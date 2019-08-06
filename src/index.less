@@ -1,0 +1,49 @@
+@color: #f06423;
+html, body{
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.contain{
+    width: 750px;
+    background: #c5c5c5;
+    margin: auto;
+    text-align: center;
+}
+.name{
+    background: @color;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 750px;
+    margin: 0 auto 20px;
+    font-size: 36px;
+}
+.img{
+    width: 600px;
+    height: 200px;
+    margin: 10px auto;
+    border-bottom: 1px solid #f06423;/*no*/
+}
+.img1{
+    background: url(./asset/coin1.png) no-repeat center;
+    background-size: contain;
+}
+.img2{
+    background: url(./asset/chengji.png) no-repeat center;
+    background-size: contain;
+}
+.img3{
+    background: url(./asset/chenggong.png) no-repeat center;
+    background-size: contain;
+}
+
+.dpr{
+    text-align: center;
+    font-size: 16px;
+    padding: 8px;
+}

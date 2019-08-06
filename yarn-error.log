@@ -1,0 +1,64 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\Admin\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add three -S
+
+PATH: 
+  C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Users\Admin\AppData\Local\Microsoft\WindowsApps;;C:\Users\Admin\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Admin\AppData\Roaming\npm
+
+Yarn version: 
+  1.17.3
+
+Node version: 
+  10.16.1
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: ENOENT: no such file or directory, copyfile 'C:\Users\Admin\AppData\Local\Yarn\Cache\v4\npm-is-descriptor-0.1.6-366d8240dde487ca51823b1ab9f07a10a78251ca\node_modules\is-descriptor\index.js' -> 'E:\work\demo\threejs\node_modules\define-property\node_modules\is-descriptor\index.js'
+
+npm manifest: 
+  {
+    "name": "loadr",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "build": "node build",
+      "server": "node server"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+      "autoprefixer": "^9.6.1",
+      "clean-webpack-plugin": "^3.0.0",
+      "css-loader": "^3.0.0",
+      "express": "^4.17.1",
+      "express-http-proxy": "^1.5.1",
+      "file-loader": "^4.0.0",
+      "html-webpack-plugin": "^3.2.0",
+      "less": "^3.9.0",
+      "less-loader": "^5.0.0",
+      "mini-css-extract-plugin": "^0.7.0",
+      "opn": "^6.0.0",
+      "postcss-loader": "^3.0.0",
+      "postcss-px2rem-exclude": "^0.0.6",
+      "style-loader": "^0.23.1",
+      "ts-loader": "^6.0.4",
+      "typescript": "^3.5.3",
+      "url-loader": "^2.0.1",
+      "webpack": "^4.35.2",
+      "webpack-dev-middleware": "^3.7.0",
+      "webpack-hot-middleware": "^2.25.0",
+      "webpack-merge": "^4.2.1"
+    },
+    "dependencies": {
+      "axios": "^0.19.0"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
