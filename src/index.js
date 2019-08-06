@@ -5,6 +5,11 @@ import Game from'./ts/Game'
 let game = new Game();
 game.setup();
 
+
+$("#toggle-sidebar").click(function(){
+    $(".page-wrapper").toggleClass("open");	    
+});
+
 document.querySelector("#Background").addEventListener("change", onChangeColor);
 document.querySelector("#AmbientLight").addEventListener("change", onChangeColor);
 document.querySelector("#DirectionalLight").addEventListener("change", onChangeColor);
