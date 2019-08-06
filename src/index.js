@@ -2,29 +2,22 @@ import './index.less'
 import {httpGet, httpPost} from './common/request'
 import Game from'./ts/Game'
 
-// httpPost('/api/info').then(res=>{
-//     console.log(res);
-// })
-
-// document.querySelector(".dpr").innerHTML = "devicePixelRatio: " + window.devicePixelRatio;
-
 let game = new Game();
 game.setup();
 
-// function Anima(){
-//     this.run = function(){
-//         console.log("anima run");
-//     }
-// }
-// Anima.prototype.say = function(){
-//     console.log("anima say");
-// }
+document.querySelector("#Background").addEventListener("change", onChangeColor);
+document.querySelector("#AmbientLight").addEventListener("change", onChangeColor);
+document.querySelector("#DirectionalLight").addEventListener("change", onChangeColor);
 
-// Anima.prototype.leg = 4;
+function onChangeColor(e){
+    window.dispatchEvent(new CustomEvent("change_color", {
+        detail: {
+            name: e.target.getAttribute("id"),
+            data: e.target.value
+        }
+    }))
+}
 
-// Anima.prototype = {
-//     eye: 2
-// }
-// var a = new Anima();
-// console.log(a.leg);
-// Anima.prototype.leg = 8;
+window.addEventListener("change_color", function(e){
+    game.changeColor(e.detail);
+})
