@@ -10,6 +10,7 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import { EquirectangularToCubeGenerator } from 'three/examples/jsm/loaders/EquirectangularToCubeGenerator';
 import { PMREMGenerator } from 'three/examples/jsm/pmrem/PMREMGenerator';
 import { PMREMCubeUVPacker } from 'three/examples/jsm/pmrem/PMREMCubeUVPacker';
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 
 export default class Game {
     scene: THREE.Scene;
@@ -17,30 +18,76 @@ export default class Game {
     renderer: THREE.WebGLRenderer;
     ambient: THREE.AmbientLight;
     directional: THREE.DirectionalLight;
+    raycaster: THREE.Raycaster = new THREE.Raycaster();
 
     constructor() {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 900);
         this.renderer = new THREE.WebGLRenderer();
+        window.addEventListener("mousedown", e => {this.onMouseDown(e)}, false);
+    }
+
+    onMouseDown(e: MouseEvent){
+        let x = (e.clientX / window.innerWidth) * 2 - 1;
+        let y = -(e.clientY / window.innerHeight) * 2 + 1;
+        this.raycaster.setFromCamera({x: x, y: y}, this.camera);
+        let intersects = this.raycaster.intersectObjects(this.scene.children);
+        if(intersects[0]){
+            this.saveObject(intersects[0].object);
+        }
     }
 
     setup() {
-        let geometry = new THREE.BoxGeometry();
-        let material = new THREE.MeshNormalMaterial();
+        let geometry = new THREE.BoxBufferGeometry();
+        let material = new THREE.MeshStandardMaterial({color: 0xff0099});
+        material.emissiveMap = new THREE.TextureLoader().load("/girl.jpg");
+        material.emissive = new THREE.Color(0x00ff00);
+        material.needsUpdate = true;
+
         let cube = new THREE.Mesh(geometry, material);
-        cube.position.set(0, -4, 0);
+        cube.receiveShadow = true;
+        cube.castShadow = true;
+        cube.position.set(2, 4, 2);
         this.scene.add(cube);
+
+        let m = new THREE.MeshStandardMaterial();
+        // specularMap//高光贴图
+        // diffuseMap//颜色贴图
+        let list = [
+            m.envMap,
+            m.bumpMap,//细节贴图，没有光影效果
+            m.alphaMap,
+            m.lightMap,
+            m.metalnessMap,//金属性
+            m.normalMap,//凹凸细节，模拟光影效果
+            m.emissiveMap,//自发光
+            m.displacementMap//高模烘培贴图，给低模更真实的效果
+        ]
 
         let ambient = new THREE.AmbientLight(0xffffff);
         this.scene.add(ambient);
 
         let directional = new THREE.DirectionalLight(0xffffff);
+        directional.castShadow = true;
+        // directional.shadow.mapSize.width = 400;
+        // directional.shadow.mapSize.height = 400;
+        // directional.shadow.camera.left = -50;
+        // directional.shadow.camera.right = 50;
+        // directional.shadow.camera.top = 50;
+        // directional.shadow.camera.bottom = -50;
+        // directional.shadow.camera.far = 100;
+        // directional.shadow.bias = -0.002;
+
+        directional.position.set(4, 9, 2);
+        directional.lookAt(new THREE.Vector3());
         this.scene.add(directional);
+        this.scene.add(new THREE.DirectionalLightHelper(directional));
 
         this.camera.position.z = 10;
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setClearColor(new THREE.Color(0xffffff));
+        this.renderer.setClearColor(new THREE.Color(0x333333));
+        this.renderer.shadowMapEnabled = true;
         document.body.appendChild(this.renderer.domElement);
         new OrbitControls(this.camera, this.renderer.domElement);
 
@@ -51,6 +98,16 @@ export default class Game {
         this.load3DS();
         this.loadGLTF();
         this.animate();
+        this.addPlane();
+    }
+
+    addPlane(){
+        let geometry = new THREE.PlaneGeometry(10, 10);
+        let meterial = new THREE.MeshStandardMaterial({color: 0xffaa88});
+        let mesh = new THREE.Mesh(geometry, meterial);
+        mesh.receiveShadow = true;
+        mesh.rotateX(Math.PI * -90 / 180);
+        this.scene.add(mesh);
     }
 
     changeColor(param: any) {
@@ -63,6 +120,13 @@ export default class Game {
         else if (param.name == "DirectionalLight") {
             this.directional.color = new THREE.Color(param.data)
         }
+    }
+
+    saveObject(obj: THREE.Object3D){
+        let exporter = new GLTFExporter();
+        exporter.parse(obj, (gltf) => {
+            console.log(gltf);
+        }, {});
     }
 
     loadJSON() {
@@ -83,27 +147,20 @@ export default class Game {
         if(isDebug){
             resourcePath = '/obj/house/';
             url = '/obj/house/QQ.3DS';
-
-            // resourcePath = '/obj/car/';
-            // url ='/obj/car/motom.3ds';
         }
 
         loader.setResourcePath(resourcePath);
         loader.load(url, (object) => {
-            console.log("-----");
-            console.log(object);
             object.traverse((child: any) => {
                 if (child.isMesh) {
                     console.log(child);
-                    // child.material.normalMap = normal;
-                    // child.material = new THREE.MeshNormalMaterial();
-                    // isDebug && child.scale.set(0.004, 0.004, 0.004);
-                    // isDebug && child.scale.set(0.04, 0.04, 0.04);
                 }
 
             });
             isDebug && object.scale.set(0.05, 0.05, 0.05);
+            object.position.set(4, 2, 1);
             this.scene.add(object);
+            this.scene.add(new THREE.BoxHelper(object));
         })
     }
 
@@ -133,6 +190,7 @@ export default class Game {
                                 }
                             })
                             this.scene.add(gltf.scene);
+                            this.scene.add(new THREE.BoxHelper(gltf.scene));
                         })
                     })
     }

@@ -7,8 +7,12 @@ game.setup();
 
 
 $("#toggle-sidebar").click(function(){
-    $(".page-wrapper").toggleClass("open");	    
+    $(".page-wrapper").toggleClass("open");	 
 });
+
+$("#btn").click(function(){
+    game.saveObject();
+})
 
 document.querySelector("#Background").addEventListener("change", onChangeColor);
 document.querySelector("#AmbientLight").addEventListener("change", onChangeColor);
