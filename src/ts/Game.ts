@@ -23,7 +23,7 @@ export default class Game {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 900);
         this.renderer = new THREE.WebGLRenderer();
-        window.addEventListener("mousedown", e => {this.onMouseDown(e)}, false);
+        // window.addEventListener("mousedown", e => {this.onMouseDown(e)}, false);
     }
 
     onMouseDown(e: MouseEvent):void{
@@ -50,9 +50,37 @@ export default class Game {
 
     saveObject(obj: THREE.Object3D):void{
         let exporter = new GLTFExporter();
-        exporter.parse(obj, (gltf: any) => {
-            console.log(gltf);
-        }, {});
+        exporter.parse(obj, (result: any) => {
+            console.log(result);
+            if ( result instanceof ArrayBuffer ) {
+                this.saveArrayBuffer( result, 'scene.glb' );
+            } else {
+                var output = JSON.stringify( result, null, 2 );
+                this.saveString( output, 'scene.gltf' );
+            }
+        }, {
+            binary: true,
+            embedImages: false,
+            forcePowerOfTwoTextures: true
+        });
+    }
+
+    save( blob: any, filename: string ) {
+        var link = document.createElement( 'a' );
+        link.style.display = 'none';
+        document.body.appendChild( link ); // Firefox workaround, see #6594
+        link.href = URL.createObjectURL( blob );
+        link.download = filename;
+        link.click();
+    }
+
+     saveString( text: any, filename:string ) {
+        this.save( new Blob( [ text ], { type: 'text/plain' } ), filename );
+    }
+
+
+    saveArrayBuffer( buffer: any, filename: string ) {
+        this.save( new Blob( [ buffer ], { type: 'application/octet-stream' } ), filename );
     }
 
     animate():void {
@@ -167,7 +195,7 @@ export default class Game {
     }
 
     addBSPObject():void{
-        let mat = new THREE.MeshBasicMaterial({color: 0xf0f0f0});
+        let mat = new THREE.MeshStandardMaterial({color: 0xf0f0f0});
         mat.map = new THREE.TextureLoader().load("/girl.jpg");
 
         let aMaterial = new THREE.MeshLambertMaterial({color: 0xff0000, opacity: 0.72, transparent: true});
@@ -194,7 +222,6 @@ export default class Game {
         rMesh.receiveShadow = true;
         rMesh.castShadow = true;
 
-
         aMesh.position.set(-4, 3, 0);
         bMesh.position.set(0, 3, 0);
         rMesh.position.set(4, 3, 0);
@@ -202,6 +229,11 @@ export default class Game {
         let helper = new THREE.BoxHelper(rMesh, new THREE.Color(0xff0000));
         this.scene.add(helper);
         helper.position.copy(rMesh.position);
+
+        setTimeout(() => {
+            this.saveObject(rMesh);
+        }, 3000);
+        
     }
 
     addExtrude():void{
@@ -320,7 +352,7 @@ export default class Game {
     loadCustom():void{
         let loader = new GLTFLoader();
         loader.setPath('/obj/glTF/');
-        loader.load('box.gltf', (gltf) => {
+        loader.load('scene.glb', (gltf) => {
             gltf.scene.traverse((child:any) => {
                 if(child.isMesh){
                     child.receiveShadow = true;
