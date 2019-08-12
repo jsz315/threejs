@@ -8,7 +8,6 @@ import { EquirectangularToCubeGenerator } from 'three/examples/jsm/loaders/Equir
 import { PMREMGenerator } from 'three/examples/jsm/pmrem/PMREMGenerator';
 import { PMREMCubeUVPacker } from 'three/examples/jsm/pmrem/PMREMCubeUVPacker';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
-import { BoxHelper, Vector3, Mesh } from 'three';
 
 const ThreeBSP = require('three-js-csg')(THREE);
 
@@ -27,7 +26,7 @@ export default class Game {
         window.addEventListener("mousedown", e => {this.onMouseDown(e)}, false);
     }
 
-    onMouseDown(e: MouseEvent){
+    onMouseDown(e: MouseEvent):void{
         let x = (e.clientX / window.innerWidth) * 2 - 1;
         let y = -(e.clientY / window.innerHeight) * 2 + 1;
         this.raycaster.setFromCamera({x: x, y: y}, this.camera);
@@ -37,19 +36,33 @@ export default class Game {
         }
     }
 
-    setup() {
-        // let geometry = new THREE.BoxBufferGeometry();
-        // let material = new THREE.MeshStandardMaterial({color: 0xff0099});
-        // material.emissiveMap = new THREE.TextureLoader().load("/girl.jpg");
-        // material.emissive = new THREE.Color(0x00ff00);
-        // material.needsUpdate = true;
+    changeColor(param: any):void {
+        if (param.name == "Background") {
+            this.renderer.setClearColor(new THREE.Color(param.data));
+        }
+        else if (param.name == "AmbientLight") {
+            this.ambient.color = new THREE.Color(param.data);
+        }
+        else if (param.name == "DirectionalLight") {
+            this.directional.color = new THREE.Color(param.data)
+        }
+    }
 
-        // let cube = new THREE.Mesh(geometry, material);
-        // cube.receiveShadow = true;
-        // cube.castShadow = true;
-        // cube.position.set(2, 4, 2);
-        // this.scene.add(cube);
+    saveObject(obj: THREE.Object3D):void{
+        let exporter = new GLTFExporter();
+        exporter.parse(obj, (gltf: any) => {
+            console.log(gltf);
+        }, {});
+    }
 
+    animate():void {
+        requestAnimationFrame(() => {
+            this.animate();
+        });
+        this.renderer.render(this.scene, this.camera);
+    }
+
+    setup():void {
         let m = new THREE.MeshStandardMaterial();
         // specularMap//高光贴图
         // diffuseMap//颜色贴图
@@ -63,151 +76,187 @@ export default class Game {
             m.emissiveMap,//自发光
             m.displacementMap//高模烘培贴图，给低模更真实的效果
         ]
-        let geometry = new THREE.BoxGeometry(3, 3, 3);
-        let material = new THREE.MeshNormalMaterial();
-        let mat = new THREE.MeshStandardMaterial({wireframe: true});
-        let cube = new THREE.Mesh(geometry, material);
-        this.scene.add(cube);
 
-        // const sphere = new THREE.Mesh(new THREE.SphereGeometry(2, 30, 30), material);
-        const sphere = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), material)
-        sphere.position.y = -1;
-        this.scene.add(sphere);
-
-        let cBSP = new ThreeBSP(cube);
-        let sBSP = new ThreeBSP(sphere);
-        let rBSP = cBSP.subtract(sBSP);
-        // let rBSP = cBSP.union(sBSP);
-        let rMesh = rBSP.toMesh();
-        rMesh.material = material;
-        rMesh.position.y = -7;
-        this.scene.add(rMesh);
-
-        cube.position.set(-4, -3, 0);
-        sphere.position.set(0, -4, 0);
-        rMesh.position.set(4, -3, 0);
-
-        let helper = new BoxHelper(rMesh, new THREE.Color(0xff0000));
-        this.scene.add(helper);
-        helper.position.set(rMesh.position.x, rMesh.position.y, rMesh.position.z);
-
-
-        let grid = new THREE.GridHelper(40, 40);
-        this.scene.add(grid);
-
-        let ambient = new THREE.AmbientLight(0xffffff);
-        this.scene.add(ambient);
-
-        let directional = new THREE.DirectionalLight(0xffffff);
-        directional.castShadow = true;
-        // directional.shadow.mapSize.width = 400;
-        // directional.shadow.mapSize.height = 400;
-        // directional.shadow.camera.left = -50;
-        // directional.shadow.camera.right = 50;
-        // directional.shadow.camera.top = 50;
-        // directional.shadow.camera.bottom = -50;
-        // directional.shadow.camera.far = 100;
-        directional.shadow.bias = -0.002;
-
-        directional.position.set(4, 9, 2);
-        directional.lookAt(new THREE.Vector3());
-        this.scene.add(directional);
-        this.scene.add(new THREE.DirectionalLightHelper(directional));
-
-        this.camera.position.set(0, 0, 10);
+        this.camera.position.set(2, 4, 12);
+        this.camera.rotation.set(0.4, 0.2, 0.1);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setClearColor(new THREE.Color(0x333333));
-        this.renderer.shadowMapEnabled = true;
+        this.renderer.setClearColor(new THREE.Color(0x909090));
+        this.renderer.shadowMap.enabled = true;
         document.body.appendChild(this.renderer.domElement);
         new OrbitControls(this.camera, this.renderer.domElement);
 
-        this.ambient = ambient;
-        this.directional = directional;
+        this.addGrid();
+        this.addPlane();
+        this.addLights();
+
+        this.addBSPObject();
+        this.addLine();
+        this.addPath();
+        this.addExtrude();
 
         this.loadJSON();
         this.load3DS();
         this.loadGLTF();
+        this.loadCustom();
+
         this.animate();
-        this.addPlane();
     }
 
-    addPlane(){
-        let geometry = new THREE.PlaneGeometry(10, 10);
+    addGrid():void{
+        let grid = new THREE.GridHelper(80, 80);
+        this.scene.add(grid);
+    }
+    
+    addPlane():void{
+        let geometry = new THREE.PlaneGeometry(40, 40);
         let meterial = new THREE.MeshStandardMaterial({color: 0xffaa88, side: THREE.DoubleSide});
         let mesh = new THREE.Mesh(geometry, meterial);
         mesh.receiveShadow = true;
         mesh.rotateX(Math.PI * -90 / 180);
         this.scene.add(mesh);
-
-        this.addPath();
     }
 
-    addPath(){
-        let shape = new THREE.Shape();
-        shape.arc(0, 0, 1, 0, Math.PI * 2, false);
-        let p1 = new THREE.Vector3(3, -4, 6);
-        let p2 = new THREE.Vector3(-3, 6, 12);
-        let path = new THREE.LineCurve3(p1, p2);
+    addLights():void{
+        let ambient = new THREE.AmbientLight(0xffffff);
+        this.scene.add(ambient);
+
+        let directional = new THREE.DirectionalLight(0xffffff);
+        directional.castShadow = true;
+        const shadowSize = 20;
+
+        directional.shadow.camera.left = -shadowSize;
+        directional.shadow.camera.right = shadowSize;
+        directional.shadow.camera.top = shadowSize;
+        directional.shadow.camera.bottom = -shadowSize;
+        directional.shadow.camera.far = 200;
+
+        directional.position.set(4, 9, 5);
+        directional.lookAt(new THREE.Vector3());
+        this.scene.add(directional);
+        this.scene.add(new THREE.DirectionalLightHelper(directional));
         
+        this.ambient = ambient;
+        this.directional = directional;
+    }
+
+    addLine():void{
+        let group = new THREE.Group();
+        let curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(3, 4, 2),
+            new THREE.Vector3(1, 2, -3),
+            new THREE.Vector3(-3, 0, 4),
+            new THREE.Vector3(2, -3, 1),
+        ], true);
+        let geometry = new THREE.Geometry();
+        geometry.vertices = curve.getSpacedPoints(50);
+        let mesh = new THREE.Line(geometry);
+        group.add(mesh);
+
+        let sphereGeometry = new THREE.SphereGeometry(0.1);
+        let mat = new THREE.MeshNormalMaterial();
+        let spacePoints = curve.getPoints(50);
+        for(let point of spacePoints){
+            let helper = new THREE.Mesh(sphereGeometry, mat);
+            helper.position.copy(point);
+            group.add(helper);
+        }
+
+        group.position.set(-4, 4, 6);
+        this.scene.add(group);
+    }
+
+    addBSPObject():void{
+        let mat = new THREE.MeshBasicMaterial({color: 0xf0f0f0});
+        mat.map = new THREE.TextureLoader().load("/girl.jpg");
+
+        let aMaterial = new THREE.MeshLambertMaterial({color: 0xff0000, opacity: 0.72, transparent: true});
+        let aMesh = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 3), aMaterial);
+        this.scene.add(aMesh);
+        aMesh.receiveShadow = true;
+        aMesh.castShadow = true;
+
+        let bMaterial = new THREE.MeshStandardMaterial({color: 0x00ff00});
+        let bMesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 1), bMaterial);
+        this.scene.add(bMesh);
+        bMesh.receiveShadow = true;
+        bMesh.castShadow = true;
+
+        bMesh.position.y = 1;
+
+        let aBSP = new ThreeBSP(aMesh);
+        let bBSP = new ThreeBSP(bMesh);
+        let rBSP = aBSP.subtract(bBSP);
+        // let rBSP = cBSP.union(sBSP);
+        let rMesh = rBSP.toMesh();
+        rMesh.material = mat;
+        this.scene.add(rMesh);
+        rMesh.receiveShadow = true;
+        rMesh.castShadow = true;
+
+
+        aMesh.position.set(-4, 3, 0);
+        bMesh.position.set(0, 3, 0);
+        rMesh.position.set(4, 3, 0);
+
+        let helper = new THREE.BoxHelper(rMesh, new THREE.Color(0xff0000));
+        this.scene.add(helper);
+        helper.position.copy(rMesh.position);
+    }
+
+    addExtrude():void{
+        let shape = new THREE.Shape();
+        shape.moveTo(0, 0);
+        shape.lineTo(1, 0);
+        shape.lineTo(1, 1.2);
+        shape.lineTo(0, 1);
+        // shape.arc(0, 0, 1, 0, Math.PI * 2, false);
+        let p1 = new THREE.Vector3(-5, 10, 2);
+        let p2 = new THREE.Vector3(-2, 4, 10);
+        let path = new THREE.LineCurve3(p1, p2);
+
         let extrudeSettings = {
             bevelEnabled: true,
-            bevelSize: 1,
-            bevelThickness: 3,
+            bevelSize: 0.4,
+            bevelThickness: 0.4,
             bevelOffset: 0,
             bevelSegments: 4,
-            step: 10,
+            step: 4,
             depth: 2,
             extrudePath: path
         }
-
-        var curve = new THREE.CatmullRomCurve3( [
-            new THREE.Vector3( -10, 0, 10 ),
-            new THREE.Vector3( -5, 5, 5 ),
-            new THREE.Vector3( 0, 0, 0 ),
-            new THREE.Vector3( 5, -5, 5 ),
-            new THREE.Vector3( 10, 0, 10 )
-        ] );
-
-        var points = curve.getPoints(200);
-        var geometry = new THREE.BufferGeometry().setFromPoints( points );
-    
-        // let extrude = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-        // let geometry = new THREE.TubeGeometry(curve, 10, 2, 8, true);
-        let mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
+        let extrude = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        let mesh = new THREE.Mesh(extrude, new THREE.MeshNormalMaterial())
         this.scene.add(mesh);
     }
 
-    changeColor(param: any) {
-        if (param.name == "Background") {
-            this.renderer.setClearColor(new THREE.Color(param.data));
-        }
-        else if (param.name == "AmbientLight") {
-            this.ambient.color = new THREE.Color(param.data);
-        }
-        else if (param.name == "DirectionalLight") {
-            this.directional.color = new THREE.Color(param.data)
-        }
+    addPath():void{
+        var curve = new THREE.CatmullRomCurve3( [
+            new THREE.Vector3(3, 4, 2),
+            new THREE.Vector3(1, 2, -3),
+            new THREE.Vector3(-3, 0, 4),
+            new THREE.Vector3(2, -3, 1),
+            new THREE.Vector3(1, 0, -1),
+        ] );
+        let geometry = new THREE.TubeGeometry(curve, 90, 0.4, 12, false);
+        let mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
+        this.scene.add(mesh);
+        mesh.position.set(-2, 5, -8);
     }
 
-    saveObject(obj: THREE.Object3D){
-        let exporter = new GLTFExporter();
-        exporter.parse(obj, (gltf: any) => {
-            console.log(gltf);
-        }, {});
-    }
+    
 
-    loadJSON() {
+    loadJSON():void {
         let loader = new THREE.ObjectLoader();
         loader.load("/obj/teapot-claraio.json", (obj: any) => {
-            obj.material = new THREE.MeshNormalMaterial();
-            obj.position.set(0, 4, 0);
+            obj.material = new THREE.MeshStandardMaterial({color: 0x33ff88});
+            obj.position.set(0, 2, -3);
             this.scene.add(obj);
-            this.scene.add(new BoxHelper(obj, new THREE.Color(0xff0000)));
+            this.scene.add(new THREE.BoxHelper(obj, new THREE.Color(0xff0000)));
         })
     }
 
-    load3DS() {
+    load3DS():void {
         let loader = new TDSLoader();
         let isDebug = location.search.indexOf("debug=1") != -1;
         var resourcePath = '/obj/portalgun/textures/';
@@ -222,19 +271,21 @@ export default class Game {
         loader.load(url, (object) => {
             object.traverse((child: any) => {
                 if (child.isMesh) {
+                    console.log("3ds mesh");
                     console.log(child);
+                    child.receiveShadow = true;
+                    child.castShadow = true;
                 }
 
             });
             isDebug && object.scale.set(0.05, 0.05, 0.05);
-            object.position.set(4, 2, 1);
+            object.position.set(4, 3, 4);
             this.scene.add(object);
             this.scene.add(new THREE.BoxHelper(object));
         })
     }
 
-    loadGLTF(){
-
+    loadGLTF():void{
         let rgbeLoader = new RGBELoader();
         rgbeLoader.setDataType(THREE.UnsignedByteType);
         rgbeLoader.load( '/obj/glTF/pedestrian_overpass_2k.hdr', texture => {
@@ -255,18 +306,32 @@ export default class Game {
                 gltf.scene.traverse((child:any) => {
                     if(child.isMesh){
                         child.material.envMap = envMap;
+                        child.receiveShadow = true;
+                        child.castShadow = true;
                     }
                 })
+                gltf.scene.position.set(0, 3, 3);
                 this.scene.add(gltf.scene);
                 this.scene.add(new THREE.BoxHelper(gltf.scene));
             })
         })
     }
 
-    animate() {
-        requestAnimationFrame(() => {
-            this.animate();
-        });
-        this.renderer.render(this.scene, this.camera);
+    loadCustom():void{
+        let loader = new GLTFLoader();
+        loader.setPath('/obj/glTF/');
+        loader.load('box.gltf', (gltf) => {
+            gltf.scene.traverse((child:any) => {
+                if(child.isMesh){
+                    child.receiveShadow = true;
+                    child.castShadow = true;
+                }
+            })
+            gltf.scene.position.set(6, 3, 6);
+            this.scene.add(gltf.scene);
+            this.scene.add(new THREE.BoxHelper(gltf.scene));
+        })
     }
+
+    
 }
