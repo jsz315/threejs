@@ -140,11 +140,12 @@ export default class Game {
         this.addLine();
         this.addPath();
         this.addExtrude();
+        this.addFacesImage();
 
         this.loadJSON();
         this.load3DS();
         this.loadGLTF();
-        
+
         this.animate();
     }
 
@@ -183,6 +184,25 @@ export default class Game {
         
         this.ambient = ambient;
         this.directional = directional;
+    }
+
+    addFacesImage():void{
+        var material1 = new THREE.MeshPhongMaterial( { 
+            map: THREE.ImageUtils.loadTexture('/uploads/1702/crate.jpg') } );
+        var material2 = new THREE.MeshPhongMaterial( { 
+            map: THREE.ImageUtils.loadTexture('/uploads/1702/bricks.jpg') } );
+        var material3 = new THREE.MeshPhongMaterial( { 
+            map: THREE.ImageUtils.loadTexture('/uploads/1702/clouds.jpg') } );
+        var material4 = new THREE.MeshPhongMaterial( { 
+            map: THREE.ImageUtils.loadTexture('/uploads/1702/stone-wall.jpg') } );
+        var material5 = new THREE.MeshPhongMaterial( { 
+            map: THREE.ImageUtils.loadTexture('/uploads/1702/water.jpg') } );
+        var material6 = new THREE.MeshPhongMaterial( { 
+            map: THREE.ImageUtils.loadTexture('/uploads/1702/wood-floor.jpg') } );
+                
+        var materials = [material1, material2, material3, material4, material5, material6];
+                
+        // var meshFaceMaterial = new THREE.MeshFaceMaterial( materials );
     }
 
     addLine():void{
