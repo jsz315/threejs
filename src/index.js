@@ -14,6 +14,10 @@ $("#btn").click(function(){
     game.saveObject();
 })
 
+$("#load").click(function(){
+    game.loadObject();
+})
+
 document.querySelector("#Background").addEventListener("change", onChangeColor);
 document.querySelector("#AmbientLight").addEventListener("change", onChangeColor);
 document.querySelector("#DirectionalLight").addEventListener("change", onChangeColor);

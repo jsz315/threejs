@@ -18,6 +18,7 @@ export default class Game {
     ambient: THREE.AmbientLight;
     directional: THREE.DirectionalLight;
     raycaster: THREE.Raycaster = new THREE.Raycaster();
+    model: THREE.Object3D;
 
     constructor() {
         this.scene = new THREE.Scene();
@@ -27,13 +28,13 @@ export default class Game {
     }
 
     onMouseDown(e: MouseEvent):void{
-        let x = (e.clientX / window.innerWidth) * 2 - 1;
-        let y = -(e.clientY / window.innerHeight) * 2 + 1;
-        this.raycaster.setFromCamera({x: x, y: y}, this.camera);
-        let intersects = this.raycaster.intersectObjects(this.scene.children);
-        if(intersects[0]){
-            this.saveObject(intersects[0].object);
-        }
+        // let x = (e.clientX / window.innerWidth) * 2 - 1;
+        // let y = -(e.clientY / window.innerHeight) * 2 + 1;
+        // this.raycaster.setFromCamera({x: x, y: y}, this.camera);
+        // let intersects = this.raycaster.intersectObjects(this.scene.children);
+        // if(intersects[0]){
+        //     this.saveObject(intersects[0].object);
+        // }
     }
 
     changeColor(param: any):void {
@@ -48,9 +49,10 @@ export default class Game {
         }
     }
 
-    saveObject(obj: THREE.Object3D):void{
+    saveObject():void{
+        let embed = $('#embed').is(':checked');
         let exporter = new GLTFExporter();
-        exporter.parse(obj, (result: any) => {
+        exporter.parse(this.model, (result: any) => {
             console.log(result);
             if ( result instanceof ArrayBuffer ) {
                 this.saveArrayBuffer( result, 'scene.glb' );
@@ -59,10 +61,26 @@ export default class Game {
                 this.saveString( output, 'scene.gltf' );
             }
         }, {
-            binary: true,
-            embedImages: false,
-            forcePowerOfTwoTextures: true
+            binary: embed,
+            embedImages: embed,
+            forcePowerOfTwoTextures: embed
         });
+    }
+
+    loadObject():void{
+        let loader = new GLTFLoader();
+        loader.setPath('/obj/glTF/');
+        loader.load('scene.gltf', (gltf) => {
+            gltf.scene.traverse((child:any) => {
+                if(child.isMesh){
+                    child.receiveShadow = true;
+                    child.castShadow = true;
+                }
+            })
+            gltf.scene.position.set(6, 3, 6);
+            this.scene.add(gltf.scene);
+            this.scene.add(new THREE.BoxHelper(gltf.scene));
+        })
     }
 
     save( blob: any, filename: string ) {
@@ -126,8 +144,7 @@ export default class Game {
         this.loadJSON();
         this.load3DS();
         this.loadGLTF();
-        this.loadCustom();
-
+        
         this.animate();
     }
 
@@ -230,9 +247,7 @@ export default class Game {
         this.scene.add(helper);
         helper.position.copy(rMesh.position);
 
-        setTimeout(() => {
-            this.saveObject(rMesh);
-        }, 3000);
+        this.model = rMesh;
         
     }
 
@@ -346,22 +361,6 @@ export default class Game {
                 this.scene.add(gltf.scene);
                 this.scene.add(new THREE.BoxHelper(gltf.scene));
             })
-        })
-    }
-
-    loadCustom():void{
-        let loader = new GLTFLoader();
-        loader.setPath('/obj/glTF/');
-        loader.load('scene.glb', (gltf) => {
-            gltf.scene.traverse((child:any) => {
-                if(child.isMesh){
-                    child.receiveShadow = true;
-                    child.castShadow = true;
-                }
-            })
-            gltf.scene.position.set(6, 3, 6);
-            this.scene.add(gltf.scene);
-            this.scene.add(new THREE.BoxHelper(gltf.scene));
         })
     }
 
