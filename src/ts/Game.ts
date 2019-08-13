@@ -92,8 +92,9 @@ export default class Game {
 
         this.addBSPObject();
         this.addLine();
-        this.addPath();
+        this.addTube();
         this.addExtrude();
+        this.addBalls();
 
         this.loadJSON();
         this.load3DS();
@@ -176,7 +177,13 @@ export default class Game {
         aMesh.receiveShadow = true;
         aMesh.castShadow = true;
 
-        let bMaterial = new THREE.MeshStandardMaterial({color: 0x00ff00});
+        let bMaterial = new THREE.MeshToonMaterial({
+            color: new THREE.Color(0xff4400),
+            specular: new THREE.Color(0x0022ff),
+            reflectivity: 0.4,
+            shininess: 30
+        });
+
         let bMesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 1), bMaterial);
         this.scene.add(bMesh);
         bMesh.receiveShadow = true;
@@ -202,6 +209,21 @@ export default class Game {
         let helper = new THREE.BoxHelper(rMesh, new THREE.Color(0xff0000));
         this.scene.add(helper);
         helper.position.copy(rMesh.position);
+    }
+
+    addBalls():void{
+        let sphere = new THREE.SphereGeometry(1, 16, 16);
+        let material = new THREE.MeshToonMaterial({
+            color: new THREE.Color(0xff8855),
+            specular: new THREE.Color(0x4422ff),
+            reflectivity: 0.7,
+            shininess: 40
+        })
+        let ball = new THREE.Mesh(sphere, material);
+        this.scene.add(ball);
+        ball.receiveShadow = true;
+        ball.castShadow = true;
+        ball.position.set(4, 2, -5);
     }
 
     addExtrude():void{
@@ -230,17 +252,30 @@ export default class Game {
         this.scene.add(mesh);
     }
 
-    addPath():void{
+    addTube():void{
         var curve = new THREE.CatmullRomCurve3( [
-            new THREE.Vector3(3, 4, 2),
-            new THREE.Vector3(1, 2, -3),
-            new THREE.Vector3(-3, 0, 4),
-            new THREE.Vector3(2, -3, 1),
-            new THREE.Vector3(1, 0, -1),
+            new THREE.Vector3( 0, 10, - 10 ), new THREE.Vector3( 10, 0, - 10 ),
+            new THREE.Vector3( 20, 0, 0 ), new THREE.Vector3( 30, 0, 10 ),
+            new THREE.Vector3( 30, 0, 20 ), new THREE.Vector3( 20, 0, 30 ),
+            new THREE.Vector3( 10, 0, 30 ), new THREE.Vector3( 0, 0, 30 ),
+            new THREE.Vector3( - 10, 10, 30 ), new THREE.Vector3( - 10, 20, 30 ),
+            new THREE.Vector3( 0, 30, 30 ), new THREE.Vector3( 10, 30, 30 ),
+            new THREE.Vector3( 20, 30, 15 ), new THREE.Vector3( 10, 30, 10 ),
+            new THREE.Vector3( 0, 30, 10 ), new THREE.Vector3( - 10, 20, 10 ),
+            new THREE.Vector3( - 10, 10, 10 ), new THREE.Vector3( 0, 0, 10 ),
+            new THREE.Vector3( 10, - 10, 10 ), new THREE.Vector3( 20, - 15, 10 ),
+            new THREE.Vector3( 30, - 15, 10 ), new THREE.Vector3( 40, - 15, 10 ),
+            new THREE.Vector3( 50, - 15, 10 ), new THREE.Vector3( 60, 0, 10 ),
+            new THREE.Vector3( 70, 0, 0 ), new THREE.Vector3( 80, 0, 0 ),
+            new THREE.Vector3( 90, 0, 0 ), new THREE.Vector3( 100, 0, 0 )
         ] );
-        let geometry = new THREE.TubeGeometry(curve, 90, 0.4, 12, false);
-        let mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
+        let geometry = new THREE.TubeGeometry(curve, 180, 1, 12, false);
+        let mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: 0xff3388}));
         this.scene.add(mesh);
+
+        var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.3, wireframe: true, transparent: true } );
+        var wireframe = new THREE.Mesh( geometry, wireframeMaterial );
+		mesh.add( wireframe );
         mesh.position.set(-2, 5, -8);
     }
 
@@ -320,7 +355,7 @@ export default class Game {
     loadCustom():void{
         let loader = new GLTFLoader();
         loader.setPath('/obj/glTF/');
-        loader.load('box.gltf', (gltf) => {
+        loader.load('scene.gltf', (gltf) => {
             gltf.scene.traverse((child:any) => {
                 if(child.isMesh){
                     child.receiveShadow = true;
