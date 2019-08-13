@@ -8,6 +8,7 @@ import { EquirectangularToCubeGenerator } from 'three/examples/jsm/loaders/Equir
 import { PMREMGenerator } from 'three/examples/jsm/pmrem/PMREMGenerator';
 import { PMREMCubeUVPacker } from 'three/examples/jsm/pmrem/PMREMCubeUVPacker';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
+import { Reflector } from 'three/examples/jsm/objects/Reflector';
 
 const ThreeBSP = require('three-js-csg')(THREE);
 
@@ -153,6 +154,7 @@ export default class Game {
         this.addGrid();
         this.addPlane();
         this.addLights();
+        this.addMirror();
 
         this.addBSPObject();
         this.addLine();
@@ -181,6 +183,22 @@ export default class Game {
         mesh.receiveShadow = true;
         mesh.rotateX(Math.PI * -90 / 180);
         this.scene.add(mesh);
+    }
+
+    addMirror():void{
+        let planeGeometry = new THREE.PlaneBufferGeometry(8, 8);
+        let options = {
+            clipBias: 0.01,
+            textureWidth: window.innerWidth * window.devicePixelRatio,
+            textureHeight: window.innerHeight * window.devicePixelRatio,
+            color: new THREE.Color(0xffffff),
+            recursion: 0
+        };
+ 
+        let mirror = new Reflector(planeGeometry, options);
+        mirror.rotateX(Math.PI * -90 / 180);
+        mirror.position.y = 0.1;
+        this.scene.add(mirror);
     }
 
     addLights():void{
@@ -223,6 +241,8 @@ export default class Game {
         // geometry.uvsNeedUpdate = true;
 
         let mesh = new THREE.Mesh(geometry, materials);
+        mesh.receiveShadow = true;
+        mesh.castShadow = true;
         mesh.position.set(2, 4, -8);
         this.scene.add(mesh);
         // this.model.add(mesh);
@@ -257,23 +277,15 @@ export default class Game {
             new THREE.Vector2(0, 0)
         ]
 
-        // uvs[0].forEach((v: THREE.Vector2) => {
-        //     v.y = 1 - v.y;
-        // })
-
-        // uvs[1].forEach((v: THREE.Vector2) => {
-        //     v.y = 1 - v.y;
-        // })
-
-        // material2.map.rotation = Math.PI * 0.5;
-
         geometry.uvsNeedUpdate = true;
         geometry.center();
         geometry.computeVertexNormals();
         geometry.computeFaceNormals();
 
         let mesh = new THREE.Mesh(geometry, [material1, material2]);
-        mesh.position.set(-6, 6, -6);
+        mesh.receiveShadow = true;
+        mesh.castShadow = true;
+        mesh.position.set(-7, 6, -8);
         // this.scene.add(mesh);
         this.model.add(mesh);
     }
