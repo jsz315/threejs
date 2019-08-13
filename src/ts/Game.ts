@@ -18,22 +18,30 @@ export default class Game {
     ambient: THREE.AmbientLight;
     directional: THREE.DirectionalLight;
     raycaster: THREE.Raycaster = new THREE.Raycaster();
+    model: THREE.Object3D;
 
     constructor() {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 900);
         this.renderer = new THREE.WebGLRenderer();
-        window.addEventListener("mousedown", e => {this.onMouseDown(e)}, false);
+        // window.addEventListener("mousedown", e => this.onMouseDown(e), false);
+        window.addEventListener("resize", e => this.onResize(e), false);
+    }
+
+    onResize(e:Event):void{
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
     onMouseDown(e: MouseEvent):void{
-        let x = (e.clientX / window.innerWidth) * 2 - 1;
-        let y = -(e.clientY / window.innerHeight) * 2 + 1;
-        this.raycaster.setFromCamera({x: x, y: y}, this.camera);
-        let intersects = this.raycaster.intersectObjects(this.scene.children);
-        if(intersects[0]){
-            this.saveObject(intersects[0].object);
-        }
+        // let x = (e.clientX / window.innerWidth) * 2 - 1;
+        // let y = -(e.clientY / window.innerHeight) * 2 + 1;
+        // this.raycaster.setFromCamera({x: x, y: y}, this.camera);
+        // let intersects = this.raycaster.intersectObjects(this.scene.children);
+        // if(intersects[0]){
+        //     this.saveObject(intersects[0].object);
+        // }
     }
 
     changeColor(param: any):void {
@@ -48,11 +56,64 @@ export default class Game {
         }
     }
 
-    saveObject(obj: THREE.Object3D):void{
+    saveObject():void{
+        let embed = $('#embed').is(':checked');
         let exporter = new GLTFExporter();
-        exporter.parse(obj, (gltf: any) => {
+        exporter.parse(this.model, (result: any) => {
+            console.log(result);
+            if ( result instanceof ArrayBuffer ) {
+                this.saveArrayBuffer( result, 'scene.glb' );
+            } else {
+                var output = JSON.stringify( result, null, 2 );
+                this.saveString( output, 'scene.gltf' );
+            }
+        }, {
+            binary: false,
+            embedImages: embed,
+            forcePowerOfTwoTextures: embed,
+            truncateDrawRange: false
+        });
+    }
+
+    loadObject():void{
+        let loader = new GLTFLoader();
+        loader.setPath('/obj/glTF/');
+        loader.load('scene.gltf', (gltf) => {
+            console.log("gltf");
             console.log(gltf);
-        }, {});
+            gltf.scene.traverse((child: any) => {
+                if(child.isMesh){
+                    console.log(child);
+                    child.receiveShadow = true;
+                    child.castShadow = true;
+                    // child.geometry.attributes.uv.array.forEach((v:number, i:number) => {
+                    //     v = 1 - v;
+                    // });
+                    child.uvsNeedUpdate = true;
+                }
+            })
+            gltf.scene.position.set(4, 5, 4);
+            this.scene.add(gltf.scene);
+            this.scene.add(new THREE.BoxHelper(gltf.scene));
+        })
+    }
+
+    save( blob: any, filename: string ) {
+        var link = document.createElement( 'a' );
+        link.style.display = 'none';
+        document.body.appendChild( link ); // Firefox workaround, see #6594
+        link.href = URL.createObjectURL( blob );
+        link.download = filename;
+        link.click();
+    }
+
+     saveString( text: any, filename:string ) {
+        this.save( new Blob( [ text ], { type: 'text/plain' } ), filename );
+    }
+
+
+    saveArrayBuffer( buffer: any, filename: string ) {
+        this.save( new Blob( [ buffer ], { type: 'application/octet-stream' } ), filename );
     }
 
     animate():void {
@@ -63,6 +124,9 @@ export default class Game {
     }
 
     setup():void {
+        this.model = new THREE.Group();
+        this.scene.add(this.model);
+
         let m = new THREE.MeshStandardMaterial();
         // specularMap//高光贴图
         // diffuseMap//颜色贴图
@@ -95,11 +159,12 @@ export default class Game {
         this.addTube();
         this.addExtrude();
         this.addBalls();
+        this.addFacesImage();
+        this.addDraw();
 
         this.loadJSON();
         this.load3DS();
         this.loadGLTF();
-        this.loadCustom();
 
         this.animate();
     }
@@ -132,13 +197,85 @@ export default class Game {
         directional.shadow.camera.bottom = -shadowSize;
         directional.shadow.camera.far = 200;
 
-        directional.position.set(4, 9, 5);
+        directional.position.set(4, 24, 8);
         directional.lookAt(new THREE.Vector3());
         this.scene.add(directional);
         this.scene.add(new THREE.DirectionalLightHelper(directional));
         
         this.ambient = ambient;
         this.directional = directional;
+    }
+
+    addFacesImage():void{
+        var material1 = new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('/texture/p1.jpg')} );
+        var material2 = new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('/texture/p2.jpg')} );
+        var material3 = new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('/texture/p3.jpg')} );
+        var material4 = new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('/texture/p4.jpg')} );
+        var material5 = new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('/texture/p5.jpg')} );
+        var material6 = new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('/texture/p6.jpg')} );
+
+                
+        var materials = [material1, material2, material3, material4, material5, material6];
+
+        let geometry = new THREE.BoxGeometry(2, 2, 2);
+        // geometry.vertices = [];
+        // geometry.faceVertexUvs[0] = [];
+        // geometry.uvsNeedUpdate = true;
+
+        let mesh = new THREE.Mesh(geometry, materials);
+        mesh.position.set(2, 4, -8);
+        this.scene.add(mesh);
+        // this.model.add(mesh);
+    }
+
+    addDraw():void{
+        let material1 = new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('/girl.jpg'), side: THREE.FrontSide, color:0xff0000});
+        let material2 = new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('/boy.jpg'), side: THREE.FrontSide, color: 0x00ff00});
+        let geometry = new THREE.Geometry();
+
+        let A = new THREE.Vector3(0, 0, 0);
+        let B = new THREE.Vector3(10, 0, 0);
+        let C = new THREE.Vector3(10, 10, 0);
+        let D = new THREE.Vector3(2, 8, -5);
+
+        geometry.vertices.push(A, B, C, D);
+
+        let ABC = new THREE.Face3(0, 1, 2, null, new THREE.Color(0xffffff), 0);
+        let CDA = new THREE.Face3(2, 3, 0, null, new THREE.Color(0xffffff), 1);
+        geometry.faces.push(ABC);
+        geometry.faces.push(CDA);
+        
+        let uvs = geometry.faceVertexUvs[0];
+        uvs[0] = [
+            new THREE.Vector2(0, 0),
+            new THREE.Vector2(1, 0),
+            new THREE.Vector2(1, 1)
+        ];
+        uvs[1] = [
+            new THREE.Vector2(1, 1),
+            new THREE.Vector2(0, 1),
+            new THREE.Vector2(0, 0)
+        ]
+
+        // uvs[0].forEach((v: THREE.Vector2) => {
+        //     v.y = 1 - v.y;
+        // })
+
+        // uvs[1].forEach((v: THREE.Vector2) => {
+        //     v.y = 1 - v.y;
+        // })
+
+        // material2.map.rotation = Math.PI * 0.5;
+
+        geometry.uvsNeedUpdate = true;
+        geometry.center();
+        geometry.computeVertexNormals();
+        geometry.computeFaceNormals();
+
+        let mesh = new THREE.Mesh(geometry, [material1, material2]);
+        mesh.position.set(-6, 6, -6);
+        // this.scene.add(mesh);
+        this.model.add(mesh);
     }
 
     addLine():void{
@@ -168,7 +305,7 @@ export default class Game {
     }
 
     addBSPObject():void{
-        let mat = new THREE.MeshBasicMaterial({color: 0xf0f0f0});
+        let mat = new THREE.MeshStandardMaterial({color: 0xf0f0f0});
         mat.map = new THREE.TextureLoader().load("/girl.jpg");
 
         let aMaterial = new THREE.MeshLambertMaterial({color: 0xff0000, opacity: 0.72, transparent: true});
@@ -201,7 +338,6 @@ export default class Game {
         rMesh.receiveShadow = true;
         rMesh.castShadow = true;
 
-
         aMesh.position.set(-4, 3, 0);
         bMesh.position.set(0, 3, 0);
         rMesh.position.set(4, 3, 0);
@@ -209,6 +345,8 @@ export default class Game {
         let helper = new THREE.BoxHelper(rMesh, new THREE.Color(0xff0000));
         this.scene.add(helper);
         helper.position.copy(rMesh.position);
+
+        // this.model.add(rMesh);
     }
 
     addBalls():void{
@@ -276,7 +414,7 @@ export default class Game {
         var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.3, wireframe: true, transparent: true } );
         var wireframe = new THREE.Mesh( geometry, wireframeMaterial );
 		mesh.add( wireframe );
-        mesh.position.set(-2, 5, -8);
+        mesh.position.set(-12, 5, -8);
     }
 
     
@@ -351,22 +489,4 @@ export default class Game {
             })
         })
     }
-
-    loadCustom():void{
-        let loader = new GLTFLoader();
-        loader.setPath('/obj/glTF/');
-        loader.load('scene.gltf', (gltf) => {
-            gltf.scene.traverse((child:any) => {
-                if(child.isMesh){
-                    child.receiveShadow = true;
-                    child.castShadow = true;
-                }
-            })
-            gltf.scene.position.set(6, 3, 6);
-            this.scene.add(gltf.scene);
-            this.scene.add(new THREE.BoxHelper(gltf.scene));
-        })
-    }
-
-    
 }

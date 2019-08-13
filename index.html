@@ -56,7 +56,20 @@
             <span class="input-group-addon" id="basic-addon3">DirectionalLight</span>
             <input type="color" class="form-control" aria-describedby="basic-addon3" id="DirectionalLight">
         </div>
-        <div class="btn" id="btn"></div>
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon3">rotation</span>
+            <input type="range" class="form-control" min="-2" max="2" step="0.01" id="rotation">
+        </div>
+        <div class="box">
+            <div class="checkbox">
+                <label>
+                  <input type="checkbox" id="embed">嵌入图片
+                </label>
+              </div>
+            <button type="button" class="btn btn-default" id="btn">保存模型</button>
+            <button type="button" class="btn btn-default" id="load">读取模型</button>
+            <button type="button" class="btn btn-default" id="write">写入文件</button>
+        </div>
     </div>
 </body>
 </html>
