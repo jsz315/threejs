@@ -28,7 +28,7 @@ export default class Game {
             antialias: true,
             alpha: true
         });
-        // window.addEventListener("mousedown", e => this.onMouseDown(e), false);
+        window.addEventListener("mousedown", e => this.onMouseDown(e), false);
         window.addEventListener("resize", e => this.onResize(e), false);
     }
 
@@ -39,13 +39,37 @@ export default class Game {
     }
 
     onMouseDown(e: MouseEvent):void{
-        // let x = (e.clientX / window.innerWidth) * 2 - 1;
-        // let y = -(e.clientY / window.innerHeight) * 2 + 1;
-        // this.raycaster.setFromCamera({x: x, y: y}, this.camera);
-        // let intersects = this.raycaster.intersectObjects(this.scene.children);
-        // if(intersects[0]){
-        //     this.saveObject(intersects[0].object);
-        // }
+        let x = (e.clientX / window.innerWidth) * 2 - 1;
+        let y = -(e.clientY / window.innerHeight) * 2 + 1;
+        this.raycaster.setFromCamera({x: x, y: y}, this.camera);
+        let intersects = this.raycaster.intersectObjects(this.scene.children, true);
+        console.log(intersects[0]);
+        if(intersects[0] && intersects[0].face){
+            let n = intersects[0].face.normal;
+            console.log("aim normal");
+            console.log(n);
+            let obj: any = intersects[0].object;
+            obj.geometry.faces.forEach((element:any) => {
+                if(this.theSame(element.normal, n)){
+                    element.materialIndex = 0;
+                }
+                else{
+                    console.log(element.normal);
+                }
+            });
+            obj.geometry.groupsNeedUpdate = true;
+        }
+    }
+
+    theSame(a:THREE.Vector3, b:THREE.Vector3){
+        if(Math.abs(a.x - b.x) < 0.001){
+            if(Math.abs(a.y - b.y) < 0.001){
+                if(Math.abs(a.z - b.z) < 0.001){
+                    return true;
+                } 
+            }   
+        }
+        return false;
     }
 
     changeColor(param: any):void {
@@ -165,19 +189,19 @@ export default class Game {
         this.addGrid();
         this.addPlane();
         this.addLights();
-        this.addMirror();
+        // this.addMirror();
 
-        this.addBSPObject();
-        this.addLine();
-        this.addTube();
-        this.addExtrude();
-        this.addBalls();
+        // this.addBSPObject();
+        // this.addLine();
+        // this.addTube();
+        // this.addExtrude();
+        // this.addBalls();
         this.addFacesImage();
-        this.addDraw();
+        // this.addDraw();
 
-        this.loadJSON();
-        this.load3DS();
-        this.loadGLTF();
+        // this.loadJSON();
+        // this.load3DS();
+        // this.loadGLTF();
 
         this.animate();
     }
