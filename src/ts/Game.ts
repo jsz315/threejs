@@ -24,7 +24,10 @@ export default class Game {
     constructor() {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 900);
-        this.renderer = new THREE.WebGLRenderer();
+        this.renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: true
+        });
         // window.addEventListener("mousedown", e => this.onMouseDown(e), false);
         window.addEventListener("resize", e => this.onResize(e), false);
     }
@@ -78,8 +81,8 @@ export default class Game {
 
     loadObject():void{
         let loader = new GLTFLoader();
-        loader.setPath('/obj/glTF/');
-        loader.load('scene.gltf', (gltf) => {
+        loader.setPath('/obj/gl/');
+        loader.load('win.gltf', (gltf) => {
             console.log("gltf");
             console.log(gltf);
             gltf.scene.traverse((child: any) => {
@@ -87,15 +90,23 @@ export default class Game {
                     console.log(child);
                     child.receiveShadow = true;
                     child.castShadow = true;
+                    if(child.material.map){
+                        child.material.map.flipY = true;
+                    }
+                    
+                    // child.material.map.rotation = -Math.PI;
                     // child.geometry.attributes.uv.array.forEach((v:number, i:number) => {
-                    //     v = 1 - v;
+                    //     if(i % 2 == 1){
+                    //         v = 1 - v;
+                    //     }
                     // });
                     child.uvsNeedUpdate = true;
                 }
             })
-            gltf.scene.position.set(4, 5, 4);
+            gltf.scene.position.set(0, 4, 0);
+            gltf.scene.scale.set(40, 40, 40);
             this.scene.add(gltf.scene);
-            this.scene.add(new THREE.BoxHelper(gltf.scene));
+            this.scene.add(new THREE.BoxHelper(gltf.scene, new THREE.Color(0x333333)));
         })
     }
 
@@ -178,7 +189,7 @@ export default class Game {
     
     addPlane():void{
         let geometry = new THREE.PlaneGeometry(40, 40);
-        let meterial = new THREE.MeshStandardMaterial({color: 0xffaa88, side: THREE.DoubleSide});
+        let meterial = new THREE.MeshStandardMaterial({color: 0x909090, side: THREE.DoubleSide});
         let mesh = new THREE.Mesh(geometry, meterial);
         mesh.receiveShadow = true;
         mesh.rotateX(Math.PI * -90 / 180);
@@ -207,7 +218,7 @@ export default class Game {
 
         let directional = new THREE.DirectionalLight(0xffffff);
         directional.castShadow = true;
-        const shadowSize = 20;
+        const shadowSize = 40;
 
         directional.shadow.camera.left = -shadowSize;
         directional.shadow.camera.right = shadowSize;
@@ -215,7 +226,7 @@ export default class Game {
         directional.shadow.camera.bottom = -shadowSize;
         directional.shadow.camera.far = 200;
 
-        directional.position.set(4, 24, 8);
+        directional.position.set(5, 5, -5);
         directional.lookAt(new THREE.Vector3());
         this.scene.add(directional);
         this.scene.add(new THREE.DirectionalLightHelper(directional));
@@ -244,13 +255,21 @@ export default class Game {
         mesh.receiveShadow = true;
         mesh.castShadow = true;
         mesh.position.set(2, 4, -8);
-        this.scene.add(mesh);
-        // this.model.add(mesh);
+        // this.scene.add(mesh);
+        this.model.add(mesh);
     }
 
     addDraw():void{
         let material1 = new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('/girl.jpg'), side: THREE.FrontSide, color:0xff0000});
         let material2 = new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('/boy.jpg'), side: THREE.FrontSide, color: 0x00ff00});
+        // material1.map.wrapS = THREE.RepeatWrapping;
+        // material1.map.wrapT = THREE.RepeatWrapping;
+        // material2.map.wrapS = THREE.RepeatWrapping;
+        // material2.map.wrapT = THREE.RepeatWrapping;
+        
+        // material1.map.repeat.set(10, 10);
+        // material2.map.repeat.set(10, 10);
+
         let geometry = new THREE.Geometry();
 
         let A = new THREE.Vector3(0, 0, 0);
