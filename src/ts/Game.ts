@@ -20,6 +20,7 @@ export default class Game {
     directional: THREE.DirectionalLight;
     raycaster: THREE.Raycaster = new THREE.Raycaster();
     model: THREE.Object3D;
+    uniforms: any;
 
     constructor() {
         this.scene = new THREE.Scene();
@@ -156,6 +157,10 @@ export default class Game {
         requestAnimationFrame(() => {
             this.animate();
         });
+        if(this.uniforms){
+            this.uniforms.time.value += 0.02;
+        }
+        
         this.renderer.render(this.scene, this.camera);
     }
 
@@ -189,19 +194,20 @@ export default class Game {
         this.addGrid();
         this.addPlane();
         this.addLights();
-        // this.addMirror();
+        this.addMirror();
+        this.addShader();
 
-        // this.addBSPObject();
-        // this.addLine();
-        // this.addTube();
-        // this.addExtrude();
-        // this.addBalls();
+        this.addBSPObject();
+        this.addLine();
+        this.addTube();
+        this.addExtrude();
+        this.addBalls();
         this.addFacesImage();
-        // this.addDraw();
+        this.addDraw();
 
-        // this.loadJSON();
-        // this.load3DS();
-        // this.loadGLTF();
+        this.loadJSON();
+        this.load3DS();
+        this.loadGLTF();
 
         this.animate();
     }
@@ -218,6 +224,29 @@ export default class Game {
         mesh.receiveShadow = true;
         mesh.rotateX(Math.PI * -90 / 180);
         this.scene.add(mesh);
+    }
+
+    addShader():void{
+        this.uniforms = {
+            time: {type: "f", value: 0.1}
+        }
+
+        let vertexShader = $("#vertexShader").text();
+        let fragmentShader = $("#fragmentShader").text();
+
+        console.log(vertexShader);
+        console.log(fragmentShader);
+
+        let geometry = new THREE.BoxGeometry(2, 2, 2);
+        let meterial = new THREE.ShaderMaterial({
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+            uniforms: this.uniforms
+        })
+
+        let mesh = new THREE.Mesh(geometry, meterial);
+        this.scene.add(mesh);
+        mesh.position.set(2, 6, -5);
     }
 
     addMirror():void{
