@@ -108,8 +108,15 @@ export default class Game {
 
         this.timer += 0.1;
 
-        this.ts.rotateY(-0.01);
-        this.lightHelper.matrixWorld = this.directional.matrixWorld;
+        // this.ts.rotateY(-0.01);
+
+        // this.lightHelper.matrixWorld = this.directional.matrixWorld;
+
+        // this.lightHelper.position.copy(this.camera.position);
+        // this.lightHelper.rotation.copy(this.camera.rotation);
+
+        this.directional.matrixWorld = this.camera.matrixWorld;
+
         // this.rotateAroundWorldAxis(this.directional, new THREE.Vector3(0, 1, 0), 0.01);
         // this.directional.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.01);
         // this.directional.lookAt(new THREE.Vector3());
@@ -190,7 +197,7 @@ export default class Game {
             emissive: 0xffffff
         });
         let mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(0, 2, 0);
+        mesh.position.set(0, 4, 0);
         this.scene.add(mesh);
 
         var textureLoader = new THREE.TextureLoader();
@@ -222,7 +229,8 @@ export default class Game {
         }
         this.bufferView.addAttribute("color", new THREE.Float32BufferAttribute(colors.array, 3));
 
-        console.log(this.directional);
+        // console.log(this.lightHelper.position);
+        // console.log(this.camera.position);
     }
 
     addGrid():void{
