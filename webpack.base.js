@@ -3,6 +3,9 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
+
+console.log(process.argv);
 
 module.exports = {
     //指定入口文件
@@ -55,11 +58,11 @@ module.exports = {
     },
 
     plugins: [
-        new CleanWebpackPlugin({
-            root: path.resolve(__dirname, 'dist'),
-            verbose: true,
-            dry: false
-        }),
+        // new CleanWebpackPlugin({
+        //     root: path.resolve(__dirname, 'dist'),
+        //     verbose: true,
+        //     exclude: ['dll'],
+        // }),
         new HtmlWebpackPlugin({
             filename: `index.html`,
             template: `index.html`
@@ -69,5 +72,14 @@ module.exports = {
             // both options are optional
             filename: 'css/[name].css'
         }),
+        new webpack.DllReferencePlugin({
+            context: __dirname,
+            manifest: path.join(__dirname, './dist/dll/three.manifest.json')
+        }),
+        new AddAssetHtmlPlugin([
+            {
+                filepath: path.resolve(__dirname, './dist/dll/*.js')
+            }
+        ])
     ]
 };
