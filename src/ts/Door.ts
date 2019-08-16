@@ -30,6 +30,8 @@ export default class Game {
     timer: number = 0;
     ts: THREE.Group;
     lightHelper: THREE.DirectionalLightHelper;
+    spot: THREE.SpotLight;
+    spotBox: THREE.Mesh;
 
     constructor() {
         this.scene = new THREE.Scene();
@@ -39,8 +41,22 @@ export default class Game {
             alpha: true,
             preserveDrawingBuffer: true
         });
-        // window.addEventListener("mousedown", e => this.onMouseDown(e), false);
+        window.addEventListener("mousedown", e => this.onMouseDown(e), false);
         window.addEventListener("resize", e => this.onResize(e), false);
+    }
+
+    onMouseDown(e: MouseEvent):void{
+        let x = (e.clientX / window.innerWidth) * 2 - 1;
+        let y = -(e.clientY / window.innerHeight) * 2 + 1;
+        this.raycaster.setFromCamera({x: x, y: y}, this.camera);
+        let intersects = this.raycaster.intersectObjects(this.scene.children, true);
+        console.log(intersects[0]);
+        if(intersects[0] && intersects[0].face){
+            let n = intersects[0].face.normal;
+            if(this.spot){
+                this.spot.target = intersects[0].object;
+            }
+        }
     }
 
     onResize(e:Event):void{
@@ -51,10 +67,18 @@ export default class Game {
 
     loadObject():void{
         let loader = new GLTFLoader();
-        loader.setPath('/obj/gl/');
-        loader.load('win.gltf', (gltf) => {
+        loader.setPath('/obj/glTF/');
+        loader.load('scene.gltf', (gltf) => {
             console.log("gltf");
             console.log(gltf);
+
+            let mat = new THREE.MeshLambertMaterial({
+                color: 0xff0000,
+                emissive: 0xffffff,
+                emissiveMap: new THREE.TextureLoader().load("/texture/p4.jpg"),
+                map: new THREE.TextureLoader().load("/texture/p4.jpg")
+            })
+
             gltf.scene.traverse((child: any) => {
                 if(child.isMesh){
                     console.log(child);
@@ -70,11 +94,12 @@ export default class Game {
                     //         v = 1 - v;
                     //     }
                     // });
+                    child.material = mat;
                     child.uvsNeedUpdate = true;
                 }
             })
-            gltf.scene.position.set(0, 4, 0);
-            gltf.scene.scale.set(40, 40, 40);
+            gltf.scene.position.set(0, 0, 0);
+            gltf.scene.scale.set(0.1, 0.1, 0.1);
             this.scene.add(gltf.scene);
             this.scene.add(new THREE.BoxHelper(gltf.scene, new THREE.Color(0x333333)));
         })
@@ -110,12 +135,14 @@ export default class Game {
 
         // this.ts.rotateY(-0.01);
 
-        // this.lightHelper.matrixWorld = this.directional.matrixWorld;
+        
 
         // this.lightHelper.position.copy(this.camera.position);
         // this.lightHelper.rotation.copy(this.camera.rotation);
 
-        this.directional.matrixWorld = this.camera.matrixWorld;
+        // this.directional.matrixWorld = this.camera.matrixWorld;
+        // this.lightHelper.matrixWorld = this.camera.matrixWorld;
+    
 
         // this.rotateAroundWorldAxis(this.directional, new THREE.Vector3(0, 1, 0), 0.01);
         // this.directional.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.01);
@@ -197,8 +224,8 @@ export default class Game {
             emissive: 0xffffff
         });
         let mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(0, 4, 0);
-        this.scene.add(mesh);
+        mesh.position.set(0, 2, 0);
+        // this.scene.add(mesh);
 
         var textureLoader = new THREE.TextureLoader();
         textureLoader.load( "/texture/p4.jpg", function ( map ) {
@@ -239,8 +266,8 @@ export default class Game {
     }
 
     addPlane():void{
-        let geometry = new THREE.PlaneGeometry(40, 40);
-        let meterial = new THREE.MeshStandardMaterial({color: 0xf3f3f3, side: THREE.DoubleSide});
+        let geometry = new THREE.PlaneGeometry(30, 30);
+        let meterial = new THREE.MeshStandardMaterial({side: THREE.DoubleSide, emissive: 0x909090});
         let mesh = new THREE.Mesh(geometry, meterial);
         mesh.receiveShadow = true;
         mesh.castShadow = true;
@@ -279,13 +306,13 @@ export default class Game {
         ambient.intensity = 0.4;
      
         directional.castShadow = true;
-        const shadowSize = 40;
+        // const shadowSize = 40;
 
-        directional.shadow.camera.left = -shadowSize;
-        directional.shadow.camera.right = shadowSize;
-        directional.shadow.camera.top = shadowSize;
-        directional.shadow.camera.bottom = -shadowSize;
-        directional.shadow.camera.far = 200;
+        // directional.shadow.camera.left = -shadowSize;
+        // directional.shadow.camera.right = shadowSize;
+        // directional.shadow.camera.top = shadowSize;
+        // directional.shadow.camera.bottom = -shadowSize;
+        // directional.shadow.camera.far = 200;
 
         // directional.position.set(5, 5, -5);
         // directional.lookAt(new THREE.Vector3());
@@ -293,10 +320,10 @@ export default class Game {
 
         // controllerFP.setObjectPosXYZ(0, 0, 140);
         // controllerFP.lookAtXYZ(0, 1, 140);
-        directional.position.set(4, 6, 5);
-        directional.lookAt(0, 0, 0);
+        directional.position.set(2, 4, 3);
+        directional.lookAt(0, 2, 0);
         this.camera.position.set(1, 4, 10);
-        this.camera.lookAt(0, 0, 0);
+        this.camera.lookAt(0, 2, 0);
         // this.camera.add(new THREE.CameraHelper(this.camera));
         
 
@@ -316,17 +343,26 @@ export default class Game {
         this.lightHelper = new THREE.DirectionalLightHelper(directional);
         this.scene.add(this.lightHelper);
 
-        // var spotLight = new THREE.SpotLight( 0xff8888 );
-        // spotLight.position.set( 100, 200, 100 );
-        // spotLight.angle = Math.PI / 6;
-        // spotLight.penumbra = 0.9;
-        // this.scene.add( spotLight );
+        var spotLight = new THREE.SpotLight( 0xffffff );
+        spotLight.castShadow = true;
+        spotLight.position.set( 0, 2, 4 );
+        spotLight.angle = Math.PI / 6;
+        spotLight.penumbra = 0.3;
+        spotLight.lookAt(new THREE.Vector3(0, 2, 0));
+        this.scene.add( spotLight );
+        this.scene.add(new THREE.SpotLightHelper(spotLight));
 
-        // var spotLight = new THREE.SpotLight( 0x8888ff );
-        // spotLight.position.set( - 100, - 200, - 100 );
-        // spotLight.angle = Math.PI / 6;
-        // spotLight.penumbra = 0.9;
-        // this.scene.add( spotLight );
+        this.spot = spotLight;
+
+        this.spotBox = new THREE.Mesh()
+
+        // var spotLight2 = new THREE.SpotLight( 0x0000ff );
+        // spotLight2.position.set( 0, 0, -8 );
+        // spotLight2.angle = Math.PI / 6;
+        // spotLight2.penumbra = 1;
+        // this.scene.add( spotLight2 );
+        // this.scene.add(new THREE.SpotLightHelper(spotLight2));
+
     }
 
 }
