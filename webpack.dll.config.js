@@ -1,6 +1,8 @@
 const path = require('path')
 const webpack = require('webpack')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 
 module.exports = {
     entry: {
@@ -20,6 +22,7 @@ module.exports = {
         new webpack.DllPlugin({
             name: '_dll_[name]_[hash:8]',
             path: path.join(__dirname, './dist/dll/[name].manifest.json')
-        })
+        }),
+        new BundleAnalyzerPlugin()
     ]
 }

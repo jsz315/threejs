@@ -19,7 +19,10 @@ function getConfig(){
             new webpack.HotModuleReplacementPlugin(),
         ]
     });
-    config.entry.index.push('webpack-hot-middleware/client');
+    // config.entry.index.push('webpack-hot-middleware/client');
+    for(let i in config.entry){
+        config.entry[i].push('webpack-hot-middleware/client');
+    }
     if(config.entry.vendor){
         config.entry.vendor.push('webpack-hot-middleware/client');
     }

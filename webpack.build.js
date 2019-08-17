@@ -1,6 +1,7 @@
 const merge = require("webpack-merge");
 const webpack = require('webpack');
 const http = require('./config/http');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 function getConfig(){
     const baseConfig = require("./webpack.base");
@@ -9,6 +10,9 @@ function getConfig(){
         mode: 'production',
         // 开启调试模式
         devtool: "cheap-module-source-map",
+        plugins: [
+            new BundleAnalyzerPlugin()
+        ]
     });
     return config;
 }

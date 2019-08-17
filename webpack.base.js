@@ -4,14 +4,15 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const global = require('./global')
 
-console.log(process.argv);
+console.log("配置文件");
+console.log(global);
 
 module.exports = {
     //指定入口文件
-    entry: {
-        index: ['./src/index.js']
-    },
+    entry: global.entry,
     //指定出口文件.打包生成build.js,如果没有dist文件夹会自动创建.最好写绝对路径，不然会报下图中的错误Invalid configuration object
     output: {
         path: path.join(__dirname, 'dist'), 
@@ -58,15 +59,21 @@ module.exports = {
     },
 
     plugins: [
-        // new CleanWebpackPlugin({
-        //     root: path.resolve(__dirname, 'dist'),
-        //     verbose: true,
-        //     exclude: ['dll'],
-        // }),
-        new HtmlWebpackPlugin({
-            filename: `index.html`,
-            template: `index.html`
+        new CleanWebpackPlugin({
+            root: path.resolve(__dirname, 'dist'),
+            verbose: true,
+            dry: false,
+            exclude: ['dll'],
+            cleanOnceBeforeBuildPatterns: ['!dll/*.js']
         }),
+        new CopyWebpackPlugin([
+            {
+              from: path.resolve(__dirname, './static/js'),
+              to: path.resolve(__dirname, 'dist/js'),
+              ignore: ['.*']
+            }
+        ]),
+        ...global.html,
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // both options are optional
@@ -78,7 +85,11 @@ module.exports = {
         }),
         new AddAssetHtmlPlugin([
             {
-                filepath: path.resolve(__dirname, './dist/dll/*.js')
+                filepath: path.resolve(__dirname, './dist/dll/*.js'),
+                // 文件输出目录
+                outputPath: 'dll',
+                // 脚本或链接标记的公共路径
+                publicPath: 'dll'
             }
         ])
     ]
