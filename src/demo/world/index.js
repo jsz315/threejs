@@ -8,10 +8,10 @@ app.setup();
 
 let gui;
 let API = {
-    color: 0xffffff,
-    x: 0,
-    y: 0,
-    z: 0
+    meshColor: 0xffffff,
+    lineColor: 0xff0000,
+    meshOpacity: 0.5,
+    lineOpacity: 0.5
 };
 
 initGui();
@@ -22,9 +22,9 @@ window.addEventListener("info", e => {
     let y = fixNumber(pot.y);
     let z = fixNumber(pot.z);
     $pot.val([x, y, z].join(","));
-    API.x = x;
-    API.y = y;
-    API.z = z;
+    // API.x = x;
+    // API.y = y;
+    // API.z = z;
 })
 
 function fixNumber(n){
@@ -38,10 +38,10 @@ function updateGUIParam(){
 
 function initGui() {
     gui = new GUI();
-    gui.addColor( API, 'color' ).name( 'color' ).onChange( updateGUIParam );
-    gui.add( API, 'x', -80, 80 ).name( 'x' ).onChange( updateGUIParam );
-    gui.add( API, 'y', -80, 80 ).name( 'y' ).onChange( updateGUIParam );
-    gui.add( API, 'z', -80, 80 ).name( 'z' ).onChange( updateGUIParam );
+    gui.addColor( API, 'meshColor' ).name( 'meshColor' ).onChange( updateGUIParam );
+    gui.addColor( API, 'lineColor' ).name( 'lineColor' ).onChange( updateGUIParam );
+    gui.add( API, 'meshOpacity', 0.0, 1.0 ).name( 'meshOpacity' ).onChange( updateGUIParam );
+    gui.add( API, 'lineOpacity', 0.0, 1.0 ).name( 'lineOpacity' ).onChange( updateGUIParam );
 }
 
 function initStats(){
@@ -79,6 +79,14 @@ $(".draw").click(function(e){
     app.draw();
 });
 
+$(".list").click(function(e){
+    var list = $pot.val().split(",");
+    var pots = list.map(item => {
+        return Number(item);
+    })
+    app.addpots(pots);
+})
+
 $(window).keydown(function(event){
     if(event.keyCode == 32){
         $camera.click();
@@ -89,8 +97,8 @@ function getPot(){
     var pot = $pot.val();
     var list = pot.split(",");
     return {
-        x: list[0],
-        y: list[1],
-        z: list[2],
+        x: Number(list[0]),
+        y: Number(list[1]),
+        z: Number(list[2]),
     }
 }

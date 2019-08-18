@@ -6,21 +6,16 @@ import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls
 export default class App {
     public static ZERO:THREE.Vector3 = new THREE.Vector3();
     public static TOTAL:number = 0;
+    public static SELECTED_COLOR:number = 0xff8800;
+    public static NORMAL_COLOR:number = 0xa0a0a0;
+    public static NORMAL_MATERIAL:THREE.MeshNormalMaterial = new THREE.MeshNormalMaterial();
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
     renderer: THREE.WebGLRenderer;
 
-    normalMaterial: THREE.MeshBasicMaterial;
-    selectedMaterial: THREE.MeshBasicMaterial;
+    tubeMesh: THREE.Mesh;
+    tubeFrame: THREE.Mesh;
     orbit: OrbitControls;
-
-    spotLight: THREE.SpotLight;
-    spotDrag: THREE.Mesh;
-    spotLightHelper: THREE.SpotLightHelper;
-
-    directionalLight: THREE.DirectionalLight;
-    directionalDrag: THREE.Mesh;
-    directionalLightHelper: THREE.DirectionalLightHelper;
 
     curPot: THREE.Mesh;
     pots: Array<THREE.Mesh>;
@@ -78,14 +73,19 @@ export default class App {
     }
 
     updateGUIParam(param: any){
-        this.curPot && this.curPot.position.set(param.x, param.y, param.z);
+        if(this.tubeMesh){
+            (this.tubeMesh.material as THREE.MeshBasicMaterial).color = new THREE.Color(param.meshColor);
+            (this.tubeFrame.material as THREE.MeshBasicMaterial).color = new THREE.Color(param.lineColor);
+            (this.tubeMesh.material as THREE.MeshBasicMaterial).opacity = param.meshOpacity;
+            (this.tubeFrame.material as THREE.MeshBasicMaterial).opacity = param.lineOpacity;
+        }
     }
     
 
     setup():void {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setClearColor(new THREE.Color(0x909090));
+        this.renderer.setClearColor(new THREE.Color(0xffffff));
         this.renderer.shadowMap.enabled = true;
         document.body.appendChild(this.renderer.domElement);
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
@@ -93,11 +93,6 @@ export default class App {
         this.camera.position.set(7.742, 9.887, 13.769);
 
         this.pots = [];
-        this.normalMaterial = new THREE.MeshBasicMaterial({
-            color: 0x999999,
-            map: new THREE.CanvasTexture(this.getCanvas(1))
-        });
-        
 
         this.addPlane();
         this.addPot(0, 0, 0);
@@ -148,13 +143,13 @@ export default class App {
                 height: 1
             }
             
-            let xw = new THREE.Mesh(new THREE.TextGeometry("X", param), new THREE.MeshNormalMaterial());           
+            let xw = new THREE.Mesh(new THREE.TextGeometry("X", param), App.NORMAL_MATERIAL);           
             xw.position.set(30, 0, 0);
 
-            let yw = new THREE.Mesh(new THREE.TextGeometry("Y", param), new THREE.MeshNormalMaterial());           
+            let yw = new THREE.Mesh(new THREE.TextGeometry("Y", param), App.NORMAL_MATERIAL);           
             yw.position.set(0, 30, 0);
 
-            let zw = new THREE.Mesh(new THREE.TextGeometry("Z", param), new THREE.MeshNormalMaterial());           
+            let zw = new THREE.Mesh(new THREE.TextGeometry("Z", param), App.NORMAL_MATERIAL);           
             zw.position.set(0, 0, 30);
 
             this.scene.add(xw);
@@ -165,17 +160,17 @@ export default class App {
             yw.geometry.center();
             zw.geometry.center();
 
-            console.log(new THREE.Box3().setFromObject(xw));
+            // console.log(new THREE.Box3().setFromObject(xw));
         })
         
     }
 
     changeCurPot(pot: THREE.Mesh){
         if(this.curPot){
-            (this.curPot.material as any).color = new THREE.Color(0x666666);
+            (this.curPot.material as any).color = new THREE.Color(App.NORMAL_COLOR);
         }
         this.curPot = pot;
-        (this.curPot.material as any).color = new THREE.Color(0xff0000);
+        (this.curPot.material as any).color = new THREE.Color(App.SELECTED_COLOR);
     }
 
     getCanvas(n: any){
@@ -187,7 +182,7 @@ export default class App {
         let ctx = canvas.getContext("2d");
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, w, h);
-        ctx.font = 80 + "px bold";
+        ctx.font = 90 + "px bold";
         ctx.fillStyle = "#000000";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -205,7 +200,7 @@ export default class App {
 
     addPot(x:number, y:number, z:number){
         let pot = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({
-            color: 0x666666,
+            color: App.SELECTED_COLOR,
             map: new THREE.CanvasTexture(this.getCanvas(++App.TOTAL))
         }));
         pot.position.set(x, y, z);
@@ -214,12 +209,21 @@ export default class App {
         this.changeCurPot(pot);
     }
 
+    addpots(list: Array<number>){
+        let geometry = new THREE.BufferGeometry();
+        geometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(list), 3));
+        // geometry.addAttribute("face", new THREE.BufferAttribute(new Float32Array(list), 3));
+        geometry.computeVertexNormals();
+
+        let material = new THREE.MeshBasicMaterial({color: 0xd200ff});
+        let mesh = new THREE.Line(geometry, material);
+        this.scene.add(mesh);
+    }
+
     draw(){
-        let old = this.scene.getObjectByName("draw");
-        if(old){
-            this.scene.remove(old);
+        if(this.tubeMesh){
+            this.scene.remove(this.tubeMesh);
         }
-        
 
         let pots:Array<THREE.Vector3> = [];
         this.pots.forEach(item => {
@@ -227,21 +231,25 @@ export default class App {
         })
 
         var curve = new THREE.CatmullRomCurve3(pots);
-        let geometry = new THREE.TubeGeometry(curve, 180, 1, 12, false);
-        let mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: 0xff3388}));
+        let geometry = new THREE.TubeGeometry(curve, 180, 1, 6, false);
+        let material = new THREE.MeshBasicMaterial({
+                color: 0xff3388, 
+                opacity: 0.5,
+                transparent: true
+            });
+        let mesh = new THREE.Mesh(geometry, material);
         this.scene.add(mesh);
 
-        var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.3, wireframe: true, transparent: true } );
-        var wireframe = new THREE.Mesh( geometry, wireframeMaterial );
-		mesh.add( wireframe );
-
-    
-        // let material = new THREE.LineBasicMaterial({
-        //     color: 0xffff00
-        // });
-
-        // let mesh = new THREE.Line(geometry, material);
-        mesh.name = "draw";
-        // this.scene.add(mesh);
+        let wireframeMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0x000000, 
+            opacity: 0.5, 
+            wireframe: true, 
+            transparent: true 
+        });
+        let wireframe = new THREE.Mesh( geometry, wireframeMaterial );
+        mesh.add( wireframe );
+        
+        this.tubeMesh = mesh;
+        this.tubeFrame = wireframe;
     }
 }
