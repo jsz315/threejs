@@ -5,11 +5,13 @@ import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls
 
 export default class App {
     public static ZERO:THREE.Vector3 = new THREE.Vector3();
+    public static TOTAL:number = 0;
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
     renderer: THREE.WebGLRenderer;
-    objMaterial: THREE.MeshStandardMaterial;
-    planeMaterial: THREE.MeshStandardMaterial;
+
+    normalMaterial: THREE.MeshBasicMaterial;
+    selectedMaterial: THREE.MeshBasicMaterial;
     orbit: OrbitControls;
 
     spotLight: THREE.SpotLight;
@@ -19,7 +21,9 @@ export default class App {
     directionalLight: THREE.DirectionalLight;
     directionalDrag: THREE.Mesh;
     directionalLightHelper: THREE.DirectionalLightHelper;
-    
+
+    curPot: THREE.Mesh;
+    pots: Array<THREE.Mesh>;
     dragControls: DragControls;
     stats: any;
     
@@ -35,6 +39,26 @@ export default class App {
 
     setStats(stats: any){
         this.stats = stats;
+    }
+
+    add(param: any){
+        this.addPot(param.x, param.y, param.z);
+    }
+
+    set(param: any){
+        if(this.curPot){
+            this.curPot.position.set(param.x, param.y, param.z);
+        }
+    }
+
+    del(){
+        if(this.curPot){
+            this.scene.remove(this.curPot);
+            this.pots = this.pots.filter(item => {
+                return item != this.curPot;
+            })
+            this.curPot = null;
+        }
     }
     
     onResize(e:Event):void{
@@ -54,7 +78,7 @@ export default class App {
     }
 
     updateGUIParam(param: any){
-
+        this.curPot && this.curPot.position.set(param.x, param.y, param.z);
     }
     
 
@@ -68,9 +92,15 @@ export default class App {
         this.orbit.enabled = false;
         this.camera.position.set(7.742, 9.887, 13.769);
 
+        this.pots = [];
+        this.normalMaterial = new THREE.MeshBasicMaterial({
+            color: 0x999999,
+            map: new THREE.CanvasTexture(this.getCanvas(1))
+        });
+        
+
         this.addPlane();
-        this.addLights();
-        this.addObj();
+        this.addPot(0, 0, 0);
         this.addDrag();
         this.animate();
 
@@ -83,17 +113,6 @@ export default class App {
     }
 
     addDrag():void{
-        this.spotDrag = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.4), new THREE.MeshNormalMaterial());
-        this.scene.add(this.spotDrag);
-        this.spotDrag.position.copy(this.spotLight.position);
-        this.spotDrag.lookAt(this.spotLight.target.position);
-
-        this.directionalDrag = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 0.1), new THREE.MeshNormalMaterial());
-        this.scene.add(this.directionalDrag);
-        this.directionalDrag.position.copy(this.directionalLight.position);
-        this.directionalDrag.lookAt(this.directionalLight.target.position);
-
-
         let controls = new TrackballControls( this.camera, this.renderer.domElement );
         controls.rotateSpeed = 1.0;
         controls.zoomSpeed = 1.2;
@@ -103,18 +122,13 @@ export default class App {
         controls.staticMoving = true;
         controls.dynamicDampingFactor = 0.3;
 
-        var dragControls = new DragControls( [this.spotDrag, this.directionalDrag], this.camera, this.renderer.domElement );
-        dragControls.addEventListener( 'dragstart', () => {
+        var dragControls = new DragControls( this.pots, this.camera, this.renderer.domElement );
+        dragControls.addEventListener( 'dragstart', (e) => {
+            this.changeCurPot(e.object);
             controls.enabled = false;
         } );
-        dragControls.addEventListener( 'drag', () => {
-            this.spotLight.position.copy(this.spotDrag.position);
-            this.spotDrag.lookAt(App.ZERO);
-            this.spotLightHelper.update();
-
-            this.directionalLight.position.copy(this.directionalDrag.position);
-            this.directionalDrag.lookAt(App.ZERO);
-            this.directionalLightHelper.update();
+        dragControls.addEventListener( 'drag', (e) => {
+            this.postInfo(e.object);
         } );
         dragControls.addEventListener( 'dragend', () => {
             controls.enabled = true;
@@ -125,46 +139,109 @@ export default class App {
    
     addPlane():void{
         this.scene.add(new THREE.GridHelper(80, 80));
-        this.scene.add(new THREE.AxesHelper(4));
+        this.scene.add(new THREE.AxesHelper(40));
+
+        new THREE.FontLoader().load("/obj/font/gentilis_bold.typeface.json", (font) => {
+            let param = {
+                font: font,
+                size: 4,
+                height: 1
+            }
+            
+            let xw = new THREE.Mesh(new THREE.TextGeometry("X", param), new THREE.MeshNormalMaterial());           
+            xw.position.set(30, 0, 0);
+
+            let yw = new THREE.Mesh(new THREE.TextGeometry("Y", param), new THREE.MeshNormalMaterial());           
+            yw.position.set(0, 30, 0);
+
+            let zw = new THREE.Mesh(new THREE.TextGeometry("Z", param), new THREE.MeshNormalMaterial());           
+            zw.position.set(0, 0, 30);
+
+            this.scene.add(xw);
+            this.scene.add(yw);
+            this.scene.add(zw);
+
+            xw.geometry.center();
+            yw.geometry.center();
+            zw.geometry.center();
+
+            console.log(new THREE.Box3().setFromObject(xw));
+        })
+        
     }
 
-    addObj(){
-
+    changeCurPot(pot: THREE.Mesh){
+        if(this.curPot){
+            (this.curPot.material as any).color = new THREE.Color(0x666666);
+        }
+        this.curPot = pot;
+        (this.curPot.material as any).color = new THREE.Color(0xff0000);
     }
 
-
-    addLights():void{
-        //环境光
-        var ambient:THREE.AmbientLight = new THREE.AmbientLight(0xffffff);
-        ambient.intensity = 0.4;
-        this.scene.add(ambient);
-
-        //聚光灯
-        var spotLight:THREE.SpotLight = new THREE.SpotLight(0xffffff);
-        spotLight.intensity = 0.7;
-        spotLight.castShadow = true;
-        spotLight.angle = 0.3;
-        spotLight.penumbra = 0.2;
-        spotLight.decay = 2;
-        spotLight.distance = 50;
-        this.scene.add(spotLight);
-        spotLight.position.set(-2, 7, 4);
-
-        this.spotLightHelper = new THREE.SpotLightHelper(spotLight);
-        this.scene.add(this.spotLightHelper);
-
-        //平行光
-        var directionalLight:THREE.DirectionalLight = new THREE.DirectionalLight(0xffffff);
-        directionalLight.intensity = 0.7;
-        directionalLight.castShadow = true;
-        this.scene.add(directionalLight);
-        directionalLight.position.set(4, 7, 5);
-
-        this.directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight);
-        this.scene.add(this.directionalLightHelper);
-
-        this.spotLight = spotLight;
-        this.directionalLight = directionalLight;
+    getCanvas(n: any){
+        let w = 256;
+        let h = 256;
+        let canvas = document.createElement("canvas");
+        canvas.width = 256;
+        canvas.height = 256;
+        let ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, w, h);
+        ctx.font = 80 + "px bold";
+        ctx.fillStyle = "#000000";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(n, w / 2, h / 2); 
+        return canvas;
     }
 
+    postInfo(pot: THREE.Mesh){
+        window.dispatchEvent(new CustomEvent("info", {
+            detail: {
+                position: pot.position
+            }
+        }))
+    }
+
+    addPot(x:number, y:number, z:number){
+        let pot = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({
+            color: 0x666666,
+            map: new THREE.CanvasTexture(this.getCanvas(++App.TOTAL))
+        }));
+        pot.position.set(x, y, z);
+        this.scene.add(pot);
+        this.pots.push(pot);
+        this.changeCurPot(pot);
+    }
+
+    draw(){
+        let old = this.scene.getObjectByName("draw");
+        if(old){
+            this.scene.remove(old);
+        }
+        
+
+        let pots:Array<THREE.Vector3> = [];
+        this.pots.forEach(item => {
+            pots.push(item.position);
+        })
+
+        var curve = new THREE.CatmullRomCurve3(pots);
+        let geometry = new THREE.TubeGeometry(curve, 180, 1, 12, false);
+        let mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: 0xff3388}));
+        this.scene.add(mesh);
+
+        var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.3, wireframe: true, transparent: true } );
+        var wireframe = new THREE.Mesh( geometry, wireframeMaterial );
+		mesh.add( wireframe );
+
+    
+        // let material = new THREE.LineBasicMaterial({
+        //     color: 0xffff00
+        // });
+
+        // let mesh = new THREE.Line(geometry, material);
+        mesh.name = "draw";
+        // this.scene.add(mesh);
+    }
 }
