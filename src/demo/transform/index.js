@@ -12,7 +12,9 @@ let API = {
     lineColor: 0xff0000,
     meshOpacity: 0.5,
     lineOpacity: 0.5,
-    scale: 1.0
+    scale: 1.0,
+    rotateNum: 0.01,
+    translateNum: 0.01
 };
 
 initGui();
@@ -39,11 +41,8 @@ function updateGUIParam(){
 
 function initGui() {
     gui = new GUI();
-    gui.addColor( API, 'meshColor' ).name( 'meshColor' ).onChange( updateGUIParam );
-    gui.addColor( API, 'lineColor' ).name( 'lineColor' ).onChange( updateGUIParam );
-    gui.add( API, 'meshOpacity', 0.0, 1.0 ).name( 'meshOpacity' ).onChange( updateGUIParam );
-    gui.add( API, 'lineOpacity', 0.0, 1.0 ).name( 'lineOpacity' ).onChange( updateGUIParam );
-    gui.add( API, 'scale', 0.0, 2.0 ).name( 'scale' ).onChange( updateGUIParam );
+    gui.add( API, 'rotateNum', -0.2, 0.2 ).name( 'rotateNum' ).onChange( updateGUIParam );
+    gui.add( API, 'translateNum', -1.0, 1.0 ).name( 'translateNum' ).onChange( updateGUIParam );
 }
 
 function initStats(){
@@ -56,12 +55,6 @@ function initStats(){
     
     app.setStats(stats);
 }
-
-let $camera = $(".camera");
-$camera.click(function(e){
-    $camera.toggleClass("open");
-    app.toggerControl($camera.hasClass("open"));
-});
 
 let $pot = $(".pot");
 
@@ -81,17 +74,19 @@ $(".del").click(function(e){
     app.del(getPot());
 });
 
-$(".drawTube").click(function(e){
-    app.drawTube();
-});
-
 $(".drawObject").click(function(e){
     app.drawObject();
 });
 
 $(window).keydown(function(event){
-    if(event.keyCode == 67){
-        $camera.click();
+    if(event.keyCode == 87){
+        app.setMode( "translate" );
+    }
+    else if(event.keyCode == 69){
+        app.setMode( "rotate" );
+    }
+    else if(event.keyCode == 82){
+        app.setMode( "scale" );
     }
 })
 

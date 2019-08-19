@@ -64,7 +64,7 @@ module.exports = {
             verbose: true,
             dry: false,
             exclude: ['dll'],
-            cleanOnceBeforeBuildPatterns: ['!dll/*.js']
+            cleanOnceBeforeBuildPatterns: ['!dll/*.*']
         }),
         new CopyWebpackPlugin([
             {
