@@ -212,11 +212,11 @@ export default class App {
     addpots(list: Array<number>){
         let geometry = new THREE.BufferGeometry();
         geometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(list), 3));
-        // geometry.addAttribute("face", new THREE.BufferAttribute(new Float32Array(list), 3));
+        // geometry.addAttribute("face", new THREE.BufferAttribute(new Float32Array([0, 1, 2, 1, 2 ,3]), 3));
         geometry.computeVertexNormals();
 
         let material = new THREE.MeshBasicMaterial({color: 0xd200ff});
-        let mesh = new THREE.Line(geometry, material);
+        let mesh = new THREE.Mesh(geometry, material);
         this.scene.add(mesh);
     }
 
