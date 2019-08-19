@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 
 export default class App {
     public static ZERO:THREE.Vector3 = new THREE.Vector3();
@@ -13,18 +14,17 @@ export default class App {
     camera: THREE.PerspectiveCamera;
     renderer: THREE.WebGLRenderer;
 
-    tubeMesh: THREE.Mesh;
-    tubeFrame: THREE.Mesh;
-    objectMesh: THREE.Line;
     orbit: OrbitControls;
 
     curObject: THREE.Mesh|THREE.Line;
     pots: Array<THREE.Mesh>;
-    controls: TrackballControls;
-    dragControls: DragControls;
     dragItems: Array<THREE.Mesh|THREE.Line>;
     stats: any;
 
+    role: THREE.Mesh;
+    control: TransformControls;
+    rotateNum: number = 0.01;
+    translateNum: number = 0.01;
     
     constructor() {
         this.scene = new THREE.Scene();
@@ -40,6 +40,10 @@ export default class App {
         this.stats = stats;
     }
 
+    setMode(mode: string){
+        this.control.setMode(mode);
+    }
+
     set(param: any){
         if(this.curObject){
             this.curObject.position.set(param.x, param.y, param.z);
@@ -48,8 +52,6 @@ export default class App {
 
     del(){
         if(this.curObject){
-            console.log("del before:" + this.dragItems.length);
-
             this.scene.remove(this.curObject);
             this.dragItems = this.dragItems.filter(item => {
                 return item != this.curObject;
@@ -57,12 +59,9 @@ export default class App {
             this.pots = this.pots.filter(item => {
                 return item != this.curObject;
             });
-            console.log("del after:" + this.dragItems.length);
-            console.log(this.dragItems);
             this.curObject.geometry.dispose();
             (this.curObject.material as any).dispose();
             this.curObject = null;
-            this.initDrag();
         }
     }
     
@@ -78,20 +77,15 @@ export default class App {
         });
 
         this.stats && this.stats.update();
+        this.role.translateZ(this.translateNum);
+        this.role.rotateY(this.rotateNum);
        
         this.renderer.render(this.scene, this.camera);
     }
 
     updateGUIParam(param: any){
-        if(this.tubeMesh){
-            (this.tubeMesh.material as THREE.MeshBasicMaterial).color = new THREE.Color(param.meshColor);
-            (this.tubeFrame.material as THREE.MeshBasicMaterial).color = new THREE.Color(param.lineColor);
-            (this.tubeMesh.material as THREE.MeshBasicMaterial).opacity = param.meshOpacity;
-            (this.tubeFrame.material as THREE.MeshBasicMaterial).opacity = param.lineOpacity;
-        }
-        this.pots.forEach((item:THREE.Mesh) => {
-            item.scale.set(param.scale, param.scale, param.scale);
-        })
+        this.rotateNum = param.rotateNum;
+        this.translateNum = param.translateNum;
     }
     
 
@@ -102,58 +96,44 @@ export default class App {
         this.renderer.shadowMap.enabled = true;
         document.body.appendChild(this.renderer.domElement);
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
-        this.orbit.enabled = false;
         this.camera.position.set(7.742, 9.887, 13.769);
 
         this.pots = [];
         this.dragItems = [];
 
         this.addPlane();
-        this.addDrag();
+
+        this.addRole();
+        this.addControl();
+
         this.animate();
 
         this.camera.lookAt(App.ZERO);
     }
 
-    toggerControl(use: boolean):void{
-        this.orbit.enabled = use;
-        this.dragControls.enabled = !use;
-    }
-
-    addDrag():void{
-        let controls = new TrackballControls( this.camera, this.renderer.domElement );
-        controls.rotateSpeed = 1.0;
-        controls.zoomSpeed = 1.2;
-        controls.panSpeed = 0.8;
-        controls.noZoom = false;
-        controls.noPan = false;
-        controls.staticMoving = true;
-        controls.dynamicDampingFactor = 0.3;
-
-        this.controls = controls;
-        this.initDrag();
-    }
-
-    initDrag(){
-        if(this.dragControls){
-            this.dragControls.dispose();
-            this.dragControls = null;
-        }
-        var dragControls = new DragControls( this.dragItems, this.camera, this.renderer.domElement );
-        dragControls.addEventListener( 'dragstart', (e) => {
-            this.changeCurObject(e.object);
-            this.controls.enabled = false;
-        } );
-        dragControls.addEventListener( 'drag', (e) => {
-            this.postInfo(e.object);
-        } );
-        dragControls.addEventListener( 'dragend', () => {
-            this.controls.enabled = true;
+    addControl():void{
+        let control = new TransformControls( this.camera, this.renderer.domElement );
+        control.addEventListener( 'dragging-changed', ( event )=> {
+            this.orbit.enabled = ! event.value;
         } );
 
-        this.dragControls = dragControls;
+        control.attach( this.role );
+        this.scene.add( control );
+        this.control = control;
     }
 
+    addRole():void{
+        this.role = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshNormalMaterial());
+        this.scene.add(this.role);
+        this.role.name = "role";
+
+        // let axis = new THREE.Vector3(0, 1, 0);
+        // let matrix = new THREE.Matrix4();
+        // matrix.makeRotationAxis(axis.normalize(), 45 * Math.PI / 180);
+        // matrix.multiply(this.role.matrix);
+        // this.role.matrix = matrix;
+        // this.role.setRotationFromMatrix(matrix);
+    }
    
     addPlane():void{
         let gridHelper = new THREE.GridHelper(80, 80);
@@ -186,20 +166,24 @@ export default class App {
             xw.geometry.center();
             yw.geometry.center();
             zw.geometry.center();
-
-            // console.log(new THREE.Box3().setFromObject(xw));
         })
         
     }
 
-    changeCurObject(obj: THREE.Mesh|THREE.Line){
-        if(this.curObject){
-            (this.curObject as any).material.color = new THREE.Color(App.NORMAL_COLOR);
+    addPots(list: Array<number>){
+        for(let i = 0; i < list.length; i += 3){
+            let pot = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({
+                color: App.SELECTED_COLOR,
+                map: new THREE.CanvasTexture(this.getCanvas(++App.TOTAL))
+            }));
+            pot.position.set(list[i], list[i + 1], list[i + 2]);
+            this.scene.add(pot);
+            this.pots.push(pot);
+            this.dragItems.push(pot);
+            pot.name = "pot" + App.TOTAL;
         }
-        this.curObject = obj;
-        (this.curObject as any).material.color = new THREE.Color(App.SELECTED_COLOR);
     }
-
+    
     getCanvas(n: any){
         let w = 256;
         let h = 256;
@@ -217,29 +201,6 @@ export default class App {
         return canvas;
     }
 
-    postInfo(pot: THREE.Mesh){
-        window.dispatchEvent(new CustomEvent("info", {
-            detail: {
-                position: pot.position
-            }
-        }))
-    }
-
-    addPots(list: Array<number>){
-        for(let i = 0; i < list.length; i += 3){
-            let pot = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({
-                color: App.SELECTED_COLOR,
-                map: new THREE.CanvasTexture(this.getCanvas(++App.TOTAL))
-            }));
-            pot.position.set(list[i], list[i + 1], list[i + 2]);
-            this.scene.add(pot);
-            this.pots.push(pot);
-            this.dragItems.push(pot);
-            this.changeCurObject(pot);
-            pot.name = "pot" + App.TOTAL;
-        }
-    }
-
     drawObject(){
         let list: number[] = [];
         this.pots.forEach((item: THREE.Mesh) => {
@@ -254,43 +215,6 @@ export default class App {
         this.scene.add(mesh);
         mesh.name = "drawObject";
 
-        this.objectMesh = mesh;
         this.dragItems.push(mesh);
-        this.changeCurObject(mesh);
-    }
-
-    drawTube(){
-        let pots:Array<THREE.Vector3> = [];
-        this.pots.forEach(item => {
-            pots.push(item.position);
-        })
-
-        var curve = new THREE.CatmullRomCurve3(pots);
-        let geometry = new THREE.TubeGeometry(curve, 180, 1, 6, false);
-        let material = new THREE.MeshBasicMaterial({
-                color: 0xff3388, 
-                opacity: 0.5,
-                transparent: true
-            });
-        let mesh = new THREE.Mesh(geometry, material);
-        this.scene.add(mesh);
-
-        let wireframeMaterial = new THREE.MeshBasicMaterial({ 
-            color: 0x000000, 
-            opacity: 0.5, 
-            wireframe: true, 
-            transparent: true 
-        });
-        let wireframe = new THREE.Mesh( geometry, wireframeMaterial );
-        mesh.add( wireframe );
-        
-        this.tubeMesh = mesh;
-        this.tubeFrame = wireframe;
-
-        mesh.name = "drawTube";
-        wireframe.name = "drawFrame";
-
-        this.dragItems.push(mesh);
-        this.changeCurObject(mesh);
     }
 }
