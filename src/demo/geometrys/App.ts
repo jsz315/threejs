@@ -111,7 +111,7 @@ export default class App {
             new THREE.DodecahedronBufferGeometry( 0.5 ),
             new THREE.CylinderBufferGeometry( 0.5, 0.5, 1, 12 ),
             new THREE.ConeBufferGeometry( 0.5, 1, 16 ),
-            new THREE.IcosahedronGeometry( 1, 0 ),
+            new THREE.IcosahedronBufferGeometry( 1, 0 ),
             new THREE.OctahedronBufferGeometry( 1, 0 ),
             new THREE.TorusBufferGeometry( 10, 3, 16, 60 ),
             new THREE.TorusKnotBufferGeometry( 10, 3, 60, 16 ),
