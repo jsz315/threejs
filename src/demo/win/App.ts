@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import FocusLight from './FocusLight';
+import Loading from './Loading';
 
 export default class App {
     public static ZERO:THREE.Vector3 = new THREE.Vector3();
@@ -9,6 +11,8 @@ export default class App {
     renderer: THREE.WebGLRenderer;
     orbit: OrbitControls;
     stats: any;
+    focusLight: FocusLight;
+    loading: Loading;
     
     constructor() {
         this.scene = new THREE.Scene();
@@ -26,6 +30,13 @@ export default class App {
         this.orbit.enabled = true;
         this.camera.position.set(3, 4, 5);
         this.camera.lookAt(new THREE.Vector3());
+
+        this.focusLight = new FocusLight(0xffffff, 1.24);
+        this.scene.add(this.focusLight);
+
+        this.loading = new Loading();
+        this.scene.add(this.loading);
+
         window.addEventListener("resize", e => this.onResize(e), false);
     }
     
@@ -41,6 +52,7 @@ export default class App {
         });
         this.stats && this.stats.update();
         this.renderer.render(this.scene, this.camera);
+        this.focusLight.update(this.camera);
     }
 
     setStats(stats: any):void{
@@ -48,30 +60,45 @@ export default class App {
     }
 
     loadObject():void{
-        let loader = new GLTFLoader();
-        loader.setPath('obj/gl/');
+        let loadingManager = new THREE.LoadingManager(()=>{
+            console.log("loaded");
+            this.scene.remove(this.loading);
+        }, (url:string, loaded:number, total:number)=>{
+            let n = Math.floor(loaded / total * 100); 
+            console.log("load " + n + "%");
+            this.loading.update(n + "%");
+            this.scene.add(this.loading);
+        })
+
+        let loader = new GLTFLoader(loadingManager);
+        let baseURL = (window as any).CFG.baseURL;
+        loader.setPath(baseURL + '/obj/gl/');
         loader.load('win.gltf', (gltf) => {
+
+            console.log("gltf");
+            console.log(gltf);
 
             gltf.scene.traverse((child: any) => {
                 if(child.isMesh){
-                    console.log(child);
                     child.name = "load_mesh";
+                    child.updateMatrix();
                 }
             })
+
+            let aim = gltf.scene.children[0].children[0].children[0];
             
-            let size = new THREE.Box3().setFromObject(gltf.scene).getSize(new THREE.Vector3());
+            let size = new THREE.Box3().setFromObject(aim).getSize(new THREE.Vector3());
             let max = Math.max(size.x, size.y, size.z);
             let scale = 10 / max;            
-            gltf.scene.scale.set(scale, scale, scale);
+            aim.scale.set(scale, scale, scale);
+         
+            aim.position.set(0, 0, 0);
+           
+            let group = new THREE.Object3D();
+            group.add(aim);
+            group.rotateX(Math.PI / 2);
 
-            this.scene.add(gltf.scene);
-            gltf.scene.name = "load_scene";
-
-            let c = new THREE.Box3().setFromObject(gltf.scene);
-            let x = (c.min.x + c.max.x) / 2;
-            let y = (c.min.y + c.max.y) / 2;
-            let z = (c.min.z + c.max.z) / 2;
-            gltf.scene.position.set(0 - x, 0 - y, 0 - z);
+            this.scene.add(group);
         })
     }
 
@@ -82,18 +109,8 @@ export default class App {
     }
 
     addLights():void{
-        //环境光
         var ambient:THREE.AmbientLight = new THREE.AmbientLight(0xffffff);
         ambient.intensity = 0.4;
         this.scene.add(ambient);
-
-        //聚光灯
-        var spotLight:THREE.SpotLight = new THREE.SpotLight(0xffffff);
-        spotLight.intensity = 2.02;
-        spotLight.castShadow = true;
-        spotLight.angle = 1.0;
-        spotLight.penumbra = 0.2;
-        this.scene.add(spotLight);
-        spotLight.position.set(-2, 7, 4);
     }
 }
