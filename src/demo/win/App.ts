@@ -81,6 +81,8 @@ export default class App {
             gltf.scene.traverse((child: any) => {
                 if(child.isMesh){
                     child.name = "load_mesh";
+                    child.material.roughness = 0.3;
+                    child.material.metalness = 0.1;
                     child.updateMatrix();
                 }
             })
