@@ -23,7 +23,7 @@ export default class App {
         });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setClearColor(new THREE.Color(0x909090));
+        this.renderer.setClearColor(new THREE.Color(0x000000));
         this.renderer.shadowMap.enabled = true;
         document.body.appendChild(this.renderer.domElement);
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
@@ -115,6 +115,8 @@ export default class App {
             gltf.scene.traverse((child: any) => {
                 if(child.isMesh){
                     child.name = "load_mesh";
+                    child.material.roughness = 0.3;
+                    child.material.metalness = 0.1;
                     child.updateMatrix();
                 }
             })
@@ -144,7 +146,7 @@ export default class App {
 
     addLights():void{
         var ambient:THREE.AmbientLight = new THREE.AmbientLight(0xffffff);
-        ambient.intensity = 0.4;
+        ambient.intensity = 0.72;
         this.scene.add(ambient);
     }
 }
