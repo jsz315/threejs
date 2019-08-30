@@ -15,7 +15,6 @@ export default class App {
 
     tubeMesh: THREE.Mesh;
     tubeFrame: THREE.Mesh;
-    objectMesh: THREE.Line;
     orbit: OrbitControls;
 
     curObject: THREE.Mesh|THREE.Line;
@@ -250,11 +249,10 @@ export default class App {
         // geometry.addAttribute("face", new THREE.BufferAttribute(new Float32Array([0, 1, 2, 1, 2 ,3]), 3));
         geometry.computeVertexNormals();
         let material = new THREE.MeshBasicMaterial({color: 0xd200ff});
-        let mesh = new THREE.Mesh(geometry, material);
+        let mesh = new THREE.Line(geometry, material);
         this.scene.add(mesh);
         mesh.name = "drawObject";
 
-        this.objectMesh = mesh;
         this.dragItems.push(mesh);
         this.changeCurObject(mesh);
     }
@@ -266,12 +264,27 @@ export default class App {
         })
 
         var curve = new THREE.CatmullRomCurve3(pots);
-        let geometry = new THREE.TubeGeometry(curve, 180, 1, 6, false);
+
+        var extrudeSettings = {
+            steps: 200,
+            bevelEnabled: false,
+            extrudePath: curve
+        };
+
+        let rect = [];
+        rect.push(new THREE.Vector2(0, 0));
+        rect.push(new THREE.Vector2(2, 0));
+        rect.push(new THREE.Vector2(2, 0.1));
+        rect.push(new THREE.Vector2(0, 0.1));
+        var shape = new THREE.Shape( rect );
+
+        var geometry = new THREE.ExtrudeBufferGeometry( shape, extrudeSettings );
         let material = new THREE.MeshBasicMaterial({
                 color: 0xff3388, 
                 opacity: 0.5,
                 transparent: true
             });
+            
         let mesh = new THREE.Mesh(geometry, material);
         this.scene.add(mesh);
 
@@ -293,4 +306,42 @@ export default class App {
         this.dragItems.push(mesh);
         this.changeCurObject(mesh);
     }
+
+    /*
+    drawTube0(){
+        let pots:Array<THREE.Vector3> = [];
+        this.pots.forEach(item => {
+            pots.push(item.position);
+        })
+
+        var curve = new THREE.CatmullRomCurve3(pots);
+        let geometry = new THREE.TubeGeometry(curve, 180, 1, 6, false);
+        let material = new THREE.MeshBasicMaterial({
+                color: 0xff3388, 
+                opacity: 0.5,
+                transparent: true
+            });
+            
+        let mesh = new THREE.Mesh(geometry, material);
+        this.scene.add(mesh);
+
+        let wireframeMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0x000000, 
+            opacity: 0.5, 
+            wireframe: true, 
+            transparent: true 
+        });
+        let wireframe = new THREE.Mesh( geometry, wireframeMaterial );
+        mesh.add( wireframe );
+        
+        this.tubeMesh = mesh;
+        this.tubeFrame = wireframe;
+
+        mesh.name = "drawTube";
+        wireframe.name = "drawFrame";
+
+        this.dragItems.push(mesh);
+        this.changeCurObject(mesh);
+    }
+    */
 }
