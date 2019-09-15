@@ -23,7 +23,7 @@ export default class App {
         });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setClearColor(new THREE.Color(0x909090));
+        this.renderer.setClearColor(new THREE.Color(0x000000));
         this.renderer.shadowMap.enabled = true;
         document.body.appendChild(this.renderer.domElement);
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
@@ -57,6 +57,40 @@ export default class App {
 
     setStats(stats: any):void{
         this.stats = stats;
+    }
+
+    prevLoad():void{
+        console.log("start load");
+        let baseURL = (window as any).CFG.baseURL;
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', baseURL + '/obj/gl/win.bin');
+        xhr.onprogress = (event) =>{
+            if (event.lengthComputable) {
+                // console.log(event.loaded);
+                // console.log(event.total);
+                let n = Math.floor(event.loaded / event.total * 100);
+                console.log(n + "%");
+                this.loading.update(n + "%");
+                this.scene.add(this.loading);
+            }
+        };
+        xhr.onreadystatechange = () => { // 状态发生变化时，函数被回调
+            if (xhr.readyState === 4) { // 成功完成
+                // 判断响应结果:
+                if (xhr.status === 200) {
+                    // 成功，通过responseText拿到响应的文本:
+                    this.loadObject();
+                } else {
+                    // 失败，根据响应码判断失败原因:
+                    alert("加载失败，请刷新页面重新尝试")
+                }
+            } else {
+                // HTTP请求还在继续...
+            }
+        }
+        xhr.send();
+  
+        // xhr.responseType = "blob";
     }
 
     loadObject():void{
@@ -106,13 +140,13 @@ export default class App {
 
     setup():void {
         this.addLights();
-        this.loadObject();
+        this.prevLoad();
         this.animate();
     }
 
     addLights():void{
         var ambient:THREE.AmbientLight = new THREE.AmbientLight(0xffffff);
-        ambient.intensity = 0.4;
+        ambient.intensity = 0.72;
         this.scene.add(ambient);
     }
 }
