@@ -61,10 +61,21 @@ const getHtml = function(apps){
     })
 }
 
+const getCopy = function(apps){
+    return apps.map(item => {
+        return {
+            from: path.resolve(__dirname, item + "/asset"),
+            to: path.resolve(__dirname, 'dist/asset'),
+            ignore: ['.*']
+        }
+    })
+}
+
 const apps = getApps(process.argv[process.argv.length - 1])
 const global = {
     entry: getEntry(apps),
-    html: getHtml(apps)
+    html: getHtml(apps),
+    copy: getCopy(apps)
 }
 
 module.exports = global

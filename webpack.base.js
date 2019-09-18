@@ -16,7 +16,7 @@ module.exports = {
     //指定出口文件.打包生成build.js,如果没有dist文件夹会自动创建.最好写绝对路径，不然会报下图中的错误Invalid configuration object
     output: {
         path: path.join(__dirname, 'dist'), 
-        filename: 'js/[name].js',
+        filename: 'js/[name].[hash:4].js',
         publicPath: '',
     },
     resolve: {
@@ -71,13 +71,14 @@ module.exports = {
               from: path.resolve(__dirname, './static/js'),
               to: path.resolve(__dirname, 'dist/js'),
               ignore: ['.*']
-            }
+            },
+            ...global.copy
         ]),
         ...global.html,
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // both options are optional
-            filename: 'css/[name].css'
+            filename: 'css/[name].[hash:4].css'
         }),
         new webpack.DllReferencePlugin({
             context: __dirname,

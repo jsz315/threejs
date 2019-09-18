@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- <meta name="referrer" content="never"> -->
+    <!-- <meta http-equiv="Access-Control-Allow-Origin" content="*" /> -->
     <title>门窗加载</title>
     <script>
         // (function (doc, win) {
@@ -31,12 +33,43 @@
     
     <script>
         window.CFG = {
-            baseURL: ''
+            baseURL: '.'
         }
     </script>
 
 </head>
 <body>
+    <div class="canvas-box">
+        <canvas id="canvas"></canvas>
+        <div id="btn"></div>
+    </div>
+
+    <div id="control">
+
+        <div class="label">环境光：<span id="ambient_num">0</span></div>
+        <div class="input-box">
+            <input class="input" id="ambient" type="range" min="0" max="10" step="0.02">
+        </div>
     
+        <div class="label">平行光：<span id="directional_num">0</span></div>
+        <div class="input-box">
+            <input class="input" id="directional" type="range" min="0" max="10" step="0.02">
+        </div>
+    
+        <div class="label">粗糙度：<span id="roughness_num">0</span></div>
+        <div class="input-box">
+            <input class="input" id="roughness" type="range" min="0" max="2" step="0.01">
+        </div>
+    
+        <div class="label">金属性：<span id="metalness_num">0</span></div>
+        <div class="input-box">
+            <input class="input" id="metalness" type="range" min="0" max="2" step="0.01">
+        </div>
+
+    </div>
+
+    <div class="img-box">
+        <img class="img" src="asset/produce.jpg">
+    </div>
 </body>
 </html>
