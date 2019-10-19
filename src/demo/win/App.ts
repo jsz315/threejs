@@ -93,41 +93,17 @@ export default class App {
             obj = intersectObjects[0].object;
             console.log(obj);
             if(obj.material.map){
-                console.log(obj.material.map.image.currentSrc);
+                let img = obj.material.map.image;
+                console.log(img.currentSrc);
+                console.log(img.width + "x" + img.height);
                 console.log(obj.material.map);
-                this.curMaterial = obj.material;
+                // this.curMaterial = obj.material;
             }
         }
     }
 
     playAnimate():void{
         this.effect.play();
-        // let url = Tooler.getQueryString("url");
-        // url = url.replace(".glb", ".animation");
-        // Tooler.loadData(url, (res: any)=>{
-        //     let obj = JSON.parse(res);
-        //     console.log(obj);
-        //     obj.leafs[0].fans.forEach((item:any, index:number) => {
-        //         if(index < 10){
-        //             let content: THREE.Object3D = this.scene.getObjectByName(item.content);
-        //             let offset = item.animation[0].offset;
-        //             let rotate = item.animation[0].rotate;
-        //             content.position.set(content.position.x + offset.x, content.position.y + offset.y, content.position.z + offset.z);
-        //             let angle = 1;
-
-        //             let timer = setInterval(()=>{
-        //                 if(angle++ < 90){
-        //                     Tooler.rotateOnAxis(content, rotate.pivot, rotate.axis, rotate.angle / 90);
-        //                 }
-        //                 else{
-        //                     clearInterval(timer);
-        //                 }
-        //             }, 30)
-        //         }
-                
-        //     })
-            
-        // });
     }
 
     fitModel(group:THREE.Object3D):void{
@@ -154,7 +130,21 @@ export default class App {
         this.setRoughness(this.roughness);
         this.setMetalness(this.metalness);
 
-        Tooler.showAllMap(parent);
+        this.initMaterials(parent);
+    }
+
+    initMaterials(parent:THREE.Object3D){
+        let materials = Tooler.getAllMaterial(parent);
+        materials.forEach((m:any) => {
+            if(m.map){
+                if(m.map.image.src.indexOf("/IPR_") != -1){
+                    this.curMaterial = m;
+                    console.log("门框材质定位成功");
+                }
+            }
+            m.transparent = true;
+            m.alphaTest = 0.1;
+        })
     }
 
     changeMap(url:string):void{

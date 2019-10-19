@@ -60,8 +60,8 @@ export default class Tooler{
         return !!res;
     }
 
-    public static showAllMap(obj: THREE.Object3D){
-        let maps:any = [];
+    public static getAllMaterial(obj: THREE.Object3D):any{
+        let materials:any = [];
         obj.traverse((item:any) => {
             if(item.isMesh){
                 let list;
@@ -73,16 +73,14 @@ export default class Tooler{
                 }
                 list.forEach((m:any) => {
                     if(m.map){
-                        maps.push(m);
+                        materials.push(m);
                         // m.map.flipY = true;
                         // m.map.flipX = true;
                     }
-                    m.transparent = true;
-                    m.alphaTest = 0.1;
                 })
             }
         })
-        console.log(maps);
+        return materials;
     }
 
     public static loadData(url:string, complateHandler:Function, progressHandler?:Function):void{

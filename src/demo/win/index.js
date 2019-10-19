@@ -17,7 +17,7 @@ window.onload = function(){
 
 function addMap(){
     var list = [];
-    for(let i = 0; i < 16; i++){
+    for(let i = 0; i < 12; i++){
         let src = `./asset/map/p${i + 1}.jpg`;
         let div = `<div class="color" style="background-image: url(${src})"></div>`;
         list.push(div);

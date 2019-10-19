@@ -138,7 +138,8 @@ export default class App {
 
                 let aim:any = gltf.scene.children[0].children[0];
                 let scale = 10;    
-                aim.scale.set(scale, scale, scale);
+                // aim.scale.set(scale, scale, scale);
+                // aim.scale.multiplyScalar(scale);
                 aim.geometry.center();
                 // aim.updateMatrix();
 
@@ -146,7 +147,7 @@ export default class App {
                 let nums = aim.geometry.attributes.position.array;
                 for(let i = 0, len = nums.length; i < len; i += 3){
                     let pot = new THREE.Vector3();
-                    pot.set(nums[i], nums[i + 1], nums[i + 2]);
+                    pot.set(nums[i] * scale, nums[i + 1] * scale, nums[i + 2] * scale);
                     list.push(pot);
                 }
 
