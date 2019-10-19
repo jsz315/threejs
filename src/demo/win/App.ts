@@ -1,8 +1,9 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import FocusLight from './FocusLight';
-import Loading from './Loading';
+import Tooler from './Tooler';
+import { FineLoader } from './FineLoader';
+import { Effect } from './Effect';
 
 export default class App {
     public static ZERO:THREE.Vector3 = new THREE.Vector3();
@@ -12,17 +13,21 @@ export default class App {
     orbit: OrbitControls;
     stats: any;
     focusLight: FocusLight;
-    loading: Loading;
-
-    roughness: number = 0.5;
-    metalness: number = 0.05;
-    focusLightIntensity: number = 4.4;
-    ambientLightIntensity: number = 4.8;
-
+    fineLoader: FineLoader;
+    
+    ambientLightIntensity: number = 0.5;
+    focusLightIntensity: number = 1.32;
+    roughness: number = 0.27;
+    metalness: number = 0.17;
+    
+    rayCaster: THREE.Raycaster;
+    isMobile: boolean;
+    curMaterial: any;
+    effect: Effect;
 
     constructor(canvas: any) {
         this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerWidth, 0.1, 900);
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerWidth, 0.1, 2400);
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
             alpha: true,
@@ -35,16 +40,22 @@ export default class App {
         // document.body.appendChild(this.renderer.domElement);
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
         this.orbit.enabled = true;
-        this.camera.position.set(3, 4, 5);
+        this.camera.position.set(0, 0, 12);
         this.camera.lookAt(new THREE.Vector3());
 
         this.focusLight = new FocusLight(0xffffff, this.focusLightIntensity);
         this.scene.add(this.focusLight);
 
-        this.loading = new Loading();
-        this.scene.add(this.loading);
+        this.fineLoader = new FineLoader();
+        this.scene.add(this.fineLoader);
+
+        this.isMobile = Tooler.checkMobile();
+        this.rayCaster = new THREE.Raycaster();
+
+        this.effect = new Effect();
 
         window.addEventListener("resize", e => this.onResize(e), false);
+        canvas.addEventListener(this.isMobile ? "touchstart" : "mousedown", (e: any) => this.select(e), false);
     }
     
     onResize(e:Event):void{
@@ -66,104 +77,108 @@ export default class App {
         this.stats = stats;
     }
 
-    prevLoad():void{
-        console.log("start load");
-        let baseURL = (window as any).CFG.baseURL;
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', baseURL + '/obj/gl/men.glb');
-        xhr.onprogress = (event) =>{
-            if (event.lengthComputable) {
-                // console.log(event.loaded);
-                // console.log(event.total);
-                let n = Math.floor(event.loaded / event.total * 100);
-                console.log(n + "%");
-                this.loading.update("加载中", n + "%");
-                this.scene.add(this.loading);
-            }
-        };
-        xhr.onreadystatechange = () => { // 状态发生变化时，函数被回调
-            if (xhr.readyState === 4) { // 成功完成
-                // 判断响应结果:
-                if (xhr.status === 200) {
-                    // 成功，通过responseText拿到响应的文本:
-                    this.loadObject();
-                } else {
-                    // 失败，根据响应码判断失败原因:
-                    alert("加载失败，请刷新页面重新尝试");
-                }
-            } else {
-                // HTTP请求还在继续...
+    select(e: any):any {
+        if(this.isMobile){
+            e = e.changedTouches[0];
+        }
+        let mouse = new THREE.Vector2();
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / window.innerWidth) * 2 + 1;
+
+        let obj:any;
+        this.rayCaster.setFromCamera(mouse, this.camera);
+        let list = this.scene.children;
+        let intersectObjects = this.rayCaster.intersectObjects(list, true);
+        if (intersectObjects[0]) {
+            obj = intersectObjects[0].object;
+            console.log(obj);
+            if(obj.material.map){
+                console.log(obj.material.map.image.currentSrc);
+                console.log(obj.material.map);
+                this.curMaterial = obj.material;
             }
         }
-        xhr.send();
-  
-        // xhr.responseType = "blob";
     }
 
-    loadObject():void{
-        let loadingManager = new THREE.LoadingManager(()=>{
-            console.log("loaded");
-            this.scene.remove(this.loading);
-        }, (url:string, loaded:number, total:number)=>{
-            let n = Math.floor(loaded / total * 100); 
-            console.log("load " + n + "%");
-            this.loading.update("初始化", n + "%", "#00a215");
-            this.scene.add(this.loading);
-        })
+    playAnimate():void{
+        this.effect.play();
+        // let url = Tooler.getQueryString("url");
+        // url = url.replace(".glb", ".animation");
+        // Tooler.loadData(url, (res: any)=>{
+        //     let obj = JSON.parse(res);
+        //     console.log(obj);
+        //     obj.leafs[0].fans.forEach((item:any, index:number) => {
+        //         if(index < 10){
+        //             let content: THREE.Object3D = this.scene.getObjectByName(item.content);
+        //             let offset = item.animation[0].offset;
+        //             let rotate = item.animation[0].rotate;
+        //             content.position.set(content.position.x + offset.x, content.position.y + offset.y, content.position.z + offset.z);
+        //             let angle = 1;
 
-        let loader = new GLTFLoader(loadingManager);
-        let baseURL = (window as any).CFG.baseURL;
-        // loader.setPath(baseURL + '/obj/gl/');
-        loader.setCrossOrigin('anonymous');
-        // loader.setCrossOrigin('*');
-        loader.load(baseURL + '/obj/gl/men.glb', (gltf) => {
-
-            console.log("gltf");
-            console.log(gltf);
-
-            this.fitModel(gltf.scene);
-        })
+        //             let timer = setInterval(()=>{
+        //                 if(angle++ < 90){
+        //                     Tooler.rotateOnAxis(content, rotate.pivot, rotate.axis, rotate.angle / 90);
+        //                 }
+        //                 else{
+        //                     clearInterval(timer);
+        //                 }
+        //             }, 30)
+        //         }
+                
+        //     })
+            
+        // });
     }
 
     fitModel(group:THREE.Object3D):void{
-        var offset:THREE.Vector3 = this.getOffsetVector3(group);
-        let scale:number = this.getFitScale(group, 10);
-        let aim = new THREE.Object3D();
-        while(group.children.length){
-            let obj = group.children[0];
-            let p = obj.position;
-            obj.position.set(p.x - offset.x, p.y - offset.y, p.z - offset.z);
-            aim.add(obj);
+        let parent:THREE.Object3D = group;
+
+        while(parent.children.length == 1){
+            parent = parent.children[0];
         }
-        aim.scale.multiplyScalar(scale);
-        // aim.rotateX(-Math.PI / 2);
+
+        let scale:number = Tooler.getFitScale(parent, 10);
+        parent.position.set(0, 0, 0);
+        parent.scale.multiplyScalar(scale);
+        parent.rotateX(-Math.PI / 2);
+        this.scene.add(parent);
+        parent.name = "load_scene";
+
+        let aim = new THREE.Object3D();
+        aim.add(parent);
         this.scene.add(aim);
-        aim.name = "load_scene";
+        let offset:THREE.Vector3 = Tooler.getOffsetVector3(aim);
+        console.log(offset);
+        aim.position.set(0 - offset.x, 0 - offset.y, 0 - offset.z);
 
         this.setRoughness(this.roughness);
         this.setMetalness(this.metalness);
+
+        Tooler.showAllMap(parent);
     }
 
-    getOffsetVector3(obj: THREE.Object3D):THREE.Vector3{
-        let box = new THREE.Box3().setFromObject(obj);
-        let x = (box.min.x + box.max.x) / 2;
-        let y = (box.min.y + box.max.y) / 2;
-        let z = (box.min.z + box.max.z) / 2;
-        let offset: THREE.Vector3 = new THREE.Vector3(x, y, z);
-        return offset;
-    }
+    changeMap(url:string):void{
+        let material: any = this.curMaterial;
+        let texture = new THREE.TextureLoader().load(url, () => {
+            material.map.needsUpdate = true;
+            material.needsUpdate = true;
+        });
 
-    getFitScale(obj: THREE.Object3D, num: number):number{
-        let box = new THREE.Box3().setFromObject(obj);
-        let size = box.getSize(new THREE.Vector3());
-        let max = Math.max(size.x, size.y, size.z);
-        let scale = num / max;
-        return scale;
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat = new THREE.Vector2(1, 1);
+        texture.flipY = !material.map.flipY;
+        material.map = texture;
     }
 
     setup():void {
+        let url = Tooler.getQueryString("url");
+        this.fineLoader.start(url, (object3D:THREE.Object3D) => {
+            this.fitModel(object3D);
+            url = url.replace(".glb", ".animation");
+            this.effect.init(url, this.scene);
+        })
         this.addLights();
-        this.prevLoad();
         this.animate();
     }
 

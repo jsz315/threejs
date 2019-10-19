@@ -2,15 +2,38 @@ import './index.less'
 import App from'./App'
 import Stats from 'three/examples/jsm/libs/stats.module';
 
-let canvas = document.getElementById("canvas");
-canvas.width = window.innerWidth * window.devicePixelRatio;
-canvas.height = window.innerWidth * window.devicePixelRatio;
-
-let app = new App(canvas);
-app.setup();
 let stats;
+let app;
 
-init();
+window.onload = function(){
+    let canvas = document.getElementById("canvas");
+    canvas.width = window.innerWidth * window.devicePixelRatio;
+    canvas.height = window.innerWidth * window.devicePixelRatio;
+    app = new App(canvas);
+    app.setup();
+    init();
+    addMap();
+}
+
+function addMap(){
+    var list = [];
+    for(let i = 0; i < 16; i++){
+        let src = `./asset/map/p${i + 1}.jpg`;
+        let div = `<div class="color" style="background-image: url(${src})"></div>`;
+        list.push(div);
+    }
+    document.getElementById("colors").innerHTML = list.join("");
+    document.getElementById("colors").addEventListener("click", (e)=>{
+        console.log(e.target);
+        if(e.target.className){
+            console.log(e.target.className);
+            console.log(e.target.style.backgroundImage);
+            let url = e.target.style.backgroundImage.replace(/(url\()|\)|"/g, "");
+            app.changeMap(url);
+        }
+    })
+
+}
 
 function init(){
     stats = new Stats();
@@ -70,6 +93,15 @@ function init(){
             stats.domElement.style.display = 'none';
         }
     }
+
+    document.querySelector(".animate").onclick = function(){
+        app.playAnimate();
+        this.className = "animate disable";
+    }
+
+    window.addEventListener("animate", (e) => {
+        document.querySelector(".animate").className = "animate";
+    });
 }
 
 
