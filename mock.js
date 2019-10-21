@@ -7,9 +7,9 @@ const path = require('path')
 const mock = function (app) {
   app.all(/api/, (req, res) => {
     // mock路由，优先查找JS，其次是JSON，找不到返回默认值
-    const JSFilePath = path.join(__dirname, './', `${req.path}.js`)
-    const JSONFilePath = path.join(__dirname, './', `${req.path}.json`)
-
+    const JSFilePath = path.join(__dirname, './mock/', `${req.path}.js`)
+    const JSONFilePath = path.join(__dirname, './mock/', `${req.path}.json`)
+    console.log("[mock] ==> " + JSONFilePath);
     if (fs.existsSync(JSFilePath)) {
       require(JSFilePath)(req, res)
     } else if (fs.existsSync(JSONFilePath)) {

@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const global = require('./global')
+const FilePlugin = require('./file-plugin')
 
 console.log("配置文件");
 console.log(global);
@@ -59,6 +60,10 @@ module.exports = {
     },
 
     plugins: [
+        new FilePlugin({
+            name: "自定义插件",
+            pages: global.pages
+        }),
         new CleanWebpackPlugin({
             root: path.resolve(__dirname, 'dist'),
             verbose: true,

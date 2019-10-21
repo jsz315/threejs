@@ -3,6 +3,17 @@ const fs = require('fs')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const glob = require('glob')
 
+fs.readdirSync('./dist/js').map(file=>{
+    console.log(file)
+    if(file.indexOf("win.") != -1){
+        let f = `./dist/js/${file}`;
+        fs.unlink(f, err => {
+            console.log("删除：" + f);
+        })
+    }
+})
+
+/*
 const walk = function(dir) {
     var results = []
     var list = fs.readdirSync(dir)
@@ -66,10 +77,5 @@ const global = {
     html: getHtml(apps)
 }
 
-// let as = process.argv[process.argv.length - 1]
-// const entryFiles = glob.sync(path.join(__dirname, "src") + '/*/' + as);
-// console.log(entryFiles);
-
 console.log(global)
-
-// export default global
+*/

@@ -24,18 +24,25 @@ export default class App {
     isMobile: boolean;
     curMaterial: any;
     effect: Effect;
+    size: any;
+    canvas: any;
 
-    constructor(canvas: any) {
+    constructor(canvas: any, size:any) {
+        this.size = this.getStageSize(true);
+        this.canvas = canvas;
+        this.canvas.width = this.size.width;
+        this.canvas.height = this.size.height;
+       
         this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerWidth, 0.1, 2400);
+        this.camera = new THREE.PerspectiveCamera(75, this.size.width / this.size.height, 0.1, 2400);
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
             alpha: true,
-            canvas: canvas
+            canvas: this.canvas
         });
         // this.renderer.setSize(window.innerWidth, window.innerHeight);
         // this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setClearColor(new THREE.Color(0xd2d2d2));
+        this.renderer.setClearColor(new THREE.Color(0xf1f1f1));
         this.renderer.shadowMap.enabled = true;
         // document.body.appendChild(this.renderer.domElement);
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
@@ -57,11 +64,30 @@ export default class App {
         window.addEventListener("resize", e => this.onResize(e), false);
         canvas.addEventListener(this.isMobile ? "touchstart" : "mousedown", (e: any) => this.select(e), false);
     }
+
+    getStageSize(usePixel?:boolean){
+        var size:any = {width: window.innerWidth};
+        if(window.innerWidth > window.innerHeight){
+            size.height = window.innerHeight;
+        }
+        else{
+            size.height = window.innerWidth;
+        }
+        if(usePixel){
+            size.width = size.width * window.devicePixelRatio;
+            size.height = size.height * window.devicePixelRatio;
+        }
+        return size;
+    }
     
     onResize(e:Event):void{
-        this.camera.aspect = window.innerWidth / window.innerWidth;
+        this.size = this.getStageSize(true);
+        this.canvas.width = this.size.width;
+        this.canvas.height = this.size.height;
+        console.log("resize");
+        this.camera.aspect = this.size.width / this.size.height;
         this.camera.updateProjectionMatrix();
-        this.renderer.setSize(window.innerWidth, window.innerWidth);
+        this.renderer.setSize(this.size.width, this.size.height);
     }
 
     animate():void {
@@ -82,8 +108,8 @@ export default class App {
             e = e.changedTouches[0];
         }
         let mouse = new THREE.Vector2();
-        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(e.clientY / window.innerWidth) * 2 + 1;
+        mouse.x = (e.clientX / this.size.width) * 2 - 1;
+        mouse.y = -(e.clientY / this.size.height) * 2 + 1;
 
         let obj:any;
         this.rayCaster.setFromCamera(mouse, this.camera);

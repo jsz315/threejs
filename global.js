@@ -71,8 +71,15 @@ const getCopy = function(apps){
     })
 }
 
+const getPages = function(apps){
+    return apps.map(item => {
+        return item.split("/").pop();
+    })
+}
+
 const apps = getApps(process.argv[process.argv.length - 1])
 const global = {
+    pages: getPages(apps),
     entry: getEntry(apps),
     html: getHtml(apps),
     copy: getCopy(apps)

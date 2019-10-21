@@ -1,18 +1,33 @@
 import './index.less'
 import App from'./App'
 import Stats from 'three/examples/jsm/libs/stats.module';
+import axios from "axios";
+import Tooler from "./Tooler.ts"
 
 let stats;
 let app;
 
 window.onload = function(){
     let canvas = document.getElementById("canvas");
-    canvas.width = window.innerWidth * window.devicePixelRatio;
-    canvas.height = window.innerWidth * window.devicePixelRatio;
     app = new App(canvas);
     app.setup();
     init();
     addMap();
+    getImg();
+}
+
+function getImg(){
+    let url = Tooler.getQueryString("url");
+    let id = url.split("/").pop().split(".")[0];
+    axios.post("/api/window_library/sysdiss", {
+        id: id
+    }).then(res=>{
+        console.log(res.data);
+        let list = [];
+        list[0] = `<img class="img" src="${res.data.datas["sys_img"]}">`;
+        list[1] = `<img class="img" src="${res.data.datas["brand_img"]}">`;
+        document.querySelector(".img-box").innerHTML = list.join("");
+    })
 }
 
 function addMap(){
@@ -97,6 +112,20 @@ function init(){
     document.querySelector(".animate").onclick = function(){
         app.playAnimate();
         this.className = "animate disable";
+    }
+
+    document.getElementById("info").onclick = function(){
+        console.log("info");
+        let pot = document.documentElement.scrollTop;
+        let size = app.getStageSize();
+        let tid = setInterval(()=>{
+            pot += 10;
+            if(pot > size.height){
+                clearInterval(tid);
+            }
+            document.documentElement.scrollTop = pot;
+        })
+        
     }
 
     window.addEventListener("animate", (e) => {
