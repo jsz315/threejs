@@ -61,6 +61,7 @@ export default class Tooler{
     }
 
     public static getAllMaterial(obj: THREE.Object3D):any{
+        let size:number = 1;
         let materials:any = [];
         obj.traverse((item:any) => {
             if(item.isMesh){
@@ -78,9 +79,11 @@ export default class Tooler{
                         // m.map.flipX = true;
                     }
                 })
+                let temp = Math.max(...item.geometry.attributes.uv.array);
+                size = Math.max(temp, size);
             }
         })
-        return materials;
+        return [materials, size];
     }
 
     public static loadData(url:string, complateHandler:Function, progressHandler?:Function):void{
@@ -100,7 +103,8 @@ export default class Tooler{
                 if (xhr.status === 200) {
                     complateHandler && complateHandler(xhr.responseText);
                 } else {
-                    alert("加载失败，请刷新页面重新尝试");
+                    console.log("加载数据失败");
+                    complateHandler && complateHandler();
                 }
             } else {
                 
@@ -115,6 +119,15 @@ export default class Tooler{
         var mat2 = new THREE.Matrix4().makeRotationAxis(axis, r * Math.PI/ 180);
         var mat3 = new THREE.Matrix4().makeTranslation(-pot.x, -pot.y, -pot.z);
         obj.applyMatrix(mat1.multiply(mat2).multiply(mat3));
+    }
+
+    public static farAway(p: THREE.Vector3, distance:number):THREE.Vector3{
+        var n = p.normalize();
+        return new THREE.Vector3(
+            n.x * distance,
+            n.y * distance,
+            n.z * distance,
+        )
     }
 
 }

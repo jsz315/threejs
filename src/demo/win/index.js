@@ -8,26 +8,108 @@ let stats;
 let app;
 
 window.onload = function(){
-    let canvas = document.getElementById("canvas");
+    let canvas = $("#canvas");
     app = new App(canvas);
     app.setup();
     init();
     addMap();
     getImg();
+
+    showDebug();
 }
 
-function getImg(){
+function showDebug(){
+    if(location.search.indexOf("debug=1") != -1){
+        $(".debug").style.display = "block";
+        $(".preview-img").style.display = "none";
+        let info = navigator.userAgent.toLowerCase();
+        if(info.match(/iPhone\sOS/i)){
+            $("#useCamera").removeAttribute("capture");
+            $("#useVideo").removeAttribute("capture");
+        }
+
+        let video = $("#video");
+        $("#openVideo").addEventListener("click", ()=>{
+            if(!navigator.mediaDevices){
+                navigator.mediaDevices = {};
+            }
+            let getUserMedia = navigator.mediaDevices.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+            if(!getUserMedia){
+                alert("无法打开摄像头");
+                return;
+            }
+            getUserMedia({
+                audio: false,
+                video: true
+            }).then((stream) => {
+                video.srcObject = stream;
+                video.play()
+            }).catch((error) => {
+                console.log(error);
+                alert("打开摄像头失败");
+            })
+        })
+
+        $("#drawImage").addEventListener("click", ()=>{
+            var canvas = $("#preview-canvas");
+            var context = canvas.getContext("2d");
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        })
+
+        previewImage("usePhoto");
+        previewImage("useCamera");
+        previewImage("useVideo");
+    }
+    
+}
+
+function previewImage(id){
+    var dom = document.getElementById(id);
+    dom.onchange = function(){
+        var file = dom.files[0];
+        var fileReader = new FileReader();
+        fileReader.onloadend = function(){
+            if(fileReader.readyState == fileReader.DONE){
+                $(".preview-img").setAttribute("src", fileReader.result);
+                $(".preview-img").style.display = "block";
+            }
+        }
+        fileReader.readAsDataURL(file);
+    }
+}
+
+async function getImg(){
     let url = Tooler.getQueryString("url");
     let id = url.split("/").pop().split(".")[0];
-    axios.post("/api/window_library/sysdiss", {
-        id: id
-    }).then(res=>{
-        console.log(res.data);
-        let list = [];
-        list[0] = `<img class="img" src="${res.data.datas["sys_img"]}">`;
-        list[1] = `<img class="img" src="${res.data.datas["brand_img"]}">`;
-        document.querySelector(".img-box").innerHTML = list.join("");
-    })
+    let res;
+    
+    if(location.host.indexOf("3d.") != -1){
+        let link = "/mapi/index.php";
+        res = await axios.get(link, {
+            params: {
+                id: id,
+                app: "index",
+                fnn: "sysdiss"
+            }
+        });
+    }
+    else{
+        let link = "/api/index/sysdiss";
+        res = await axios.post(link, {
+            id: id
+        });
+    }
+
+    let list = [];
+    if(res.data && res.data.datas){
+        if(res.data.datas["sys_img"]){
+            list.push(`<img class="img" src="${res.data.datas["sys_img"]}">`);
+        }
+        if(res.data.datas["brand_img"]){
+            list.push(`<img class="img" src="${res.data.datas["brand_img"]}">`);
+        }
+    }
+    $(".img-box").innerHTML = list.join("");
 }
 
 function addMap(){
@@ -37,10 +119,10 @@ function addMap(){
         let div = `<div class="color" style="background-image: url(${src})"></div>`;
         list.push(div);
     }
-    document.getElementById("colors").innerHTML = list.join("");
-    document.getElementById("colors").addEventListener("click", (e)=>{
+    $("#colors").innerHTML = list.join("");
+    $("#colors").addEventListener("click", (e)=>{
         console.log(e.target);
-        if(e.target.className){
+        if(e.target.className == "color"){
             console.log(e.target.className);
             console.log(e.target.style.backgroundImage);
             let url = e.target.style.backgroundImage.replace(/(url\()|\)|"/g, "");
@@ -60,33 +142,34 @@ function init(){
     document.body.appendChild(stats.domElement);
     app.setStats(stats);
     
-    var ambient = document.getElementById("ambient");
+    var ambient = $("#ambient");
     ambient.oninput = function(e){
-        console.log(e.target.value);
         app.setAmbient(e.target.value);
         showNum(e.target.value, "ambient_num");
     }
-    var directional = document.getElementById("directional");
+    var directional = $("#directional");
     directional.oninput = function(e){
-        console.log(e.target.value);
         app.setDirectional(e.target.value);
         showNum(e.target.value, "directional_num");
     }
-    var roughness = document.getElementById("roughness");
+    var roughness = $("#roughness");
     roughness.oninput = function(e){
-        console.log(e.target.value);
         app.setRoughness(e.target.value);
         showNum(e.target.value, "roughness_num");
     }
-    var metalness = document.getElementById("metalness");
+    var metalness = $("#metalness");
     metalness.oninput = function(e){
-        console.log(e.target.value);
         app.setMetalness(e.target.value);
         showNum(e.target.value, "metalness_num");
     }
+    var distance = $("#distance");
+    distance.oninput = function(e){
+        app.setDistance(e.target.value);
+        showNum(e.target.value, "distance_num");
+    }
 
-    document.getElementById("btn").onclick = function(){
-        var control = document.getElementById("control");
+    $("#btn").onclick = function(){
+        var control = $("#control");
         if(control.style.display == "none" || control.style.display == ""){
             control.style.display = "block";
             stats.domElement.style.display = 'block';
@@ -102,6 +185,9 @@ function init(){
 
             metalness.value = app.metalness;
             showNum(app.metalness, "metalness_num");
+
+            distance.value = app.far;
+            showNum(app.far, "distance_num");
         }
         else{
             control.style.display = "none";
@@ -109,12 +195,12 @@ function init(){
         }
     }
 
-    document.querySelector(".animate").onclick = function(){
+    $(".animate").onclick = function(){
         app.playAnimate();
         this.className = "animate disable";
     }
 
-    document.getElementById("info").onclick = function(){
+    $("#info").onclick = function(){
         console.log("info");
         let pot = document.documentElement.scrollTop;
         let size = app.getStageSize();
@@ -129,12 +215,16 @@ function init(){
     }
 
     window.addEventListener("animate", (e) => {
-        document.querySelector(".animate").className = "animate";
+        $(".animate").className = "animate";
     });
 }
 
 
 function showNum(n, tip){
     var n = Number(n);
-    document.getElementById(tip).innerHTML = n.toFixed(3);
+    $("#" + tip).innerHTML = n.toFixed(3);
+}
+
+function $(sel){
+    return document.querySelector(sel);
 }

@@ -15,17 +15,24 @@ export default class App {
     focusLight: FocusLight;
     fineLoader: FineLoader;
     
-    ambientLightIntensity: number = 0.5;
-    focusLightIntensity: number = 1.32;
-    roughness: number = 0.27;
-    metalness: number = 0.17;
+    ambientLightIntensity: number = 1.32;
+    focusLightIntensity: number = 0.42;
+    roughness: number = 0.35;
+    metalness: number = 0.36;
+
+    // ambientLightIntensity: number = 0.3;
+    // focusLightIntensity: number = 1.32;
+    // roughness: number = 0.54;
+    // metalness: number = 0.64;
+    far: number = 2.62;
     
     rayCaster: THREE.Raycaster;
     isMobile: boolean;
-    curMaterial: any;
+    frameMaterials: any = [];
     effect: Effect;
     size: any;
     canvas: any;
+    repeat: any;
 
     constructor(canvas: any, size:any) {
         this.size = this.getStageSize(true);
@@ -42,8 +49,8 @@ export default class App {
         });
         // this.renderer.setSize(window.innerWidth, window.innerHeight);
         // this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setClearColor(new THREE.Color(0xf1f1f1));
-        this.renderer.shadowMap.enabled = true;
+        this.renderer.setClearColor(new THREE.Color(0xe3e3e3), 0.9);
+        this.renderer.shadowMap.enabled = false;
         // document.body.appendChild(this.renderer.domElement);
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
         this.orbit.enabled = true;
@@ -160,31 +167,41 @@ export default class App {
     }
 
     initMaterials(parent:THREE.Object3D){
-        let materials = Tooler.getAllMaterial(parent);
+        let list = Tooler.getAllMaterial(parent);
+        let materials = list[0];
+        this.repeat = list[1];
+        console.log("repeat = " + this.repeat);
         materials.forEach((m:any) => {
             if(m.map){
-                if(m.map.image.src.indexOf("/IPR_") != -1){
-                    this.curMaterial = m;
+                let src = m.map.image.src;
+                if(src.indexOf("/IPR_") != -1 || src.indexOf("/dif_") != -1){
+                    this.frameMaterials.push(m);
                     console.log("门框材质定位成功");
+                    m.map.wrapS = THREE.RepeatWrapping;
+                    m.map.wrapT = THREE.RepeatWrapping;
+                    m.map.repeat = new THREE.Vector2(1, 1 / this.repeat);
                 }
             }
             m.transparent = true;
-            m.alphaTest = 0.1;
+            m.alphaTest = 0.2;
+            m.map.needsUpdate = true;
+            m.needsUpdate = true;
         })
     }
 
     changeMap(url:string):void{
-        let material: any = this.curMaterial;
-        let texture = new THREE.TextureLoader().load(url, () => {
-            material.map.needsUpdate = true;
-            material.needsUpdate = true;
-        });
-
-        texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat = new THREE.Vector2(1, 1);
-        texture.flipY = !material.map.flipY;
-        material.map = texture;
+        this.frameMaterials.forEach((material: any) =>{
+            let texture = new THREE.TextureLoader().load(url, () => {
+                material.map.needsUpdate = true;
+                material.needsUpdate = true;
+            });
+    
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat = new THREE.Vector2(1, 1 / this.repeat);
+            // texture.flipY = !material.map.flipY;
+            material.map = texture;
+        })
     }
 
     setup():void {
@@ -203,6 +220,10 @@ export default class App {
         ambient.intensity = this.ambientLightIntensity;
         ambient.name = "ambient";
         this.scene.add(ambient);
+
+        // var hemishpereLight:THREE.HemisphereLight = new THREE.HemisphereLight(0xffffff, 0xffffff);
+        // hemishpereLight.intensity = 0.6;
+        // this.scene.add(hemishpereLight);
     }
 
     setAmbient(n:number):void{
@@ -214,6 +235,11 @@ export default class App {
     setDirectional(n:number):void{
         this.focusLight.intensity = n;
         this.focusLightIntensity = n;
+    }
+
+    setDistance(n:number):void{
+        this.focusLight.far = n;
+        this.far = n;
     }
 
     setRoughness(n:number):void{

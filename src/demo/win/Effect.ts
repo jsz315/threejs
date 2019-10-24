@@ -13,15 +13,22 @@ export class Effect{
 
     init(url:string, parent:THREE.Object3D){
         this.parent = parent;
-        Tooler.loadData(url, (res: any)=>{
-            this.json = JSON.parse(res);
-            this.positions = [];
-            this.json.leafs[0].fans.forEach((item:any, index:number) => {
-                let content: THREE.Object3D = this.parent.getObjectByName(item.content);
-                this.positions.push(content.position);
-            });
-            console.log(this.json);
+        Tooler.loadData(url, (res: any) => {
+            if(res){
+                this.json = JSON.parse(res);
+                this.positions = [];
+                this.json.leafs[0].fans.forEach((item:any, index:number) => {
+                    let content: THREE.Object3D = this.parent.getObjectByName(item.content);
+                    this.positions.push(content.position);
+                });
+                console.log(this.json);
+                console.log(this.positions);
+            }
+            else{
+                (document.querySelector(".animate") as any).style.display = "none";
+            }
         });
+
     }
 
     play(){
@@ -59,6 +66,7 @@ export class Effect{
                 window.dispatchEvent(new CustomEvent("animate"));
                 if(this.dir == -1){
                     content.position.set(this.positions[n].x, this.positions[n].y, this.positions[n].z);
+                    console.log(content.position);
                 }
             }
         }, 30)
@@ -81,6 +89,7 @@ export class Effect{
                 window.dispatchEvent(new CustomEvent("animate"));
                 if(this.dir == -1){
                     content.position.set(this.positions[n].x, this.positions[n].y, this.positions[n].z);
+                    console.log(content.position);
                 }
             }
         }, 30)
