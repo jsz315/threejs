@@ -114,11 +114,13 @@ export default class Tooler{
     }
 
     public static rotateOnAxis(obj:THREE.Object3D, pivot:THREE.Vector3, axis: THREE.Vector3, r:number){
+        // var scale = obj.scale.clone();
         var pot = pivot;
         var mat1 = new THREE.Matrix4().makeTranslation(pot.x, pot.y, pot.z);
         var mat2 = new THREE.Matrix4().makeRotationAxis(axis, r * Math.PI/ 180);
         var mat3 = new THREE.Matrix4().makeTranslation(-pot.x, -pot.y, -pot.z);
         obj.applyMatrix(mat1.multiply(mat2).multiply(mat3));
+        // obj.scale.set(scale.x, scale.y, scale.z);
     }
 
     public static farAway(p: THREE.Vector3, distance:number):THREE.Vector3{

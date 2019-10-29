@@ -70,6 +70,8 @@ export default class App {
 
         window.addEventListener("resize", e => this.onResize(e), false);
         canvas.addEventListener(this.isMobile ? "touchstart" : "mousedown", (e: any) => this.select(e), false);
+
+        console.log(this.scene);
     }
 
     getStageSize(usePixel?:boolean){
@@ -163,7 +165,20 @@ export default class App {
         this.setRoughness(this.roughness);
         this.setMetalness(this.metalness);
 
+        this.resetName(this.scene);
         this.initMaterials(parent);
+    }
+
+    resetName(parent:THREE.Object3D){
+        let t = 0;
+        parent.traverse((item:any) => {
+            if(item.isMesh){
+                t++;
+                // console.log("MESH: " + item.name);
+            }
+            item.name = item.name.split("-")[0];
+        })
+        console.log("total: " + t);
     }
 
     initMaterials(parent:THREE.Object3D){
@@ -171,22 +186,62 @@ export default class App {
         let materials = list[0];
         this.repeat = list[1];
         console.log("repeat = " + this.repeat);
+        
+        let isRoom = false;
+        let winMaterials:any = [];
+        let roomMaterials:any = [];
+
         materials.forEach((m:any) => {
-            if(m.map){
+            if(m.map && m.map.image){
                 let src = m.map.image.src;
-                if(src.indexOf("/IPR_") != -1 || src.indexOf("/dif_") != -1){
-                    this.frameMaterials.push(m);
+                let used = false;
+                if(src.indexOf("/dif_") != -1){
+                    used = true;
+                    isRoom = true;
+                    roomMaterials.push(m);
+                }
+                if(src.indexOf("/IPR_") != -1){
+                    used = true;
+                    winMaterials.push(m);
+                }
+
+                if(used){
                     console.log("门框材质定位成功");
                     m.map.wrapS = THREE.RepeatWrapping;
                     m.map.wrapT = THREE.RepeatWrapping;
                     m.map.repeat = new THREE.Vector2(1, 1 / this.repeat);
+                    m.map.needsUpdate = true;
                 }
             }
             m.transparent = true;
             m.alphaTest = 0.2;
-            m.map.needsUpdate = true;
             m.needsUpdate = true;
         })
+
+        if(isRoom){
+            this.frameMaterials = roomMaterials;
+            this.frameMaterials.forEach((m:any) => {
+                console.log("change roomMaterials");
+                if(m.map && m.map.image){
+                    let src = m.map.image.src;
+                    if(src.indexOf("/dif_") != -1){
+                        this.changeMap(src);
+                    }
+                }
+            })
+        }
+        else{
+            this.frameMaterials = winMaterials;
+            this.frameMaterials.forEach((m:any) => {
+                console.log("change winMaterials");
+                if(m.map && m.map.image){
+                    let src = m.map.image.src;
+                    if(src.indexOf("/IPR_") != -1){
+                        this.changeMap(src);
+                    }
+                }
+            })
+        }
     }
 
     changeMap(url:string):void{
@@ -199,6 +254,7 @@ export default class App {
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
             texture.repeat = new THREE.Vector2(1, 1 / this.repeat);
+            console.log("this.repeat " + this.repeat);
             // texture.flipY = !material.map.flipY;
             material.map = texture;
         })
@@ -210,6 +266,7 @@ export default class App {
             this.fitModel(object3D);
             url = url.replace(".glb", ".animation");
             this.effect.init(url, this.scene);
+            
         })
         this.addLights();
         this.animate();

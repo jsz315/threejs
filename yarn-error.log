@@ -1,8 +1,8 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\Admin\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add @types/tweenjs__tween.js
+  C:\Program Files\nodejs\node.exe C:\Users\Admin\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add babylonjs
 
 PATH: 
-  C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\TortoiseSVN\bin;C:\Users\Admin\AppData\Local\Microsoft\WindowsApps;;C:\Users\Admin\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Admin\AppData\Roaming\npm
+  C:\Program Files (x86)\NetSarang\Xftp 6\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\TortoiseSVN\bin;E:\mysql-8.0.17-winx64\bin;C:\Program Files (x86)\PuTTY\;C:\Users\Admin\AppData\Local\Microsoft\WindowsApps;;C:\Users\Admin\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Admin\AppData\Roaming\npm
 
 Yarn version: 
   1.17.3
@@ -14,17 +14,8 @@ Platform:
   win32 x64
 
 Trace: 
-  Error: https://registry.npm.taobao.org/@types%2ftweenjs__tween.js: Not found
-      at Request.params.callback [as _callback] (C:\Users\Admin\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:66830:18)
-      at Request.self.callback (C:\Users\Admin\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:140464:22)
-      at Request.emit (events.js:198:13)
-      at Request.<anonymous> (C:\Users\Admin\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141436:10)
-      at Request.emit (events.js:198:13)
-      at IncomingMessage.<anonymous> (C:\Users\Admin\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141358:12)
-      at Object.onceWrapper (events.js:286:20)
-      at IncomingMessage.emit (events.js:203:15)
-      at endReadableNT (_stream_readable.js:1145:12)
-      at process._tickCallback (internal/process/next_tick.js:63:19)
+  Error: getaddrinfo EAI_AGAIN registry.npm.taobao.org registry.npm.taobao.org:443
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:56:26)
 
 npm manifest: 
   {
@@ -36,7 +27,8 @@ npm manifest:
       "build": "node build",
       "serve": "node server",
       "dll": "webpack --config webpack.dll.config",
-      "test": "node test"
+      "test": "node test",
+      "koa-serve": "node koa-serve/index"
     },
     "author": "",
     "license": "ISC",

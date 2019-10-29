@@ -6,6 +6,7 @@ import Tooler from "./Tooler.ts"
 
 let stats;
 let app;
+let retry = false;
 
 window.onload = function(){
     let canvas = $("#canvas");
@@ -13,7 +14,10 @@ window.onload = function(){
     app.setup();
     init();
     addMap();
-    getImg();
+
+    let url = Tooler.getQueryString("url");
+    let id = url.split("/").pop().split(".")[0];
+    getImg(id);
 
     showDebug();
 }
@@ -78,13 +82,12 @@ function previewImage(id){
     }
 }
 
-async function getImg(){
-    let url = Tooler.getQueryString("url");
-    let id = url.split("/").pop().split(".")[0];
+async function getImg(id){
+    // id = 16433;
     let res;
-    
-    if(location.host.indexOf("3d.") != -1){
-        let link = "/mapi/index.php";
+    let link = "";
+    if(location.search.indexOf("//3d.") != -1){
+        link = "/mapi/index.php";
         res = await axios.get(link, {
             params: {
                 id: id,
@@ -94,22 +97,28 @@ async function getImg(){
         });
     }
     else{
-        let link = "/api/index/sysdiss";
+        link = "/api/index/sysdiss";
         res = await axios.post(link, {
             id: id
         });
     }
-
-    let list = [];
+    
     if(res.data && res.data.datas){
-        if(res.data.datas["sys_img"]){
-            list.push(`<img class="img" src="${res.data.datas["sys_img"]}">`);
+        let datas = res.data.datas;
+        if(datas["sys_img"] || datas["brand_img"]){
+            let list = [];
+            datas["sys_img"] && list.push(`<img class="img" src="${datas["sys_img"]}">`);
+            datas["brand_img"] && list.push(`<img class="img" src="${datas["brand_img"]}">`);
+            $(".img-box").innerHTML = list.join("");
         }
-        if(res.data.datas["brand_img"]){
-            list.push(`<img class="img" src="${res.data.datas["brand_img"]}">`);
+        else{
+            if(!retry){
+                retry = true;
+                getImg(26);
+            }
+            
         }
     }
-    $(".img-box").innerHTML = list.join("");
 }
 
 function addMap(){

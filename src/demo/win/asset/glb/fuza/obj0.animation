@@ -1,0 +1,197 @@
+{
+    "leafs": [{
+        "fans": [{
+            "animation": [{
+                "offset": {
+                    "x": 30,
+                    "y": 0,
+                    "z": 0
+                },
+                "rotate": {
+                    "axis": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "pivot": {
+                        "x": -635.02001953125,
+                        "y": 84.56871032714844,
+                        "z": 0
+                    },
+                    "angle": 90
+                },
+                "duration": 1.2
+            }],
+            "content": "GFA_65D83DB0ACA80DBD1CADDCAC828465FF",
+            "openMode": 202
+        }, {
+            "animation": [{
+                "offset": {
+                    "x": 30,
+                    "y": 0,
+                    "z": 0
+                },
+                "rotate": {
+                    "axis": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "pivot": {
+                        "x": -635.02001953125,
+                        "y": 84.56871032714844,
+                        "z": 0
+                    },
+                    "angle": 90
+                },
+                "duration": 1.2
+            }],
+            "content": "GME_C74D98E7BBB6DC29F052DCAC819E6C89_WWW0011113",
+            "openMode": 202
+        }, {
+            "animation": [{
+                "offset": {
+                    "x": 30,
+                    "y": 0,
+                    "z": 0
+                },
+                "rotate": {
+                    "axis": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "pivot": {
+                        "x": -635.02001953125,
+                        "y": -22.69129180908203,
+                        "z": 0
+                    },
+                    "angle": -90
+                },
+                "duration": 1.2
+            }],
+            "content": "GFA_124DB27A665DABF4ED34DCAC82A106B3",
+            "openMode": 201
+        }, {
+            "animation": [{
+                "offset": {
+                    "x": 30,
+                    "y": 0,
+                    "z": 0
+                },
+                "rotate": {
+                    "axis": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "pivot": {
+                        "x": -635.02001953125,
+                        "y": -22.69129180908203,
+                        "z": 0
+                    },
+                    "angle": -90
+                },
+                "duration": 1.2
+            }],
+            "content": "GME_78AD2B331AC2B8099EC6DCAC81C6F63D_WWW0011113",
+            "openMode": 201
+        }, {
+            "animation": [{
+                "offset": {
+                    "x": -30,
+                    "y": 0,
+                    "z": 0
+                },
+                "rotate": {
+                    "axis": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "pivot": {
+                        "x": 635.02001953125,
+                        "y": 84.56871032714844,
+                        "z": 0
+                    },
+                    "angle": -90
+                },
+                "duration": 1.2
+            }],
+            "content": "GFA_1D6431802DD1329C854ADCAC82B4DE26",
+            "openMode": 204
+        }, {
+            "animation": [{
+                "offset": {
+                    "x": -30,
+                    "y": 0,
+                    "z": 0
+                },
+                "rotate": {
+                    "axis": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "pivot": {
+                        "x": 635.02001953125,
+                        "y": 84.56871032714844,
+                        "z": 0
+                    },
+                    "angle": -90
+                },
+                "duration": 1.2
+            }],
+            "content": "GME_AD404ACAB8F1A69FEB61DCAC82109C5D_WWW0011113",
+            "openMode": 204
+        }, {
+            "animation": [{
+                "offset": {
+                    "x": -30,
+                    "y": 0,
+                    "z": 0
+                },
+                "rotate": {
+                    "axis": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "pivot": {
+                        "x": 635.02001953125,
+                        "y": -22.69129180908203,
+                        "z": 0
+                    },
+                    "angle": 90
+                },
+                "duration": 1.2
+            }],
+            "content": "GFA_E9E2CCC48D074AB1C35ADCAC82CFDAC7",
+            "openMode": 203
+        }, {
+            "animation": [{
+                "offset": {
+                    "x": -30,
+                    "y": 0,
+                    "z": 0
+                },
+                "rotate": {
+                    "axis": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "pivot": {
+                        "x": 635.02001953125,
+                        "y": -22.69129180908203,
+                        "z": 0
+                    },
+                    "angle": 90
+                },
+                "duration": 1.2
+            }],
+            "content": "GME_66E45AB4CC65005E0B64DCAC823B6D21_WWW0011113",
+            "openMode": 203
+        }]
+    }]
+}

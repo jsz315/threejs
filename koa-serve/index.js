@@ -1,27 +1,131 @@
 const path = require("path")
-// const Koa = require('koa')
+const Koa = require('koa')
 // const multer = require('koa-multer')
-// const Router = require('koa-router')
-// const cors = require('koa-cors')
-// const static = require('koa-static')
-// const bodyparser = require('koa-bodyparser')
-// const request = require('request')
-
+const Router = require('koa-router')
+const cors = require('koa-cors')
+const static = require('koa-static')
+const bodyparser = require('koa-bodyparser')
+const request = require('request')
+const koaBody = require('koa-body')
+const fs = require('fs')
 const dirTooler = require("./tooler/dirTooler");
 const downloadTooler = require("./tooler/downloadTooler");
 
-// let fname = path.resolve(__dirname, "../static/upload/glb/m456");
-// console.log(fname);
-// dirTooler.mkdirsSync(fname);
-// console.log("ok");
 
-async function test(){
-    let url = "http://3d.mendaow.com/data/rendering_small.gif";
-    await downloadTooler.start(url);
-    console.log("下载成功")
+const app = new Koa()
+const router = new Router()
+
+// async function test(){
+//     let url = "http://3d.mendaow.com/data/rendering_small.gif";
+//     await downloadTooler.start(url);
+//     console.log("下载成功")
+// }
+
+// test();
+
+// init("0.0.0.0", 8899);
+init(getIPAddress(), 8899);
+
+function init(host, port) {
+
+	app.use(cors({
+		origin: function (ctx) {
+			return "*";
+		},
+		exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
+		maxAge: 5
+    }))
+    
+    // app.use(bodyparser());
+    app.use(koaBody({
+        multipart: true,
+        formidable: {
+            maxFileSize: 3000 * 1024 * 1024,
+            multipart: true
+        }
+    }))
+
+    app.use(router.routes(), router.allowedMethods())
+
+    app.use(static(
+		path.join(__dirname, '../static')
+	))
+
+	// const storage = multer.diskStorage({
+	// 	destination: function (req, file, cb) {
+	// 		cb(null, path.join(__dirname, '../static/upload'))
+	// 	},
+	// 	filename: function (req, file, cb) {
+	// 		cb(null, file.originalname);
+	// 	}
+	// })
+
+	// var upload = multer({
+	// 	storage: storage
+    // });
+    
+    // router.post('/upload', upload.single("file"), async (ctx, next) => {
+	// 	ctx.body = {
+    //         filename: ctx.req.file.name
+    //     }
+	// })
+
+	router.post('/upload', async (ctx, next) => {
+        ctx.set('Access-Control-Allow-Origin', '*');
+        const file = ctx.request.files.file;
+        const reader = fs.createReadStream(file.path);
+        let filePath = path.join(__dirname, '../static/upload/glb/' + file.name);
+        const upStream = fs.createWriteStream(filePath);
+        reader.pipe(upStream);
+
+        let assets = ctx.request.body.assets;
+        if(assets){
+            let list = assets.split(";")
+            list.forEach(item => {
+                downloadTooler.start(item);
+            })
+        }
+        
+		ctx.body = 'upload success';
+	})
+	
+	
+	router.get("/abc", async (ctx, next) => {
+		ctx.body = "hello";
+	})
+
+	router.post("/imgs", async (ctx, next) => {
+        ctx.set('Access-Control-Allow-Origin', '*');
+        console.log(ctx.request);
+		let params = ctx.request.body.params;
+		console.log(params);
+		ctx.body = "save success";
+	})
+
+    app.listen(port, host)
+    console.log(`http://${host}:${port}`);
 }
 
-test();
+function getIPAddress() {
+	const interfaces = require('os').networkInterfaces(); // 在开发环境中获取局域网中的本机iP地址
+	let IPAddress = '127.0.0.1';
+	for (var devName in interfaces) {
+		var iface = interfaces[devName];
+		for (var i = 0; i < iface.length; i++) {
+			var alias = iface[i];
+			if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+				IPAddress = alias.address;
+			}
+		}
+	}
+	return IPAddress;
+}
+
+
+
+
+
+
 
 // yarn add koa koa-router koa-body koa-send koa-multer koa-cors koa-static koa-bodyparser request vue vue-loader vue-template-compiler vuex vue-router
 // yarn add babylonjs 

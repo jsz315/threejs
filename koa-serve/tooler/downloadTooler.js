@@ -3,8 +3,7 @@ const path = require('path')
 const axios = require('axios')
 
 async function start(url){
-    let name = path.resolve(__dirname, "../../static/1.jpg")
-    console.log(name)
+    let name = path.resolve(__dirname, "../../static/upload/glb/" + url.split("/").pop())
     const writer = fs.createWriteStream(name)
     const res = await axios({
         url,

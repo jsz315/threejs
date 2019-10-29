@@ -5,7 +5,7 @@ export class Effect{
     json:any;
     parent:THREE.Object3D;
     dir:number = -1;
-    positions:Array<THREE.Vector3>;
+    positions:any;
 
     constructor(){
         
@@ -16,11 +16,30 @@ export class Effect{
         Tooler.loadData(url, (res: any) => {
             if(res){
                 this.json = JSON.parse(res);
-                this.positions = [];
-                this.json.leafs[0].fans.forEach((item:any, index:number) => {
-                    let content: THREE.Object3D = this.parent.getObjectByName(item.content);
-                    this.positions.push(content.position);
-                });
+                this.positions = {};
+                for(var i:number = 0; i < this.json.leafs.length; i++){
+                    this.json.leafs[i].fans.forEach((item:any, index:number) => {
+                        // let has = false;
+                        // parent.traverse((i:THREE.Object3D)=>{
+                        //     if(item.content == i.name){
+                        //         has = true;
+                        //         console.log("动画元素:" + item.content);
+                        //     }
+                        // })
+                        // if(!has){
+                        //     console.log("无法定位动画元素:" + item.content);
+                        // }
+
+                        let content: THREE.Object3D = parent.getObjectByName(item.content);
+                        if(content){
+                            console.log("动画元素:" + item.content);
+                            this.positions[item.content] = content.position.clone();
+                        }
+                        else{
+                            console.log("无法定位动画元素:" + item.content);
+                        }
+                    });
+                }
                 console.log(this.json);
                 console.log(this.positions);
             }
@@ -37,19 +56,21 @@ export class Effect{
         }
 
         this.dir *= -1;
-        this.json.leafs[0].fans.forEach((item:any, index:number) => {
-            let content: THREE.Object3D = this.parent.getObjectByName(item.content);
-            let offset = item.animation[0].offset;
-            let rotate = item.animation[0].rotate;
-            let duration = item.animation[0].duration * 1000;
+        for(var i:number = 0; i < this.json.leafs.length; i++){
+            this.json.leafs[i].fans.forEach((item:any, index:number) => {
+                let content: THREE.Object3D = this.parent.getObjectByName(item.content);
+                let offset = item.animation[0].offset;
+                let rotate = item.animation[0].rotate;
+                let duration = item.animation[0].duration * 1000;
 
-            if(rotate){
-                this.rotateAnimate(content, rotate, index, duration);
-            }
-            else if(offset){
-                this.translateAnimate(content, offset, index, duration);
-            }
-        })
+                if(rotate){
+                    this.rotateAnimate(content, rotate, index, duration);
+                }
+                else if(offset){
+                    this.translateAnimate(content, offset, index, duration);
+                }
+            })
+        }
     }
 
     rotateAnimate(content:THREE.Object3D, rotate:any, n:number, duration: number){
@@ -65,7 +86,8 @@ export class Effect{
                 clearInterval(tid);
                 window.dispatchEvent(new CustomEvent("animate"));
                 if(this.dir == -1){
-                    content.position.set(this.positions[n].x, this.positions[n].y, this.positions[n].z);
+                    let p = this.positions[content.name];
+                    content.position.set(p.x, p.y, p.z);
                     console.log(content.position);
                 }
             }
@@ -88,7 +110,8 @@ export class Effect{
                 clearInterval(tid);
                 window.dispatchEvent(new CustomEvent("animate"));
                 if(this.dir == -1){
-                    content.position.set(this.positions[n].x, this.positions[n].y, this.positions[n].z);
+                    let p = this.positions[content.name];
+                    content.position.set(p.x, p.y, p.z);
                     console.log(content.position);
                 }
             }
