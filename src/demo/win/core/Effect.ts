@@ -50,7 +50,7 @@ export class Effect{
                 let content: THREE.Object3D = this.parent.getObjectByName(item.content);
                 let offset = item.animation[0].offset;
                 let rotate = item.animation[0].rotate;
-                let duration = item.animation[0].duration * 1000;
+                let duration = item.animation[0].duration;
 
                 if(rotate){
                     this.rotateAnimate(content, rotate, index, duration);
@@ -64,7 +64,7 @@ export class Effect{
 
     rotateAnimate(content:THREE.Object3D, rotate:any, n:number, duration: number){
         let total = 1;
-        let times = duration / 30;
+        let times = duration * 1000 / 30;
         let r = rotate.angle * this.dir / times;
 
         let tid = setInterval(() => {
@@ -85,7 +85,7 @@ export class Effect{
 
     translateAnimate(content:THREE.Object3D, offset:any, n:number, duration: number){
         let total = 1;
-        let times = duration / 30;
+        let times = duration * 1000 / 30;
 
         let tid = setInterval(() => {
             if(total++ <= times){
