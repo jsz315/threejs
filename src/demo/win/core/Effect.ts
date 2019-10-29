@@ -19,17 +19,6 @@ export class Effect{
                 this.positions = {};
                 for(var i:number = 0; i < this.json.leafs.length; i++){
                     this.json.leafs[i].fans.forEach((item:any, index:number) => {
-                        // let has = false;
-                        // parent.traverse((i:THREE.Object3D)=>{
-                        //     if(item.content == i.name){
-                        //         has = true;
-                        //         console.log("动画元素:" + item.content);
-                        //     }
-                        // })
-                        // if(!has){
-                        //     console.log("无法定位动画元素:" + item.content);
-                        // }
-
                         let content: THREE.Object3D = parent.getObjectByName(item.content);
                         if(content){
                             console.log("动画元素:" + item.content);

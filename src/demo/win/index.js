@@ -1,8 +1,8 @@
 import './index.less'
-import App from'./App'
+import App from'./core/App'
 import Stats from 'three/examples/jsm/libs/stats.module';
 import axios from "axios";
-import Tooler from "./Tooler.ts"
+import Tooler from "./core/Tooler.ts"
 
 let stats;
 let app;
