@@ -174,7 +174,6 @@ export default class App {
         parent.traverse((item:any) => {
             if(item.isMesh){
                 t++;
-                // console.log("MESH: " + item.name);
             }
             item.name = item.name.split("-")[0];
         })
@@ -218,45 +217,52 @@ export default class App {
             m.needsUpdate = true;
         })
 
-        if(isRoom){
-            this.frameMaterials = roomMaterials;
-            this.frameMaterials.forEach((m:any) => {
-                console.log("change roomMaterials");
-                if(m.map && m.map.image){
-                    let src = m.map.image.src;
-                    if(src.indexOf("/dif_") != -1){
-                        this.changeMap(src);
+        setTimeout(() => {
+            if(isRoom){
+                console.log("阳光房");
+                this.frameMaterials = roomMaterials;
+                this.frameMaterials.forEach((m:any) => {
+                    console.log("change roomMaterials");
+                    if(m.map && m.map.image){
+                        let src = m.map.image.src;
+                        if(src.indexOf("/dif_") != -1){
+                            this.resetMap(m, src);
+                        }
                     }
-                }
-            })
-        }
-        else{
-            this.frameMaterials = winMaterials;
-            this.frameMaterials.forEach((m:any) => {
-                console.log("change winMaterials");
-                if(m.map && m.map.image){
-                    let src = m.map.image.src;
-                    if(src.indexOf("/IPR_") != -1){
-                        this.changeMap(src);
+                })
+            }
+            else{
+                this.frameMaterials = winMaterials;
+                this.frameMaterials.forEach((m:any) => {
+                    console.log("change winMaterials");
+                    if(m.map && m.map.image){
+                        let src = m.map.image.src;
+                        if(src.indexOf("/IPR_") != -1){
+                            this.resetMap(m, src);
+                        }
                     }
-                }
-            })
-        }
+                })
+            }
+        }, 300);
+        
+    }
+
+    resetMap(material: any, url:string):void{
+        let texture = new THREE.TextureLoader().load(url, () => {
+            material.map.needsUpdate = true;
+            material.needsUpdate = true;
+        });
+
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat = new THREE.Vector2(1, 1 / this.repeat);
+        console.log("this.repeat " + this.repeat);
+        material.map = texture;
     }
 
     changeMap(url:string):void{
         this.frameMaterials.forEach((material: any) =>{
-            let texture = new THREE.TextureLoader().load(url, () => {
-                material.map.needsUpdate = true;
-                material.needsUpdate = true;
-            });
-    
-            texture.wrapS = THREE.RepeatWrapping;
-            texture.wrapT = THREE.RepeatWrapping;
-            texture.repeat = new THREE.Vector2(1, 1 / this.repeat);
-            console.log("this.repeat " + this.repeat);
-            // texture.flipY = !material.map.flipY;
-            material.map = texture;
+            this.resetMap(material, url);
         })
     }
 
@@ -278,8 +284,8 @@ export default class App {
         ambient.name = "ambient";
         this.scene.add(ambient);
 
-        // var hemishpereLight:THREE.HemisphereLight = new THREE.HemisphereLight(0xffffff, 0xffffff);
-        // hemishpereLight.intensity = 0.6;
+        // var hemishpereLight:THREE.HemisphereLight = new THREE.HemisphereLight(0xffffff, 0xffff00);
+        // hemishpereLight.intensity = 1.8;
         // this.scene.add(hemishpereLight);
     }
 

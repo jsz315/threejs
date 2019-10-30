@@ -83,6 +83,11 @@ export default class Tooler{
                 size = Math.max(temp, size);
             }
         })
+
+        if(size > 2){
+            size = 2;
+        }
+
         return [materials, size];
     }
 
