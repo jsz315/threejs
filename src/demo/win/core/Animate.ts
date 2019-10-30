@@ -5,7 +5,7 @@ export default class Animate {
     view:THREE.Object3D;
     animations:object[];
     running:boolean;
-    aid:number;
+    aid:number = 0;
     moveType:number;
 
     public static ROTATE:number = 1;
@@ -17,10 +17,32 @@ export default class Animate {
     }
 
     addAnimation(animation:any){
+        animation.openDelayTid = 0;
+        animation.closeDelayTid = 0;
+        animation.openDelay = animation.openDelay || 0;
+        animation.closeDelay = animation.closeDelay || 0;
         animation.times = animation.duration * 1000 / 30;
         animation.tid = 0;
+        animation.dir = 1;
         animation.moveType = animation.rotate ? Animate.ROTATE : Animate.TRANSLATE;
         this.animations.push(animation);
+    }
+
+    createBack(){
+        let list = JSON.parse(JSON.stringify(this.animations));
+        list.reverse();
+        list.forEach((animation:any) => {
+            if(animation.rotate){
+                animation.rotate.angle *= -1;
+            }
+            if(animation.offset){
+                animation.offset.x *= -1;
+                animation.offset.y *= -1;
+                animation.offset.z *= -1;
+            }
+            animation.dir = -1;
+            this.animations.push(animation);
+        })
     }
 
     start(){
@@ -29,11 +51,25 @@ export default class Animate {
 
     end(){
         this.running = false;
+        console.log("animation end");
+        window.dispatchEvent(new CustomEvent("animate"));
     }
 
     update(){
         if(this.running){
             var animation:any = this.animations[this.aid];
+            if(animation.dir == 1){
+                animation.openDelayTid += 10;
+                if(animation.openDelayTid < animation.openDelay * 1000){
+                    return;
+                }
+            }
+            else{
+                animation.closeDelayTid += 10;
+                if(animation.closeDelayTid < animation.closeDelay * 1000){
+                    return;
+                }
+            }
             if(++animation.tid < animation.times){
                 if(animation.moveType == Animate.ROTATE){
                     var r:number = animation.rotate.angle / animation.times;
@@ -47,9 +83,14 @@ export default class Animate {
                 }
             }
             else{
-                this.end();
-                if(++this.aid >= this.animations.length){
-                    this.aid = 0;
+                animation.openDelayTid = 0;
+                animation.closeDelayTid = 0;
+                animation.tid = 0;
+                if(++this.aid % (this.animations.length / 2) == 0){
+                    if(animation.dir == -1){
+                        this.aid = 0;
+                    }
+                    this.end();
                 }
             }
         }

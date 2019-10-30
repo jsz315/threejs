@@ -103,6 +103,7 @@ export default class App {
         requestAnimationFrame(() => {
             this.animate();
         });
+        this.effect.update();
         this.stats && this.stats.update();
         this.renderer.render(this.scene, this.camera);
         this.focusLight.update(this.camera);
