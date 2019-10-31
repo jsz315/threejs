@@ -1,9 +1,8 @@
 const fs = require('fs')
-const path = require('path')
 const axios = require('axios')
 
-async function start(url){
-    let name = path.resolve(__dirname, "../../static/upload/glb/" + url.split("/").pop())
+async function start(url, folder){
+    let name = folder + "/" + url.split("/").pop()
     const writer = fs.createWriteStream(name)
     const res = await axios({
         url,

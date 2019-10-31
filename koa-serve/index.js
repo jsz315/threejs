@@ -11,9 +11,9 @@ const fs = require('fs')
 const dirTooler = require("./tooler/dirTooler");
 const downloadTooler = require("./tooler/downloadTooler");
 
-
 const app = new Koa()
 const router = new Router()
+const UPLOAD_PATH = path.join(__dirname, '../static/upload/glb')
 
 // async function test(){
 //     let url = "http://3d.mendaow.com/data/rendering_small.gif";
@@ -73,8 +73,11 @@ function init(host, port) {
 	router.post('/upload', async (ctx, next) => {
         ctx.set('Access-Control-Allow-Origin', '*');
         const file = ctx.request.files.file;
-        const reader = fs.createReadStream(file.path);
-        let filePath = path.join(__dirname, '../static/upload/glb/' + file.name);
+		const reader = fs.createReadStream(file.path);
+		const id = file.name.split(".")[0];
+		const folder = `${UPLOAD_PATH}/${id}`;
+		let filePath = `${folder}/${file.name}`;
+		dirTooler.mkdirsSync(folder);
         const upStream = fs.createWriteStream(filePath);
         reader.pipe(upStream);
 
@@ -82,7 +85,7 @@ function init(host, port) {
         if(assets){
             let list = assets.split(";")
             list.forEach(item => {
-                downloadTooler.start(item);
+                downloadTooler.start(item, folder);
             })
         }
         

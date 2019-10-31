@@ -6,6 +6,8 @@ class FilePlugin{
         console.log("FilePlugin constructor-------------")
         console.log(options);
         options.pages.forEach(page => {
+            mkdirsSync('./dist/js');
+            mkdirsSync('./dist/css');
             fs.readdirSync('./dist/js').map(file=>{
                 console.log(file)
                 if(file.indexOf(page + ".") != -1){
@@ -41,12 +43,27 @@ class FilePlugin{
         compiler.plugin("done", ()=>{
             console.log("FilePlugin done-------------");
             var ofile = path.resolve("./dist", "win.html");
-            var nfile = path.resolve("./dist", "index.php");
-            console.log(ofile);
-            fs.copyFile(ofile, nfile, err => {
+            var file1 = path.resolve("./dist", "index.php");
+            var file2 = path.resolve("./dist", "index.html");
+            fs.copyFile(ofile, file1, err => {
+                console.log("复制文件成功")
+            })
+            fs.copyFile(ofile, file2, err => {
                 console.log("复制文件成功")
             })
         })
+    }
+}
+
+function mkdirsSync(dirname){
+    if(fs.existsSync(dirname)){
+        return true;
+    }
+    else{
+        if(mkdirsSync(path.dirname(dirname))){
+            fs.mkdirSync(dirname);
+            return true;
+        }
     }
 }
 

@@ -89,16 +89,23 @@ export class Effect{
 
                             let animate = new Animate(content);
                             item.animation.forEach((m:any)=>{
-                                animate.addAnimation(m);
+                                animate.addAnimation(m, item.openMode);
                             })
-                            animate.createBack();
-
+                            
                             if(item.openMode == 666){
                                 animateList1.push(animate);
+                                animate.createBack(true);
+                            }
+                            else if(Animate.isPullDown(item.openMode)){
+                                animateList2.push(animate);
+                                animate.createBack(false);
                             }
                             else{
                                 animateList2.push(animate);
+                                animate.createBack(true);
                             }
+
+                            
                         }
                         else{
                             console.log("无法定位动画元素:" + item.content);
@@ -109,9 +116,6 @@ export class Effect{
                 this.animates = animateList1.concat(animateList2);
                 // this.animates = animateList1.length ? animateList1 : animateList2;
                 console.log(this.animates);
-
-                console.log(this.json);
-                console.log(this.positions);
             }
             else{
                 (document.querySelector(".animate") as any).style.display = "none";
