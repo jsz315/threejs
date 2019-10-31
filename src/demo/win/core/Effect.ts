@@ -70,14 +70,16 @@ export class Effect{
         });
     }
 
-    
-
     init(url:string, parent:THREE.Object3D){
         this.parent = parent;
         Tooler.loadData(url, (res: any) => {
             if(res){
                 this.json = JSON.parse(res);
                 this.positions = {};
+
+                let animateList1:any = [];
+                let animateList2:any = [];
+
                 for(var i:number = 0; i < this.json.leafs.length; i++){
                     this.json.leafs[i].fans.forEach((item:any, index:number) => {
                         let content: THREE.Object3D = parent.getObjectByName(item.content);
@@ -85,20 +87,29 @@ export class Effect{
                             console.log("动画元素:" + item.content);
                             this.positions[item.content] = content.position.clone();
 
-
                             let animate = new Animate(content);
                             item.animation.forEach((m:any)=>{
                                 animate.addAnimation(m);
                             })
                             animate.createBack();
-                            this.animates.push(animate);
 
+                            if(item.openMode == 666){
+                                animateList1.push(animate);
+                            }
+                            else{
+                                animateList2.push(animate);
+                            }
                         }
                         else{
                             console.log("无法定位动画元素:" + item.content);
                         }
                     });
                 }
+
+                this.animates = animateList1.concat(animateList2);
+                // this.animates = animateList1.length ? animateList1 : animateList2;
+                console.log(this.animates);
+
                 console.log(this.json);
                 console.log(this.positions);
             }

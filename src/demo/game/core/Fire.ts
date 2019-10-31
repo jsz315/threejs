@@ -10,11 +10,11 @@ export default class Fire{
     }
 
     update(){
-        this.num += 0.03;
-        let n = Math.sin(this.num);
-        if(n > 0.5){
-            n = 0.5;
-        }
-        this.light.intensity = n;
+        // this.num += 0.03;
+        // let n = Math.sin(this.num);
+        // if(n > 0.5){
+        //     n = 0.5;
+        // }
+        // this.light.intensity = n;
     }
 }

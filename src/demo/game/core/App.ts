@@ -2,6 +2,7 @@ import * as BABYLON from 'babylonjs'
 import Stats from 'three/examples/jsm/libs/stats.module';
 import CameraMaker from './CameraMaker';
 import Fire from './Fire';
+// import * as CANNON from '../asset/lib/cannon.min'
 
 export default class App{
 
@@ -11,7 +12,6 @@ export default class App{
     camera:BABYLON.Camera;
     stats: any;
     sphere:BABYLON.Mesh;
-    offset:BABYLON.Vector3 = new BABYLON.Vector3(-4, 1, -8);
     fire:Fire;
 
     constructor(){
@@ -21,11 +21,17 @@ export default class App{
         this.createScene();
         this.createStats();
 
-        // var physicsPlugin = new BABYLON.CannonJSPlugin();
-        // physicsPlugin.setTimeStep(1 /120);
-        // var physicsEngine = this.scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), physicsPlugin);
-        console.log(this.offset);
-
+        var physicsPlugin = new BABYLON.CannonJSPlugin();
+        physicsPlugin.setTimeStep(1 /120);
+        this.scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), physicsPlugin);
+        
+        new BABYLON.PhysicsImpostor(this.sphere, BABYLON.PhysicsImpostor.SphereImpostor, {
+            mass: 3,
+            friction: 0.5,
+            restitution: 0
+        }, this.scene);
+        console.log(this.sphere);
+        
         this.engine.runRenderLoop(()=>{
             this.fire.update();
             this.scene.render();

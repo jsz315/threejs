@@ -17,11 +17,11 @@ export default class Animate {
     }
 
     addAnimation(animation:any){
-        animation.openDelayTid = 0;
-        animation.closeDelayTid = 0;
+        animation.delayStart = 0;
+
         animation.openDelay = animation.openDelay || 0;
         animation.closeDelay = animation.closeDelay || 0;
-        animation.times = animation.duration * 1000 / 30;
+        animation.times = animation.duration * 1000 / 40;
         animation.tid = 0;
         animation.dir = 1;
         animation.moveType = animation.rotate ? Animate.ROTATE : Animate.TRANSLATE;
@@ -58,18 +58,23 @@ export default class Animate {
     update(){
         if(this.running){
             var animation:any = this.animations[this.aid];
+
+            if(animation.delayStart == 0){
+                animation.delayStart = Date.now();
+                return;
+            }
+
             if(animation.dir == 1){
-                animation.openDelayTid += 10;
-                if(animation.openDelayTid < animation.openDelay * 1000){
+                if(Date.now() - animation.delayStart < animation.openDelay * 1000){
                     return;
                 }
             }
             else{
-                animation.closeDelayTid += 10;
-                if(animation.closeDelayTid < animation.closeDelay * 1000){
+                if(Date.now() - animation.delayStart < animation.closeDelay * 1000){
                     return;
                 }
             }
+
             if(++animation.tid < animation.times){
                 if(animation.moveType == Animate.ROTATE){
                     var r:number = animation.rotate.angle / animation.times;
@@ -83,8 +88,7 @@ export default class Animate {
                 }
             }
             else{
-                animation.openDelayTid = 0;
-                animation.closeDelayTid = 0;
+                animation.delayStart = 0;
                 animation.tid = 0;
                 if(++this.aid % (this.animations.length / 2) == 0){
                     if(animation.dir == -1){

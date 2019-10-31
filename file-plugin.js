@@ -41,7 +41,7 @@ class FilePlugin{
         compiler.plugin("done", ()=>{
             console.log("FilePlugin done-------------");
             var ofile = path.resolve("./dist", "win.html");
-            var nfile = path.resolve("./dist", "index.html");
+            var nfile = path.resolve("./dist", "index.php");
             console.log(ofile);
             fs.copyFile(ofile, nfile, err => {
                 console.log("复制文件成功")

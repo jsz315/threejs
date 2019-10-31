@@ -131,8 +131,6 @@ export default class App {
             if(obj.material.map){
                 let img = obj.material.map.image;
                 console.log(img.currentSrc);
-                console.log(img.width + "x" + img.height);
-                console.log(obj.material.map);
                 // this.curMaterial = obj.material;
             }
         }
