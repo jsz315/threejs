@@ -537,7 +537,20 @@ axios@^0.19.0:
     follow-redirects "1.5.10"
     is-buffer "^2.0.2"
 
-babylonjs@^4.0.3:
+babylonjs-gltf2interface@4.0.3:
+  version "4.0.3"
+  resolved "https://registry.npm.taobao.org/babylonjs-gltf2interface/download/babylonjs-gltf2interface-4.0.3.tgz#e81cc65fac93b723feef4980b7497fa4643a8c4c"
+  integrity sha1-6BzGX6yTtyP+70mAt0l/pGQ6jEw=
+
+babylonjs-loaders@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.npm.taobao.org/babylonjs-loaders/download/babylonjs-loaders-4.0.3.tgz#aab7fbc695eed29ebe7971e4d9797a385bd365dc"
+  integrity sha1-qrf7xpXu0p6+eXHk2Xl6OFvTZdw=
+  dependencies:
+    babylonjs "4.0.3"
+    babylonjs-gltf2interface "4.0.3"
+
+babylonjs@4.0.3, babylonjs@^4.0.3:
   version "4.0.3"
   resolved "https://registry.npm.taobao.org/babylonjs/download/babylonjs-4.0.3.tgz#5dba9a96a7cb70634338e8dd7a17081e9f902cf6"
   integrity sha1-XbqalqfLcGNDOOjdehcIHp+QLPY=

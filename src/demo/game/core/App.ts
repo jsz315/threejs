@@ -13,24 +13,23 @@ export default class App{
     stats: any;
     sphere:BABYLON.Mesh;
     fire:Fire;
+    shadowGenerator: BABYLON.ShadowGenerator;
 
     constructor(){
         this.canvas = document.getElementById("canvas");
         this.engine = new BABYLON.Engine(this.canvas, true);
+        this.scene = new BABYLON.Scene(this.engine);
+        this.scene.shadowsEnabled = true;
+        this.camera = CameraMaker.getFreeCamera(this.scene);
+          this.camera.attachControl(this.canvas);
+
+        var physicsPlugin = new BABYLON.AmmoJSPlugin();
+        physicsPlugin.setTimeStep(1 /120);
+        this.scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), physicsPlugin);
+        // this.scene.collisionsEnabled = true;
 
         this.createScene();
         this.createStats();
-
-        var physicsPlugin = new BABYLON.CannonJSPlugin();
-        physicsPlugin.setTimeStep(1 /120);
-        this.scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), physicsPlugin);
-        
-        new BABYLON.PhysicsImpostor(this.sphere, BABYLON.PhysicsImpostor.SphereImpostor, {
-            mass: 3,
-            friction: 0.5,
-            restitution: 0
-        }, this.scene);
-        console.log(this.sphere);
         
         this.engine.runRenderLoop(()=>{
             this.fire.update();
@@ -44,50 +43,113 @@ export default class App{
     }
 
     createScene(){
-        this.scene = new BABYLON.Scene(this.engine);
-        this.camera = CameraMaker.getFreeCamera(this.scene);
-        this.camera.attachControl(this.canvas);
+       
         this.fire = new Fire(this.scene);
         this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 1);
 
         // var light:BABYLON.HemisphericLight = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 1), this.scene);
         // light.intensity = 0.8;
         
-        var material:BABYLON.StandardMaterial = new BABYLON.StandardMaterial("material", this.scene);
-        material.diffuseColor = new BABYLON.Color3(1, 1, 1);
-        material.diffuseTexture = new BABYLON.Texture("/asset/img/p6.jpg", this.scene);
-        material.bumpTexture = new BABYLON.Texture("/asset/img/p6_nor.jpg", this.scene);
-        (material.diffuseTexture as BABYLON.Texture).uScale = 4;
-        (material.diffuseTexture as BABYLON.Texture).vScale = 4;
-        (material.bumpTexture as BABYLON.Texture).uScale = 4;
-        (material.bumpTexture as BABYLON.Texture).vScale = 4;
+        // var material:BABYLON.StandardMaterial = new BABYLON.StandardMaterial("material", this.scene);
+        // material.diffuseColor = new BABYLON.Color3(1, 1, 1);
+        // material.diffuseTexture = new BABYLON.Texture("/asset/img/p6.jpg", this.scene);
+        // material.bumpTexture = new BABYLON.Texture("/asset/img/p6_nor.jpg", this.scene);
+        // (material.diffuseTexture as BABYLON.Texture).uScale = 4;
+        // (material.diffuseTexture as BABYLON.Texture).vScale = 4;
+        // (material.bumpTexture as BABYLON.Texture).uScale = 4;
+        // (material.bumpTexture as BABYLON.Texture).vScale = 4;
+        // var sphere:BABYLON.Mesh = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2}, this.scene);
+        // sphere.material = material;
 
-        var sphere:BABYLON.Mesh = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2}, this.scene);
-        sphere.material = material;
+        this.shadowGenerator = new BABYLON.ShadowGenerator(512, this.fire.light);
+        // this.shadowGenerator.setDarkness(0.8);
+        this.shadowGenerator.useCloseExponentialShadowMap = true;
+        // this.shadowGenerator.blurScale = 2;
+        // this.shadowGenerator.bias = 0.01;
+        // this.shadowGenerator.usePoissonSampling = true;
+
+        
 
         this.addBox(new BABYLON.Color3(1, 0, 0), new BABYLON.Vector3(7, 0, 0));
         this.addBox(new BABYLON.Color3(0, 1, 0), new BABYLON.Vector3(0, 7, 0));
         this.addBox(new BABYLON.Color3(0, 0, 1), new BABYLON.Vector3(0, 0, 7));
 
-        var ground:BABYLON.Mesh = BABYLON.Mesh.CreateGroundFromHeightMap("map", "/asset/img/p6_nor.jpg", 40, 40, 40, 0, 0.4, this.scene);
+        for(let i = 0; i < 1; i++){
+            let c = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
+            let p = new BABYLON.Vector3(
+                (0.5 - Math.random()) * 10,
+                (0.5 - Math.random()) * -30,
+                (0.5 - Math.random()) * 10,
+            );
+            this.addSphere(c, p);
+        }
+        
+        // var ground:BABYLON.Mesh = BABYLON.Mesh.CreateGroundFromHeightMap("map", "/asset/img/p6_nor.jpg", 80, 80, 40, 0, 0.4, this.scene);
+        // var ground:BABYLON.Mesh = BABYLON.Mesh.CreatePlane("plane", 400, this.scene);
+        var ground:BABYLON.Mesh = BABYLON.Mesh.CreateGround("plane", 80, 80, 80, this.scene);
         var groundMat:BABYLON.StandardMaterial = new BABYLON.StandardMaterial("groundMat", this.scene);
         groundMat.diffuseTexture = new BABYLON.Texture("/asset/img/p6.jpg", this.scene);
-        groundMat.bumpTexture = new BABYLON.Texture("/asset/img/p6_nor.jpg", this.scene);
-        groundMat.diffuseColor = new BABYLON.Color3(0, 1, 1);
-        ground.material = groundMat;
+        // groundMat.bumpTexture = new BABYLON.Texture("/asset/img/p6_nor.jpg", this.scene);
+        groundMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
+        groundMat.emissiveColor = new BABYLON.Color3(0.2, 0.2, 0.2);
 
-        this.sphere = sphere;
-        sphere.parent = this.camera;
-        sphere.position.set(0, 0, 8);
+        (groundMat.diffuseTexture as any).uScale = 4;
+        (groundMat.diffuseTexture as any).vScale = 4;
+        ground.material = groundMat;
+        ground.position.y = -10;
+        ground.receiveShadows = true;
+
+        // this.sphere = sphere;
+        // sphere.parent = this.camera;
+        // sphere.position.set(0, 0, 8);
         this.fire.light.parent = this.camera;
+
+        new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.PlaneImpostor, {
+            mass: 0,
+            friction: 0.5,
+            restitution: 0.9
+        }, this.scene);
+       
     }
 
     addBox(color: BABYLON.Color3, position:BABYLON.Vector3){
+        // var material = new BABYLON.ShaderMaterial("shader", this.scene, "/asset/shader/test1");
+
         var box:BABYLON.Mesh = BABYLON.MeshBuilder.CreateBox("box", {}, this.scene);
         var mat:BABYLON.StandardMaterial = new BABYLON.StandardMaterial("material", this.scene);
+        // mat.wireframe = true;
         mat.diffuseColor = color;
         box.material = mat;
         box.position = position;
+        new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.BoxImpostor, {
+            mass: 1,
+            friction: 0.5,
+            restitution: 0.5
+        })
+        this.shadowGenerator.getShadowMap().renderList.push(box);
+    }
+
+    addSphere(color: BABYLON.Color3, position:BABYLON.Vector3){
+        var sphere:BABYLON.Mesh = BABYLON.MeshBuilder.CreateSphere("sphere", {
+            segments: 7,
+            diameter: Math.random() * 2 + 0.4
+        }, this.scene);
+
+        var mat:BABYLON.StandardMaterial = new BABYLON.StandardMaterial("material", this.scene);
+        mat.diffuseColor = color;
+        mat.specularColor = new BABYLON.Color3(0, 0, 0);
+        // mat.wireframe = true;
+        sphere.material = mat;
+        sphere.position = position;
+        new BABYLON.PhysicsImpostor(sphere, BABYLON.PhysicsImpostor.SphereImpostor, {
+            mass: 1,
+            friction: 0.8,
+            restitution: 0.2
+        })
+
+        // sphere.receiveShadows = true;
+        this.shadowGenerator.getShadowMap().renderList.push(sphere);
+        // this.fire.light.includedOnlyMeshes.push(sphere);
     }
 
     createStats(){

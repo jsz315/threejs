@@ -171,13 +171,13 @@ function init(){
         app.setMetalness(e.target.value);
         showNum(e.target.value, "metalness_num");
     }
-    var distance = $("#distance");
-    distance.oninput = function(e){
-        app.setDistance(e.target.value);
-        showNum(e.target.value, "distance_num");
-    }
+    // var distance = $("#distance");
+    // distance.oninput = function(e){
+    //     app.setDistance(e.target.value);
+    //     showNum(e.target.value, "distance_num");
+    // }
 
-    $("#btn").onclick = function(){
+    $("#setting").onclick = function(){
         var control = $("#control");
         if(control.style.display == "none" || control.style.display == ""){
             control.style.display = "block";
@@ -195,8 +195,8 @@ function init(){
             metalness.value = app.metalness;
             showNum(app.metalness, "metalness_num");
 
-            distance.value = app.far;
-            showNum(app.far, "distance_num");
+            // distance.value = app.far;
+            // showNum(app.far, "distance_num");
         }
         else{
             control.style.display = "none";

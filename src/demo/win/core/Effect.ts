@@ -79,11 +79,13 @@ export class Effect{
 
                 let animateList1:any = [];
                 let animateList2:any = [];
+                let views:any = [];
 
                 for(var i:number = 0; i < this.json.leafs.length; i++){
                     this.json.leafs[i].fans.forEach((item:any, index:number) => {
                         let content: THREE.Object3D = parent.getObjectByName(item.content);
-                        if(content){
+                        if(content && views.indexOf(content) == -1){
+                            views.push(content);
                             console.log("动画元素:" + item.content);
                             this.positions[item.content] = content.position.clone();
 
@@ -104,8 +106,6 @@ export class Effect{
                                 animateList2.push(animate);
                                 animate.createBack(true);
                             }
-
-                            
                         }
                         else{
                             console.log("无法定位动画元素:" + item.content);

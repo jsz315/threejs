@@ -117,9 +117,10 @@ export default class App {
         if(this.isMobile){
             e = e.changedTouches[0];
         }
+        var size = this.getStageSize(false);
         let mouse = new THREE.Vector2();
-        mouse.x = (e.clientX / this.size.width) * 2 - 1;
-        mouse.y = -(e.clientY / this.size.height) * 2 + 1;
+        mouse.x = (e.clientX / size.width) * 2 - 1;
+        mouse.y = -(e.clientY / size.height) * 2 + 1;
 
         let obj:any;
         this.rayCaster.setFromCamera(mouse, this.camera);
@@ -131,7 +132,6 @@ export default class App {
             if(obj.material.map){
                 let img = obj.material.map.image;
                 console.log(img.currentSrc);
-                // this.curMaterial = obj.material;
             }
         }
     }
@@ -183,84 +183,78 @@ export default class App {
         let list = Tooler.getAllMaterial(parent);
         let materials = list[0];
         this.repeat = list[1];
-        console.log("repeat = " + this.repeat);
+        console.log(materials);
         
         let isRoom = false;
         let winMaterials:any = [];
         let roomMaterials:any = [];
 
-        materials.forEach((m:any) => {
+        materials.forEach((m:any) => {            
             if(m.map && m.map.image){
                 let src = m.map.image.src;
-                let used = false;
                 if(src.indexOf("/dif_") != -1){
-                    used = true;
                     isRoom = true;
                     roomMaterials.push(m);
                 }
                 if(src.indexOf("/IPR_") != -1){
-                    used = true;
                     winMaterials.push(m);
-                }
-
-                if(used){
-                    console.log("门框材质定位成功");
-                    m.map.wrapS = THREE.RepeatWrapping;
-                    m.map.wrapT = THREE.RepeatWrapping;
-                    m.map.repeat = new THREE.Vector2(1, 1 / this.repeat);
-                    m.map.needsUpdate = true;
                 }
             }
             m.transparent = true;
             m.alphaTest = 0.2;
-            m.needsUpdate = true;
         })
 
         setTimeout(() => {
             if(isRoom){
-                console.log("阳光房");
                 this.frameMaterials = roomMaterials;
-                this.frameMaterials.forEach((m:any) => {
-                    console.log("change roomMaterials");
-                    if(m.map && m.map.image){
-                        let src = m.map.image.src;
-                        if(src.indexOf("/dif_") != -1){
-                            this.resetMap(m, src);
-                        }
-                    }
-                })
+                // this.frameMaterials.forEach((m:any) => {
+                //     console.log("change roomMaterials");
+                //     if(m.map && m.map.image){
+                //         let src = m.map.image.src;
+                //         if(src.indexOf("/dif_") != -1){
+                //             this.resetMap(m, src);
+                //         }
+                //     }
+                // })
             }
             else{
                 this.frameMaterials = winMaterials;
-                this.frameMaterials.forEach((m:any) => {
-                    console.log("change winMaterials");
-                    if(m.map && m.map.image){
-                        let src = m.map.image.src;
-                        if(src.indexOf("/IPR_") != -1){
-                            this.resetMap(m, src);
-                        }
-                    }
-                })
+                // this.frameMaterials.forEach((m:any) => {
+                //     console.log("change winMaterials");
+                //     if(m.map && m.map.image){
+                //         let src = m.map.image.src;
+                //         if(src.indexOf("/IPR_") != -1){
+                //             this.resetMap(m, src);
+                //         }
+                //     }
+                // })
             }
+
+            materials.forEach((m:any) => {
+                if(m.map && m.map.image){
+                    let src = m.map.image.src;
+                    this.resetMap(m, src);
+                }
+            })
         }, 300);
-        
     }
 
     resetMap(material: any, url:string):void{
-        let texture = new THREE.TextureLoader().load(url, () => {
+        let texture:any = new THREE.TextureLoader().load(url, () => {
             material.map.needsUpdate = true;
             material.needsUpdate = true;
         });
 
-        texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat = new THREE.Vector2(1, 1 / this.repeat);
-        console.log("this.repeat " + this.repeat);
+        texture.wrapS = material.map.wrapS;
+        texture.wrapT = material.map.wrapT;
+        texture.repeat = new THREE.Vector2(material.map.repeat.x, material.map.repeat.y);
+        texture.flipY = material.map.flipY;
+        texture.flipX = material.map.flipY;
         material.map = texture;
     }
 
     changeMap(url:string):void{
-        this.frameMaterials.forEach((material: any) =>{
+        this.frameMaterials.length && this.frameMaterials.forEach((material: any) =>{
             this.resetMap(material, url);
         })
     }
@@ -271,7 +265,7 @@ export default class App {
             this.fitModel(object3D);
             url = url.replace(".glb", ".animation");
             this.effect.init(url, this.scene);
-            
+            window.dispatchEvent(new CustomEvent("animate"));
         })
         this.addLights();
         this.animate();
@@ -299,10 +293,10 @@ export default class App {
         this.focusLightIntensity = n;
     }
 
-    setDistance(n:number):void{
-        this.focusLight.far = n;
-        this.far = n;
-    }
+    // setDistance(n:number):void{
+    //     this.focusLight.far = n;
+    //     this.far = n;
+    // }
 
     setRoughness(n:number):void{
         var group = this.scene.getObjectByName("load_scene");
