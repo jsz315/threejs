@@ -5,6 +5,7 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const global = require('./global')
 const FilePlugin = require('./file-plugin')
 
@@ -55,11 +56,16 @@ module.exports = {
                     //图片最终请求的路径
                     publicPath: '/'
                 }
+            },
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader'
             }
         ]
     },
 
     plugins: [
+        new VueLoaderPlugin(),
         new FilePlugin({
             name: "自定义插件",
             pages: global.pages
