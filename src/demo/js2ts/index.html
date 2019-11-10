@@ -1,26 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <!-- <meta name="referrer" content="never"> -->
-    <!-- <meta http-equiv="Access-Control-Allow-Origin" content="*" /> -->
-    <title>在ts中使用js</title>
-    <script>
-    </script>
-    
-    <script>
-        window.CFG = {
-            baseURL: '.'
+    <meta charset=utf-8 />
+    <title>videojs-contrib-hls embed</title>
+
+
+    <!-- <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
+    <script src="https://unpkg.com/video.js/dist/video.js"></script>
+    <script src="https://unpkg.com/videojs-contrib-hls/dist/videojs-contrib-hls.js"></script> -->
+
+    <link href="https://vjs.zencdn.net/7.2.3/video-js.css" rel="stylesheet">
+    <style>
+        .video-js {
+            width: 100% !important;
+            height: auto !important;
         }
+    </style>
+</head>
+
+<body>
+    <h1>Video.js Example Embed</h1>
+
+    <!-- <video id="video" class="video-js vjs-default-skin" controls preload="auto">
+        <source src="https://wowza.peer5.com/live/smil:clock.smil/playlist.m3u8" type="application/x-mpegURL">
+    </video> -->
+    <video id='hls-example'  class="video-js vjs-default-skin" width="400" height="300" controls>
+        <source src="http://bili.meijuzuida.com/20190803/21104_0e334493/1000k/hls/index.m3u8" type="application/x-mpegURL">
+    </video>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-hls/5.14.1/videojs-contrib-hls.js"></script>
+    <script src="https://vjs.zencdn.net/7.2.3/video.js"></script>
+    <script>
+        var player = videojs('hls-example');
+        player.play();
     </script>
 
-</head>
-<body>
-    <p>hello</p>
-    <script src="/js/jquery-1.11.0.min.js"></script>
-    <script src="/js/Custom.js"></script>
-    
+    <script>
+        // videojs('my_video', {
+        //     bigPlayButton: false,
+        //     textTrackDisplay: false,
+        //     posterImage: true,
+        //     errorDisplay: false,
+        //     controlBar: true
+        // }, function () {
+      
+        // })
+        // document.getElementById("my_video_1").width = window.innerWidth * window.devicePixelRatio;
+    </script>
 </body>
+
 </html>

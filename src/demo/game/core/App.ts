@@ -19,9 +19,11 @@ export default class App{
         this.canvas = document.getElementById("canvas");
         this.engine = new BABYLON.Engine(this.canvas, true);
         this.scene = new BABYLON.Scene(this.engine);
-        this.scene.shadowsEnabled = true;
+        // this.scene.shadowsEnabled = true;
+        console.log("this.scene");
+        console.log(this.scene);
         this.camera = CameraMaker.getFreeCamera(this.scene);
-          this.camera.attachControl(this.canvas);
+        this.camera.attachControl(this.canvas);
 
         var physicsPlugin = new BABYLON.AmmoJSPlugin();
         physicsPlugin.setTimeStep(1 /120);
@@ -61,12 +63,30 @@ export default class App{
         // var sphere:BABYLON.Mesh = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2}, this.scene);
         // sphere.material = material;
 
-        this.shadowGenerator = new BABYLON.ShadowGenerator(512, this.fire.light);
+        this.shadowGenerator = new BABYLON.ShadowGenerator(1024, this.fire.light);
         // this.shadowGenerator.setDarkness(0.8);
-        this.shadowGenerator.useCloseExponentialShadowMap = true;
+        // this.shadowGenerator.useCloseExponentialShadowMap = true;
         // this.shadowGenerator.blurScale = 2;
         // this.shadowGenerator.bias = 0.01;
         // this.shadowGenerator.usePoissonSampling = true;
+        // shadowGenerator.useExponentialShadowMap = true;
+        this.shadowGenerator.usePoissonSampling = true;
+        // shadowGenerator.useBlurExponentialShadowMap = true;
+        this.shadowGenerator.forceBackFacesOnly = true;
+        this.shadowGenerator.blurKernel = 32;
+        this.shadowGenerator.useKernelBlur = true;
+
+        var hemisphericLight1 = new BABYLON.HemisphericLight("hemisphericLight1", new BABYLON.Vector3(1, -1, -1), this.scene);
+        hemisphericLight1.diffuse = BABYLON.Color3.FromHexString("#FFFFFF");
+        hemisphericLight1.specular = BABYLON.Color3.FromHexString("#FFFFFF");
+        hemisphericLight1.groundColor = BABYLON.Color3.FromHexString("#FFFFFF");
+        hemisphericLight1.intensity = 0.4;
+
+        var hemisphericLight2 = new BABYLON.HemisphericLight("hemisphericLight2", new BABYLON.Vector3(1, -1, 0.4), this.scene);
+        hemisphericLight2.diffuse = BABYLON.Color3.FromHexString("#FFFFFF");
+        hemisphericLight2.specular = BABYLON.Color3.FromHexString("#FFFFFF");
+        hemisphericLight2.groundColor = BABYLON.Color3.FromHexString("#FFFFFF");
+        hemisphericLight2.intensity = 0.3;
 
         
 
@@ -86,7 +106,10 @@ export default class App{
         
         // var ground:BABYLON.Mesh = BABYLON.Mesh.CreateGroundFromHeightMap("map", "/asset/img/p6_nor.jpg", 80, 80, 40, 0, 0.4, this.scene);
         // var ground:BABYLON.Mesh = BABYLON.Mesh.CreatePlane("plane", 400, this.scene);
-        var ground:BABYLON.Mesh = BABYLON.Mesh.CreateGround("plane", 80, 80, 80, this.scene);
+        // var ground:BABYLON.Mesh = BABYLON.Mesh.CreateGround("plane", 80, 80, 80, this.scene);
+
+        var ground:BABYLON.Mesh = BABYLON.Mesh.CreateBox("plane", 1, this.scene);
+        ground.scaling = new BABYLON.Vector3(10, 1, 10);
         var groundMat:BABYLON.StandardMaterial = new BABYLON.StandardMaterial("groundMat", this.scene);
         groundMat.diffuseTexture = new BABYLON.Texture("/asset/img/p6.jpg", this.scene);
         // groundMat.bumpTexture = new BABYLON.Texture("/asset/img/p6_nor.jpg", this.scene);
@@ -99,12 +122,14 @@ export default class App{
         ground.position.y = -10;
         ground.receiveShadows = true;
 
+        this.shadowGenerator.getShadowMap().renderList.push(ground);
+
         // this.sphere = sphere;
         // sphere.parent = this.camera;
         // sphere.position.set(0, 0, 8);
         this.fire.light.parent = this.camera;
 
-        new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.PlaneImpostor, {
+        new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, {
             mass: 0,
             friction: 0.5,
             restitution: 0.9
