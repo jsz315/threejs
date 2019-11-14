@@ -81,6 +81,7 @@
     <div class="colors" id="colors"></div>
 
     <div class="debug">
+        <input type="file" id="files">
         <div class="debug-label">相册</div>
         <input type="file" id="usePhoto">
         <div class="debug-label">照相机</div>
@@ -98,5 +99,32 @@
     <div class="img-box">
         <!-- <img class="img" src="asset/produce.jpg"> -->
     </div>
+    <script src="./asset/jszip.min.js"></script>
+    <script>
+        setTimeout(() => {
+            document.querySelector(".debug-label").onclick = function(){
+                zipFiles();
+            }
+        }, 3000);
+        function zipFiles(){
+            var dom = document.getElementById("files");
+            var files = dom.files;
+            console.log(files);
+            var zip = new JSZip();
+            zip.file(files[0].name, files[0]);
+            zip.generateAsync({type:"blob", compression: "DEFLATE", compressionOptions: {level: 6}})
+            .then(function(content) {
+                save(content, "example.zip");
+            });
+        }
+        function save( blob, filename ) {
+            var link = document.createElement( 'a' );
+            link.style.display = 'none';
+            document.body.appendChild( link );
+            link.href = URL.createObjectURL( blob );
+            link.download = filename;
+            link.click();
+        }
+    </script>
 </body>
 </html>

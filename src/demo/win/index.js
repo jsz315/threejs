@@ -20,6 +20,39 @@ window.onload = function(){
     getImg(id);
 
     showDebug();
+    // testZip();
+}
+
+function testZip(){
+    var fname = "/upload/glb/929/929.glb";
+    axios({ // 用axios发送post请求
+        method: 'get',
+        url: fname, // 请求地址        
+        responseType: 'blob' // 表明返回服务器返回的数据类型
+    }).then((res) => { // 处理返回的文件流
+        console.log(res);
+        readBlob(res.data);
+    });
+    
+    function readBlob(f){
+        var zip = new JSZip();
+        zip.file("929.glb", f);
+
+        zip.generateAsync({type:"blob", compression: "DEFLATE", compressionOptions: {level: 6}})
+        .then(function(content) {
+            // see FileSaver.js
+            save(content, "example.zip");
+        });
+    }
+
+    function save( blob, filename ) {
+        var link = document.createElement( 'a' );
+        link.style.display = 'none';
+        document.body.appendChild( link );
+        link.href = URL.createObjectURL( blob );
+        link.download = filename;
+        link.click();
+    }
 }
 
 function showDebug(){

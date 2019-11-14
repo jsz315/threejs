@@ -263,7 +263,7 @@ export default class App {
         let url = Tooler.getQueryString("url");
         this.fineLoader.start(url, (object3D:THREE.Object3D) => {
             this.fitModel(object3D);
-            url = url.replace(".glb", ".animation");
+            url = url.replace(/\.(glb|zip)/, ".animation");
             this.effect.init(url, this.scene);
             window.dispatchEvent(new CustomEvent("animate"));
         })

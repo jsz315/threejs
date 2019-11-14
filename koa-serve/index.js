@@ -89,7 +89,7 @@ function init(host, port) {
             })
         }
         
-		ctx.body = 'upload success';
+		ctx.body = '{"code":200,"datas":"保存成功"}';
 	})
 	
 	

@@ -145,28 +145,28 @@ export default class App{
     }
 
     createObjects(){
-        for(let i = 0; i < 1000; i++){
-            let type = "sphere";
-            if(i % 2){
-                type ="box";
-            }
-            let shape;
-            if(type == "box"){
-                shape = this.store.getBoxBufferGeometry();
-            }
-            else{
-                shape = this.store.getSphereBufferGeometry();
-            }
-            var view = new THREE.Mesh(shape, this.store.getMaterial());
-            let x = (0.5 - Math.random()) * 40;
-            let y = Math.random() * 1600;
-            let z = (0.5 - Math.random()) * 40;
-            view.position.set(x, y, z);
-            view.castShadow = true;
-            view.receiveShadow = true;
-            this.scene.add(view);
-            this.updaters.push(new PhysicsView(view, type, this.world));
-        }
+        // for(let i = 0; i < 1000; i++){
+        //     let type = "sphere";
+        //     if(i % 2){
+        //         type ="box";
+        //     }
+        //     let shape;
+        //     if(type == "box"){
+        //         shape = this.store.getBoxBufferGeometry();
+        //     }
+        //     else{
+        //         shape = this.store.getSphereBufferGeometry();
+        //     }
+        //     var view = new THREE.Mesh(shape, this.store.getMaterial());
+        //     let x = (0.5 - Math.random()) * 40;
+        //     let y = Math.random() * 1600;
+        //     let z = (0.5 - Math.random()) * 40;
+        //     view.position.set(x, y, z);
+        //     view.castShadow = true;
+        //     view.receiveShadow = true;
+        //     this.scene.add(view);
+        //     this.updaters.push(new PhysicsView(view, type, this.world));
+        // }
         
     }
 

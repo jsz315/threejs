@@ -2520,6 +2520,11 @@ image-size@~0.5.0:
   resolved "https://registry.npm.taobao.org/image-size/download/image-size-0.5.5.tgz#09dfd4ab9d20e29eb1c3e80b8990378df9e3cb9c"
   integrity sha1-Cd/Uq50g4p6xw+gLiZA3jfnjy5w=
 
+immediate@~3.0.5:
+  version "3.0.6"
+  resolved "https://registry.npm.taobao.org/immediate/download/immediate-3.0.6.tgz#9db1dbd0faf8de6fbe0f5dd5e56bb606280de69b"
+  integrity sha1-nbHb0Pr43m++D13V5Wu2BigN5ps=
+
 import-cwd@^2.0.0:
   version "2.1.0"
   resolved "https://registry.npm.taobao.org/import-cwd/download/import-cwd-2.1.0.tgz#aa6cf36e722761285cb371ec6519f53e2435b0a9"
@@ -2928,6 +2933,16 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
+jszip@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.npm.taobao.org/jszip/download/jszip-3.2.2.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fjszip%2Fdownload%2Fjszip-3.2.2.tgz#b143816df7e106a9597a94c77493385adca5bd1d"
+  integrity sha1-sUOBbffhBqlZepTHdJM4WtylvR0=
+  dependencies:
+    lie "~3.3.0"
+    pako "~1.0.2"
+    readable-stream "~2.3.6"
+    set-immediate-shim "~1.0.1"
+
 keygrip@~1.1.0:
   version "1.1.0"
   resolved "https://registry.npm.taobao.org/keygrip/download/keygrip-1.1.0.tgz#871b1681d5e159c62a445b0c74b615e0917e7226"
@@ -3099,6 +3114,13 @@ less@^3.9.0:
     promise "^7.1.1"
     request "^2.83.0"
     source-map "~0.6.0"
+
+lie@~3.3.0:
+  version "3.3.0"
+  resolved "https://registry.npm.taobao.org/lie/download/lie-3.3.0.tgz#dcf82dee545f46074daf200c7c1c5a08e0f40f6a"
+  integrity sha1-3Pgt7lRfRgdNryAMfBxaCOD0D2o=
+  dependencies:
+    immediate "~3.0.5"
 
 loader-runner@^2.4.0:
   version "2.4.0"
@@ -3799,7 +3821,7 @@ p-try@^2.0.0:
   resolved "https://registry.npm.taobao.org/p-try/download/p-try-2.2.0.tgz#cb2868540e313d61de58fafbe35ce9004d5540e6"
   integrity sha1-yyhoVA4xPWHeWPr741zpAE1VQOY=
 
-pako@~1.0.5:
+pako@~1.0.2, pako@~1.0.5:
   version "1.0.10"
   resolved "https://registry.npm.taobao.org/pako/download/pako-1.0.10.tgz#4328badb5086a426aa90f541977d4955da5c9732"
   integrity sha1-Qyi621CGpCaqkPVBl31JVdpclzI=
@@ -4547,6 +4569,11 @@ set-blocking@^2.0.0, set-blocking@~2.0.0:
   version "2.0.0"
   resolved "https://registry.npm.taobao.org/set-blocking/download/set-blocking-2.0.0.tgz#045f9782d011ae9a6803ddd382b24392b3d890f7"
   integrity sha1-BF+XgtARrppoA93TgrJDkrPYkPc=
+
+set-immediate-shim@~1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npm.taobao.org/set-immediate-shim/download/set-immediate-shim-1.0.1.tgz#4b2b1b27eb808a9f8dcc481a58e5e56f599f3f61"
+  integrity sha1-SysbJ+uAip+NzEgaWOXlb1mfP2E=
 
 set-value@^2.0.0, set-value@^2.0.1:
   version "2.0.1"

@@ -100,9 +100,9 @@ export default class PhysicsView{
 
     destory(){
         if(this.mesh.position.y < -100){
-            let x = (0.5 - Math.random()) * 40;
+            let x = (0.5 - Math.random()) * 80;
             let y = 700;
-            let z = (0.5 - Math.random()) * 40;
+            let z = (0.5 - Math.random()) * 80;
             this.body.position = new CANNON.Vec3(x, y, z);
         }
     }

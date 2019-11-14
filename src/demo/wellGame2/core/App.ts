@@ -84,9 +84,9 @@ export default class App{
   
         // CannonDebugRenderer
 
-        // var ambientLight = new THREE.AmbientLight( 0xffffff );
-        // ambientLight.intensity = 0.1;
-        // this.scene.add( ambientLight );
+        var ambientLight = new THREE.AmbientLight( 0xffffff );
+        ambientLight.intensity = 0.4;
+        this.scene.add( ambientLight );
 
         this.fire = new Fire();
         this.scene.add( this.fire.light );
@@ -241,27 +241,28 @@ export default class App{
 
     addMap(){
         var matrix = [];
-        var sizeX = 40,
+        var sizeX = 10,
             sizeY = sizeX;
+        var angle = 4;
 
         for (var i = 0; i < sizeX; i++) {
             matrix.push([]);
             for (var j = 0; j < sizeY; j++) {
-                var height = Math.sin(i / sizeX * Math.PI * 8) * Math.sin(j / sizeY * Math.PI * 8) * 8 + 8;
+                var height = Math.sin(i / sizeX * Math.PI * angle) * Math.sin(j / sizeY * Math.PI * angle) * angle + angle;
                 if(i===0 || i === sizeX-1 || j===0 || j === sizeY-1)
-                    height = 8;
+                    height = angle;
 
                 matrix[i].push(height);
             }
         }
 
         var hfShape = new CANNON.Heightfield(matrix, {
-            elementSize: 400 / sizeX
+            elementSize: 100 / sizeX
         });
         var hfBody;
 
         var quat = new CANNON.Quaternion();
-        var pos = new CANNON.Vec3(-sizeX * hfShape.elementSize / 2, -20, 200);
+        var pos = new CANNON.Vec3(-sizeX * hfShape.elementSize / 2, -20, 100);
 
         quat.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
 
@@ -270,19 +271,61 @@ export default class App{
         hfBody.addShape(hfShape, new CANNON.Vec3(0, 0, 0));
         hfBody.position.copy(pos);
         hfBody.quaternion.copy(quat);
-
         
         this.world.add(hfBody);
+
+        let mesh:THREE.Mesh = this.drawMap(hfBody.shapes[0]);
+        mesh.position.copy(pos);
+        mesh.quaternion.copy(quat);
+        this.scene.add(mesh);
+    }
+
+    drawMap(shape:any):THREE.Mesh{
+        var geometry = new THREE.Geometry();
+
+        var v0 = new CANNON.Vec3();
+        var v1 = new CANNON.Vec3();
+        var v2 = new CANNON.Vec3();
+        for (var xi = 0; xi < shape.data.length - 1; xi++) {
+            for (var yi = 0; yi < shape.data[xi].length - 1; yi++) {
+                for (var k = 0; k < 2; k++) {
+                    shape.getConvexTrianglePillar(xi, yi, k===0);
+                    v0.copy(shape.pillarConvex.vertices[0]);
+                    v1.copy(shape.pillarConvex.vertices[1]);
+                    v2.copy(shape.pillarConvex.vertices[2]);
+                    v0.vadd(shape.pillarOffset, v0);
+                    v1.vadd(shape.pillarOffset, v1);
+                    v2.vadd(shape.pillarOffset, v2);
+                    geometry.vertices.push(
+                        new THREE.Vector3(v0.x, v0.y, v0.z),
+                        new THREE.Vector3(v1.x, v1.y, v1.z),
+                        new THREE.Vector3(v2.x, v2.y, v2.z)
+                    );
+                    var i = geometry.vertices.length - 3;
+                    geometry.faces.push(new THREE.Face3(i, i+1, i+2));
+                }
+            }
+        }
+        geometry.computeBoundingSphere();
+        geometry.computeFaceNormals();
+
+        let mat: THREE.MeshStandardMaterial = new THREE.MeshStandardMaterial();
+        mat.metalness = 0.1;
+        mat.roughness = 0.72;
+        mat.map = new THREE.TextureLoader().load("/asset/img/p6.jpg");
+
+        let mesh = new THREE.Mesh(geometry, mat);
+        return mesh;
     }
 
     createObjects(){
-        for(let i = 0; i < 20; i++){
+        for(let i = 0; i < 10; i++){
             let type = ["sphere", "box", "cylinder"][i % 3];
             let shape = this.store.getBufferGeometry(type);
             var view = new THREE.Mesh(shape, this.store.getMaterial());
-            let x = (0.5 - Math.random()) * 10;
-            let y = Math.random() * 80;
-            let z = (0.5 - Math.random()) * 10;
+            let x = (0.5 - Math.random()) * 80;
+            let y = Math.random() * 900;
+            let z = (0.5 - Math.random()) * 80;
             view.position.set(x, y, z);
             view.castShadow = true;
             view.receiveShadow = true;
