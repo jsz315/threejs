@@ -18,8 +18,10 @@ export class FineLoader extends THREE.Object3D{
 
     async start(url:string, callback:Function){
         let flink = url.replace(/\.(glb|zip)/i, "");
-        if(validateLink(flink + ".zip")){
+        let isZip = false;
+        if(await validateLink(flink + ".zip")){
             url = flink + ".zip";
+            isZip = true;
         }
         else{
             url = flink + ".glb";
@@ -31,10 +33,10 @@ export class FineLoader extends THREE.Object3D{
         // let baseURL = (window as any).CFG.baseURL;
         var xhr = new XMLHttpRequest();
         xhr.open('GET', this.modelPath + this.modelName);
+        xhr.responseType = 'blob';
         xhr.onprogress = (event) =>{
             if (event.lengthComputable) {
                 let n = Math.floor(event.loaded / event.total * 100);
-                console.log(n + "%");
                 this.loading.update("加载中", n + "%");
                 this.add(this.loading);
             }
@@ -42,7 +44,11 @@ export class FineLoader extends THREE.Object3D{
         xhr.onreadystatechange = async () => {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    let res = await this.loadObject();
+                    // let res = await this.loadObject();
+                    // callback(res);
+                    let res = await this.readData(xhr.response, isZip);
+                    this.remove(this.loading);
+
                     callback(res);
                 } else {
                     alert("加载失败，请刷新页面重新尝试");
@@ -52,6 +58,41 @@ export class FineLoader extends THREE.Object3D{
             }
         }
         xhr.send();
+    }
+
+    readData(blob: any, isZip:boolean):any{
+        if(isZip){
+            return new Promise(async resolve => {
+                blob = await readBlob(blob, this.modelName);
+                let loader = new GLTFLoader();
+                loader.setCrossOrigin('anonymous');
+                loader.parse(blob, this.modelPath, (gltf:any) => {
+                    console.log("gltf");
+                    console.log(gltf);
+                    resolve(gltf.scene);
+                })
+            })
+        }
+        else{
+            return new Promise(resolve => {
+                let loadingManager = new THREE.LoadingManager(()=>{
+                    console.log("loaded");
+                }, (url:string, loaded:number, total:number)=>{
+                    let n = Math.floor(loaded / total * 100); 
+                    this.loading.update("初始化", n + "%", "#00a215");
+                    this.add(this.loading);
+                })
+        
+                let loader = new GLTFLoader(loadingManager);
+                loader.setPath(this.modelPath);
+                loader.setCrossOrigin('anonymous');
+                loader.load(this.modelName, (gltf:any) => {
+                    console.log("gltf");
+                    console.log(gltf);
+                    resolve(gltf.scene);
+                })
+            })
+        }
     }
 
     loadObject():any{
@@ -80,11 +121,11 @@ export class FineLoader extends THREE.Object3D{
         }
         else{
             return new Promise(resolve => {
-                axios({ // 用axios发送post请求
+                axios({
                     method: 'get',
-                    url: this.modelPath + this.modelName, // 请求地址        
-                    responseType: 'blob' // 表明返回服务器返回的数据类型
-                }).then(async (res) => { // 处理返回的文件流
+                    url: this.modelPath + this.modelName,      
+                    responseType: 'blob'
+                }).then(async (res) => {
                     this.remove(this.loading);
                     let bf:any = await readBlob(res.data, this.modelName);
                     let loader = new GLTFLoader();
@@ -98,7 +139,6 @@ export class FineLoader extends THREE.Object3D{
             })
         }
     }
-    
 }
 
 function readBlob(f:any, fname:string){
@@ -111,7 +151,10 @@ function readBlob(f:any, fname:string){
             console.log(zip);
             // let res = await zip.file(fname.replace(".zip", ".glb")).async("arraybuffer");
             let res = await zip.file("obj.glb").async("arraybuffer");
-            console.log(res);
+            let json = await getJson(zip);
+
+            console.log("zip json");
+            console.log(json);
             resolve(res);    
         }, function (e:any) {
             console.log("Error reading " + f.name + ": " + e.message);
@@ -119,14 +162,37 @@ function readBlob(f:any, fname:string){
     })
 }
 
+function getJson(zip:any){
+    return new Promise(async resolve => {
+        let fname = "design.json";
+        for(var i in zip.files){
+            console.log(zip.files[i]);
+            if(zip.files[i].name == fname){
+                let json = await zip.file(fname).async("string");
+                resolve(json);
+            }
+        }
+        resolve("{}");
+    });
+}
+
 function validateLink(url:string, download:boolean = false){
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open(download ? "Get" : "HEAD", url, false);
-    xmlHttp.send();
-    if(xmlHttp.status == 404){
-        console.log("文件不存在：" + url);
-        return false;
-    }
-    console.log("文件存在：" + url);
-    return true;
+    return new Promise(resolve => {
+        var xhr = new XMLHttpRequest();
+        xhr.open(download ? "Get" : "HEAD", url, true);
+        xhr.onreadystatechange = ()=>{
+            // console.log(`readyState = ${xhr.readyState} ; status = ${xhr.status}`);
+            if(xhr.readyState === 4){
+                if(xhr.status === 404){
+                    console.log("文件不存在：" + url);
+                    resolve(false);
+                }
+                if(xhr.status === 200){
+                    console.log("文件存在：" + url);
+                    resolve(true);
+                }
+            }
+        }
+        xhr.send();
+    })
 }

@@ -25,10 +25,10 @@
                 var clientWidth = window.innerWidth * scale;
                 docEl.style.fontSize = 100 * (clientWidth * dpr / 750) + 'px';
                 metaEl.setAttribute('content', 'width=' + clientWidth * dpr + ',initial-scale=' + scale + ',maximum-scale=' + scale + ', minimum-scale=' + scale + ',user-scalable=no'); 
-            };    
-            if (!doc.addEventListener) return;    
-            win.addEventListener(resizeEvt, recalc, false);    
-            doc.addEventListener('DOMContentLoaded', recalc, false);    
+            };
+            if (!doc.addEventListener) return;
+            win.addEventListener(resizeEvt, recalc, false);
+            doc.addEventListener('DOMContentLoaded', recalc, false);
         })(document, window);    
     </script>
     
@@ -100,31 +100,5 @@
         <!-- <img class="img" src="asset/produce.jpg"> -->
     </div>
     <script src="./asset/jszip.min.js"></script>
-    <script>
-        setTimeout(() => {
-            document.querySelector(".debug-label").onclick = function(){
-                zipFiles();
-            }
-        }, 3000);
-        function zipFiles(){
-            var dom = document.getElementById("files");
-            var files = dom.files;
-            console.log(files);
-            var zip = new JSZip();
-            zip.file(files[0].name, files[0]);
-            zip.generateAsync({type:"blob", compression: "DEFLATE", compressionOptions: {level: 6}})
-            .then(function(content) {
-                save(content, "example.zip");
-            });
-        }
-        function save( blob, filename ) {
-            var link = document.createElement( 'a' );
-            link.style.display = 'none';
-            document.body.appendChild( link );
-            link.href = URL.createObjectURL( blob );
-            link.download = filename;
-            link.click();
-        }
-    </script>
 </body>
 </html>

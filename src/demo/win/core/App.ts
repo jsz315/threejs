@@ -6,7 +6,7 @@ import { FineLoader } from './FineLoader';
 import { Effect } from './Effect';
 
 export default class App {
-    public static ZERO:THREE.Vector3 = new THREE.Vector3();
+    public static ZERO: THREE.Vector3 = new THREE.Vector3();
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
     renderer: THREE.WebGLRenderer;
@@ -14,7 +14,7 @@ export default class App {
     stats: any;
     focusLight: FocusLight;
     fineLoader: FineLoader;
-    
+
     ambientLightIntensity: number = 1.32;
     focusLightIntensity: number = 0.42;
     roughness: number = 0.35;
@@ -25,7 +25,7 @@ export default class App {
     // roughness: number = 0.54;
     // metalness: number = 0.64;
     far: number = 2.62;
-    
+
     rayCaster: THREE.Raycaster;
     isMobile: boolean;
     frameMaterials: any = [];
@@ -34,12 +34,12 @@ export default class App {
     canvas: any;
     repeat: any;
 
-    constructor(canvas: any, size:any) {
+    constructor(canvas: any, size: any) {
         this.size = this.getStageSize(true);
         this.canvas = canvas;
         this.canvas.width = this.size.width;
         this.canvas.height = this.size.height;
-       
+
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, this.size.width / this.size.height, 0.1, 2400);
         this.renderer = new THREE.WebGLRenderer({
@@ -74,22 +74,22 @@ export default class App {
         console.log(this.scene);
     }
 
-    getStageSize(usePixel?:boolean){
-        var size:any = {width: window.innerWidth};
-        if(window.innerWidth > window.innerHeight){
+    getStageSize(usePixel?: boolean) {
+        var size: any = { width: window.innerWidth };
+        if (window.innerWidth > window.innerHeight) {
             size.height = window.innerHeight;
         }
-        else{
+        else {
             size.height = window.innerWidth;
         }
-        if(usePixel){
+        if (usePixel) {
             size.width = size.width * window.devicePixelRatio;
             size.height = size.height * window.devicePixelRatio;
         }
         return size;
     }
-    
-    onResize(e:Event):void{
+
+    onResize(e: Event): void {
         this.size = this.getStageSize(true);
         this.canvas.width = this.size.width;
         this.canvas.height = this.size.height;
@@ -99,7 +99,7 @@ export default class App {
         this.renderer.setSize(this.size.width, this.size.height);
     }
 
-    animate():void {
+    animate(): void {
         requestAnimationFrame(() => {
             this.animate();
         });
@@ -109,12 +109,12 @@ export default class App {
         this.focusLight.update(this.camera);
     }
 
-    setStats(stats: any):void{
+    setStats(stats: any): void {
         this.stats = stats;
     }
 
-    select(e: any):any {
-        if(this.isMobile){
+    select(e: any): any {
+        if (this.isMobile) {
             e = e.changedTouches[0];
         }
         var size = this.getStageSize(false);
@@ -122,32 +122,33 @@ export default class App {
         mouse.x = (e.clientX / size.width) * 2 - 1;
         mouse.y = -(e.clientY / size.height) * 2 + 1;
 
-        let obj:any;
+        let obj: any;
         this.rayCaster.setFromCamera(mouse, this.camera);
         let list = this.scene.children;
         let intersectObjects = this.rayCaster.intersectObjects(list, true);
         if (intersectObjects[0]) {
             obj = intersectObjects[0].object;
             console.log(obj);
-            if(obj.material.map){
-                let img = obj.material.map.image;
+            let mat = Array.isArray(obj.material) ? obj.material[0] : obj.material;
+            if (mat.map) {
+                let img = mat.map.image;
                 console.log(img.currentSrc);
             }
         }
     }
 
-    playAnimate():void{
+    playAnimate(): void {
         this.effect.play();
     }
 
-    fitModel(group:THREE.Object3D):void{
-        let parent:THREE.Object3D = group;
+    fitModel(group: THREE.Object3D): void {
+        let parent: THREE.Object3D = group;
 
-        while(parent.children.length == 1){
+        while (parent.children.length == 1) {
             parent = parent.children[0];
         }
 
-        let scale:number = Tooler.getFitScale(parent, 10);
+        let scale: number = Tooler.getFitScale(parent, 10);
         parent.position.set(0, 0, 0);
         parent.scale.multiplyScalar(scale);
         parent.rotateX(-Math.PI / 2);
@@ -157,7 +158,7 @@ export default class App {
         let aim = new THREE.Object3D();
         aim.add(parent);
         this.scene.add(aim);
-        let offset:THREE.Vector3 = Tooler.getOffsetVector3(aim);
+        let offset: THREE.Vector3 = Tooler.getOffsetVector3(aim);
         console.log(offset);
         aim.position.set(0 - offset.x, 0 - offset.y, 0 - offset.z);
 
@@ -168,10 +169,10 @@ export default class App {
         this.initMaterials(parent);
     }
 
-    resetName(parent:THREE.Object3D){
+    resetName(parent: THREE.Object3D) {
         let t = 0;
-        parent.traverse((item:any) => {
-            if(item.isMesh){
+        parent.traverse((item: any) => {
+            if (item.isMesh) {
                 t++;
             }
             item.name = item.name.split("-")[0];
@@ -179,24 +180,24 @@ export default class App {
         console.log("total: " + t);
     }
 
-    initMaterials(parent:THREE.Object3D){
+    initMaterials(parent: THREE.Object3D) {
         let list = Tooler.getAllMaterial(parent);
         let materials = list[0];
         this.repeat = list[1];
         console.log(materials);
-        
-        let isRoom = false;
-        let winMaterials:any = [];
-        let roomMaterials:any = [];
 
-        materials.forEach((m:any) => {            
-            if(m.map && m.map.image){
+        let isRoom = false;
+        let winMaterials: any = [];
+        let roomMaterials: any = [];
+
+        materials.forEach((m: any) => {
+            if (m.map && m.map.image) {
                 let src = m.map.image.src;
-                if(src.indexOf("/dif_") != -1){
+                if (src.indexOf("/dif_") != -1) {
                     isRoom = true;
                     roomMaterials.push(m);
                 }
-                if(src.indexOf("/IPR_") != -1){
+                if (src.indexOf("/IPR_") != -1) {
                     winMaterials.push(m);
                 }
             }
@@ -205,7 +206,7 @@ export default class App {
         })
 
         setTimeout(() => {
-            if(isRoom){
+            if (isRoom) {
                 this.frameMaterials = roomMaterials;
                 // this.frameMaterials.forEach((m:any) => {
                 //     console.log("change roomMaterials");
@@ -217,7 +218,7 @@ export default class App {
                 //     }
                 // })
             }
-            else{
+            else {
                 this.frameMaterials = winMaterials;
                 // this.frameMaterials.forEach((m:any) => {
                 //     console.log("change winMaterials");
@@ -230,8 +231,8 @@ export default class App {
                 // })
             }
 
-            materials.forEach((m:any) => {
-                if(m.map && m.map.image){
+            materials.forEach((m: any) => {
+                if (m.map && m.map.image) {
                     let src = m.map.image.src;
                     this.resetMap(m, src);
                 }
@@ -239,8 +240,8 @@ export default class App {
         }, 300);
     }
 
-    resetMap(material: any, url:string):void{
-        let texture:any = new THREE.TextureLoader().load(url, () => {
+    resetMap(material: any, url: string): void {
+        let texture: any = new THREE.TextureLoader().load(url, () => {
             material.map.needsUpdate = true;
             material.needsUpdate = true;
         });
@@ -253,26 +254,29 @@ export default class App {
         material.map = texture;
     }
 
-    changeMap(url:string):void{
-        this.frameMaterials.length && this.frameMaterials.forEach((material: any) =>{
+    changeMap(url: string): void {
+        this.frameMaterials.length && this.frameMaterials.forEach((material: any) => {
             this.resetMap(material, url);
         })
     }
 
-    setup():void {
+    setup(): void {
         let url = Tooler.getQueryString("url");
-        this.fineLoader.start(url, (object3D:THREE.Object3D) => {
+        this.fineLoader.start(url, (object3D: THREE.Object3D) => {
             this.fitModel(object3D);
             url = url.replace(/\.(glb|zip)/, ".animation");
             this.effect.init(url, this.scene);
             window.dispatchEvent(new CustomEvent("animate"));
         })
+
+        // this.addSkybox();
+
         this.addLights();
         this.animate();
     }
 
-    addLights():void{
-        var ambient:THREE.AmbientLight = new THREE.AmbientLight(0xffffff);
+    addLights(): void {
+        var ambient: THREE.AmbientLight = new THREE.AmbientLight(0xffffff);
         ambient.intensity = this.ambientLightIntensity;
         ambient.name = "ambient";
         this.scene.add(ambient);
@@ -282,13 +286,30 @@ export default class App {
         // this.scene.add(hemishpereLight);
     }
 
-    setAmbient(n:number):void{
-        var ambient:any = this.scene.getObjectByName("ambient");
+    addSkybox() {
+        var path = "/asset/skybox/";
+        var directions = ["px", "nx", "py", "ny", "pz", "nz"];
+        var format = ".jpg";
+        var skyGeometry = new THREE.BoxGeometry(5000, 5000, 5000);
+        var materialArray = [];
+        for (var i = 0; i < 6; i++) {
+            materialArray.push(new THREE.MeshBasicMaterial({
+                map: THREE.ImageUtils.loadTexture(path + directions[i] + format),
+                side: THREE.BackSide
+            }));
+        }
+
+        var skyBox = new THREE.Mesh(skyGeometry, materialArray);
+        this.scene.add(skyBox);
+    }
+
+    setAmbient(n: number): void {
+        var ambient: any = this.scene.getObjectByName("ambient");
         ambient.intensity = n;
         this.ambientLightIntensity = n;
     }
 
-    setDirectional(n:number):void{
+    setDirectional(n: number): void {
         this.focusLight.intensity = n;
         this.focusLightIntensity = n;
     }
@@ -298,34 +319,34 @@ export default class App {
     //     this.far = n;
     // }
 
-    setRoughness(n:number):void{
+    setRoughness(n: number): void {
         var group = this.scene.getObjectByName("load_scene");
         group.traverse((child: any) => {
             if (child.isMesh) {
-                if(Array.isArray(child.material)){
-                    for(var i:number = 0; i < child.material.length; i++){
+                if (Array.isArray(child.material)) {
+                    for (var i: number = 0; i < child.material.length; i++) {
                         child.material[i].roughness = n;
                     }
                 }
-                else{
+                else {
                     child.material.roughness = n;
                 }
-                
+
             }
         })
         this.roughness = n;
     }
 
-    setMetalness(n:number):void{
+    setMetalness(n: number): void {
         var group = this.scene.getObjectByName("load_scene");
         group.traverse((child: any) => {
             if (child.isMesh) {
-                if(Array.isArray(child.material)){
-                    for(var i:number = 0; i < child.material.length; i++){
+                if (Array.isArray(child.material)) {
+                    for (var i: number = 0; i < child.material.length; i++) {
                         child.material[i].metalness = n;
                     }
                 }
-                else{
+                else {
                     child.material.metalness = n;
                 }
             }

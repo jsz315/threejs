@@ -21,7 +21,7 @@ const walk = function(dir) {
 const getApps = function(app){
     const list = walk(path.join(__dirname, 'src'))
     
-    const r = new RegExp("src(\\\\|/).*" + app)
+    const r = new RegExp("src(\\\\|/).*(\\\\|/)" + app)
     let aim = []
     list.forEach(item => {
         var match = r.exec(item);
