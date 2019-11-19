@@ -1,11 +1,18 @@
 <template>
     <div class="com">
-        <mt-range v-model="rangeValue" :min="0" :max="100" :step="1" :bar-height="1">
+        <!-- <mt-range v-model="rangeValue" :min="0" :max="100" :step="1" :bar-height="1">
             <div slot="start" class="start p-num">0</div>
             <div slot="end" class="end p-num">100</div>
         </mt-range>
-        <mt-picker :slots="slots" @change="onValuesChange" ref="picker"></mt-picker>
-        <mt-button type="primary" @click="areaChange">primary</mt-button>
+        <mt-picker :slots="slots" @change="onValuesChange" ref="picker"></mt-picker> -->
+
+        <TopView></TopView>
+        <RightView></RightView>
+        <BottomView></BottomView>
+
+        <DesignView></DesignView>
+        <EffectView></EffectView>
+        <DetailView></DetailView>
     </div>
 </template>
 
@@ -16,6 +23,13 @@ import Vue from "vue";
 
 // Vue.component(Button.name, Button);
 // Vue.component(Range.name, Range);
+
+import BottomView from '../bottom-view/index.vue';
+import RightView from '../right-view/index.vue';
+import TopView from '../top-view/index.vue';
+import DesignView from '../design-view/index.vue'
+import EffectView from '../effect-view/index.vue'
+import DetailView from '../detail-view/index.vue'
 
 export default {
     data() {
@@ -68,19 +82,19 @@ export default {
             ]
         };
     },
-    components: {},
+    components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView},
     computed: {},
     methods: {
-        onValuesChange(picker, values) {
-            console.log(values);
-            if (values[0] > values[1]) {
-                picker.setSlotValue(1, values[0]);
-            }
-        },
-        areaChange(){
-            console.log(this.$refs.picker.values);
-            this.slots[0].values = ["1", "2", "3"]
-        }
+        // onValuesChange(picker, values) {
+        //     console.log(values);
+        //     if (values[0] > values[1]) {
+        //         picker.setSlotValue(1, values[0]);
+        //     }
+        // },
+        // areaChange(){
+        //     console.log(this.$refs.picker.values);
+        //     this.slots[0].values = ["1", "2", "3"]
+        // }
     }
 };
 </script>
