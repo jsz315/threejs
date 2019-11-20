@@ -18,10 +18,11 @@
         justify-content: space-between;
         .txt{
             margin-top: 0;
-            width: 128px;
+            width: 132px;
         }
     }
     .btn{
+        cursor: pointer;
         background: #0084ff;
         color: #ffffff;
         width: 431px;
@@ -37,6 +38,36 @@
         margin-top: 30px;
         .label{
             margin-bottom: 8px;
+        }
+    }
+}
+
+
+@media screen and (min-width: 768PX){
+    .design-view{
+        font-size: 16PX;
+        .txt{
+            padding: 17PX;
+            margin-top: 30PX;
+        }
+        .area{
+            margin-top: 30PX;
+            .txt{
+                width: 128PX;
+            }
+        }
+        .btn{
+            width: 431PX;
+            height: 60PX;
+            line-height: 60PX;
+            border-radius: 30PX;
+            margin-top: 48PX;
+        }
+        .info{
+            margin-top: 30PX;
+            .label{
+                margin-bottom: 8PX;
+            }
         }
     }
 }

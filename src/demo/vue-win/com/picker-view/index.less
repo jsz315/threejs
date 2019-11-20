@@ -29,18 +29,32 @@
             justify-content: space-between;
             padding: 20px 32px;
             .btn{
+                cursor: pointer;
                 color: #000000;
                 &:nth-child(2){
                     color: #0084ff;
                 }
             }
         }
-        .picker{
+        .list{
             flex: 1;
+            user-select: none;
         }
     }
 }
 
 @keyframes fade{
     100%{transform: translateY(0);}
+}
+
+@media screen and (min-width: 768PX){
+    .picker-view{
+        font-size: 16PX;
+        .panel{
+            height: 600PX;
+            .btns{
+                padding: 20PX 32PX;
+            }
+        }
+    }
 }

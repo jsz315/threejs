@@ -5,8 +5,8 @@
                 <div class="btn" @click="choose(false)">取消</div>
                 <div class="btn" @click="choose(true)">确定</div>
             </div>
-            <div class="picker">
-                <mt-picker :slots="slots" @change="onValuesChange" ref="picker"></mt-picker>
+            <div class="list">
+                <mt-picker :slots="slots" @change="onValuesChange" value-key="text" ref="picker"></mt-picker>
             </div>
         </div>
     </div>
@@ -17,16 +17,15 @@ export default {
     data() {
         return {
             visible: false,
+            select: null,
+            type: null,
             slots: [
                 {
                     flex: 1,
                     values: [
-                        "2015-01",
-                        "2015-02",
-                        "2015-03",
-                        "2015-04",
-                        "2015-05",
-                        "2015-06"
+                        "1",
+                        "2",
+                        "3"
                     ],
                     className: "slot1",
                     textAlign: "center"
@@ -37,22 +36,25 @@ export default {
     components: {},
     computed: {},
     methods: {
-        show(n){
-            console.log(n);
+        show(n, list){
+            this.type = n;
+
             this.visible = true;
+            this.slots[0].values = list;
+            this.select = list[0];
         },
-        choose(){
+        choose(n){
             this.visible = false;
+            if(n){
+                this.$emit("select", {select: this.select, type: this.type});
+            }
         },
         onValuesChange(picker, values) {
-            console.log(values);
+            this.select = values[0];
+            // console.log(values);
             // if (values[0] > values[1]) {
             //     picker.setSlotValue(1, values[0]);
             // }
-        },
-        areaChange(){
-            console.log(this.$refs.picker.values);
-            // this.slots[0].values = ["1", "2", "3"]
         }
     }
 };

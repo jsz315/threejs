@@ -29,6 +29,7 @@
                 text-align: left;
             }
             .close{
+                cursor: pointer;
                 width: 30px;
                 height: 30px;
                 background: url("../../asset/img/close.png") no-repeat center;
@@ -40,4 +41,23 @@
 @keyframes fade{
     0%{opacity: 1;transform: scale(0.4);}
     100%{opacity: 1;transform: scale(1);}
+}
+
+@media screen and (min-width: 768PX){
+    .slot-view{
+        font-size: 16PX;
+        .panel{
+            width: 431PX;
+            padding: 28PX;
+            border-radius: 8PX;
+            .header{
+                padding-bottom: 30PX;
+                .close{
+                    width: 30PX;
+                    height: 30PX;
+                    background-size: 20PX 20PX;
+                }
+            }
+        }
+    }
 }

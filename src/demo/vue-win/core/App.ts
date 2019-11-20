@@ -15,15 +15,11 @@ export default class App {
     focusLight: FocusLight;
     fineLoader: FineLoader;
 
-    ambientLightIntensity: number = 1.32;
-    focusLightIntensity: number = 0.42;
-    roughness: number = 0.35;
-    metalness: number = 0.36;
+    ambientLightIntensity: number = 0;
+    focusLightIntensity: number = 0;
+    roughness: number = 0;
+    metalness: number = 0;
 
-    // ambientLightIntensity: number = 0.3;
-    // focusLightIntensity: number = 1.32;
-    // roughness: number = 0.54;
-    // metalness: number = 0.64;
     far: number = 2.62;
 
     rayCaster: THREE.Raycaster;
@@ -49,7 +45,7 @@ export default class App {
         });
         // this.renderer.setSize(window.innerWidth, window.innerHeight);
         // this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setClearColor(new THREE.Color(0xd3d3d3), 0.9);
+        this.renderer.setClearColor(new THREE.Color(0x999999), 0);
         this.renderer.shadowMap.enabled = false;
         // document.body.appendChild(this.renderer.domElement);
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
@@ -322,7 +318,7 @@ export default class App {
 
     setRoughness(n: number): void {
         var group = this.scene.getObjectByName("load_scene");
-        group.traverse((child: any) => {
+        group && group.traverse((child: any) => {
             if (child.isMesh) {
                 if (Array.isArray(child.material)) {
                     for (var i: number = 0; i < child.material.length; i++) {
@@ -340,7 +336,7 @@ export default class App {
 
     setMetalness(n: number): void {
         var group = this.scene.getObjectByName("load_scene");
-        group.traverse((child: any) => {
+        group && group.traverse((child: any) => {
             if (child.isMesh) {
                 if (Array.isArray(child.material)) {
                     for (var i: number = 0; i < child.material.length; i++) {
