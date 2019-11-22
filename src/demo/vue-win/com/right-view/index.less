@@ -13,6 +13,7 @@
         background: rgba(0, 0, 0, 0.44) url("../../asset/img/share.png") no-repeat center;
         background-size: 40% auto;
         margin-bottom: 24px;
+        position: relative;
     }
     .effect{
         background-image: url("../../asset/img/effect.png");
@@ -32,6 +33,23 @@
     .file{
         display: none;
     }
+
+    .menu{
+        position: absolute;
+        left: -100px;
+        width: 80px;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.44);
+        color: #ffffff;
+        .tip{
+            text-align: center;
+            height: 50px;
+            line-height: 50px;
+            &:nth-child(1){
+                border-bottom: solid 1PX #ffffff;
+            }
+        }
+    }
 }
 
 @media screen and (min-width: 768PX){
@@ -44,6 +62,14 @@
             width: 76PX;
             height: 76PX;
             margin-bottom: 24PX;
+        }
+        .menu{
+            left: -100PX;
+            width: 80PX;
+            .tip{
+                height: 50PX;
+                line-height: 50PX;
+            }
         }
     }
 }

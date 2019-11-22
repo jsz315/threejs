@@ -50,8 +50,11 @@ listener.on("param", (attr, num) => {
     else if(attr == "metalness"){
         app.setMetalness(num);
     }
-    
 })
+
+listener.on("map", (url) => {
+    app.changeMap(url);
+});
 
 window.onload = function(){
     let canvas = $("#canvas");
@@ -68,4 +71,21 @@ window.onload = function(){
 function $(sel){
     return document.querySelector(sel);
 }
-  
+
+
+// test();
+
+// async function test(){
+//     for(var i = 0; i < 7; i++){
+//         let res = await delays(i);
+//         console.log(res);
+//     }
+// }
+
+// function delays(n){
+//     return new Promise(resolve=>{
+//         setTimeout(()=>{
+//             resolve(n);
+//         }, 300)
+//     })
+// }

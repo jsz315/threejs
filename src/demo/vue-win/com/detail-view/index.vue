@@ -43,7 +43,7 @@ export default {
             let link = "";
             if (location.search.indexOf("//3d.") != -1) {
                 link = "/mapi/index.php";
-                res = await axios.get(link, {
+                res = await this.$axios.get(link, {
                     params: {
                         id: id,
                         app: "index",

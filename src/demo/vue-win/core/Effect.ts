@@ -118,7 +118,8 @@ export class Effect{
                 console.log(this.animates);
             }
             else{
-                (document.querySelector(".animate") as any).style.display = "none";
+                // (document.querySelector(".animate") as any).style.display = "none";
+                console.log("无法解析动画数据");
             }
         });
 

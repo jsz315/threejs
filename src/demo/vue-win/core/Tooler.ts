@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 export default class Tooler{
 
@@ -129,12 +130,154 @@ export default class Tooler{
     }
 
     public static farAway(p: THREE.Vector3, distance:number):THREE.Vector3{
-        var n = p.normalize();
+        // var n = p.normalize();
+        // return new THREE.Vector3(
+        //     n.x * distance,
+        //     n.y * distance,
+        //     n.z * distance,
+        // )
         return new THREE.Vector3(
-            n.x * distance,
-            n.y * distance,
-            n.z * distance,
+            p.x, p.y, p.z - distance
         )
+    }
+
+    public static blob2ArrayBuffer(blob:any){
+        return new Promise(resolve => {
+            var reader = new FileReader();
+            reader.readAsArrayBuffer(blob);
+            reader.onload = ()=>{
+                resolve(reader.result);
+            }
+        })
+    }
+
+    public static validateLink(url:string, download:boolean = false){
+        return new Promise(resolve => {
+            var xhr = new XMLHttpRequest();
+            xhr.open(download ? "Get" : "HEAD", url, true);
+            xhr.onreadystatechange = ()=>{
+                // console.log(`readyState = ${xhr.readyState} ; status = ${xhr.status}`);
+                if(xhr.readyState === 4){
+                    if(xhr.status === 404){
+                        console.log("文件不存在：" + url);
+                        resolve(false);
+                    }
+                    if(xhr.status === 200){
+                        console.log("文件存在：" + url);
+                        resolve(true);
+                    }
+                }
+            }
+            xhr.send();
+        })
+    }
+
+    public static getJsonFromZip(zip:any){
+        return new Promise(async resolve => {
+            let fname = "design.json";
+            for(var i in zip.files){
+                console.log(zip.files[i]);
+                if(zip.files[i].name == fname){
+                    let json = await zip.file(fname).async("string");
+                    resolve(JSON.parse(json));
+                }
+            }
+            resolve({});
+        });
+    }
+    
+    
+    public static readZip(f:any){
+        return new Promise(async resolve => {
+            var dateBefore:number = Date.now();
+            (<any>window).JSZip.loadAsync(f).then(async function(zip:any) {
+                var dateAfter:number = Date.now();
+                console.log("(loaded in " + (dateAfter - dateBefore) + "ms)");
+
+                console.log(zip);
+                // let res = await zip.file(fname.replace(".zip", ".glb")).async("arraybuffer");
+                let buffer = await zip.file("obj.glb").async("arraybuffer");
+                let json = await Tooler.getJsonFromZip(zip);
+
+                // let list:Array<any> = [];
+                // //加载其他子模型
+                // for(let i = 0; i < list.length; i++){
+                //     await loadSubModel(list[i]);
+                // }
+
+                resolve({buffer, json});
+            }, function (e:any) {
+                console.log("Error reading " + f.name + ": " + e.message);
+            });
+        })
+    }
+
+    public static loadModel(url:string){
+        return new Promise(async resolve => {
+            let flink = url.replace(/\.(glb|zip)/i, "");
+            let isZip = false;
+            if(await Tooler.validateLink(flink + ".zip")){
+                url = flink + ".zip";
+                isZip = true;
+            }
+            else{
+                url = flink + ".glb";
+            }
+
+            let list = Tooler.getUrlPath(url);
+            var modelPath = list[0];
+            var modelName = list[1];
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', modelPath + modelName);
+            xhr.responseType = 'blob';
+            xhr.onprogress = (event) =>{
+                if (event.lengthComputable) {
+                    let n = Math.floor(event.loaded / event.total * 100);
+                    console.log(n);
+                    // this.loading.update("加载中", n + "%");
+                    // this.add(this.loading);
+                }
+            };
+            xhr.onreadystatechange = async () => {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        // resolve({blob: xhr.response, isZip});
+                        console.log("xhr.response === ");
+                        let res = await Tooler.parseModel(xhr.response, isZip, url);
+                        resolve(res);
+                    } else {
+                        resolve(null);
+                    }
+                }
+            }
+            xhr.send();
+        })
+    }
+
+    public static parseModel(blob: any, isZip:boolean, url:string){
+        return new Promise(async resolve => {
+            let list = Tooler.getUrlPath(url);
+            let buffer:any, json:any, object3D;
+            if(isZip){
+                let res:any = await Tooler.readZip(blob);
+                buffer = res.buffer;
+                json = res.json;
+            }
+            else{
+                buffer = await Tooler.blob2ArrayBuffer(blob);
+                json = {};
+            }
+            let loader = new GLTFLoader();
+            loader.setCrossOrigin('anonymous');
+            loader.parse(buffer, list[0], (gltf:any) => {
+                console.log("gltf");
+                console.log(gltf);
+                resolve({
+                    object3D: gltf.scene,
+                    json: json
+                });
+            })
+        })
     }
 
 }

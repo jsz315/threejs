@@ -6,7 +6,7 @@
                 <div class="btn" @click="choose(true)">确定</div>
             </div>
             <div class="list">
-                <mt-picker :slots="slots" @change="onValuesChange" value-key="text" ref="picker"></mt-picker>
+                <mt-picker :slots="slots" @change="onValuesChange" value-key="label" ref="picker" :visible-item-count="7"></mt-picker>
             </div>
         </div>
     </div>
@@ -22,11 +22,7 @@ export default {
             slots: [
                 {
                     flex: 1,
-                    values: [
-                        "1",
-                        "2",
-                        "3"
-                    ],
+                    values: [],
                     className: "slot1",
                     textAlign: "center"
                 }

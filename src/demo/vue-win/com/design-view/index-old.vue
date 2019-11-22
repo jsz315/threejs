@@ -5,9 +5,9 @@
                 <input class="txt" type="text" placeholder="请输入姓名" v-model="name">
                 <input class="txt" type="text" placeholder="请输入手机号" v-model="phone" @change="onPhone">
                 <div class="area">
-                    <input class="txt" type="text" :value="area0.label" placeholder="省/市" @click="picker(0)">
-                    <input class="txt" type="text" :value="area1.label" placeholder="区" @click="picker(1)">
-                    <input class="txt" type="text" :value="area2.label" placeholder="县" @click="picker(2)">
+                    <input class="txt" type="text" :value="area0.text" placeholder="省/市" @click="picker(0)">
+                    <input class="txt" type="text" :value="area1.text" placeholder="区" @click="picker(1)">
+                    <input class="txt" type="text" :value="area2.text" placeholder="县" @click="picker(2)">
                 </div>
                 <div class="info">
                     <div class="label">当前门店：门道云深圳店</div>
@@ -25,50 +25,16 @@
 <script>
 import SlotView from '../slot-view/index.vue'
 import PickerView from '../picker-view/index.vue'
-// import provcityarea from '../../lib/area'
-
-var Provcityarea = function(list){
-    var obj = {};
-    obj.getProvs = function(){
-        return list.map((item, index)=>{
-            return {
-                label: item.label,
-                value: item.value,
-                id: index
-            }
-        });
-    }
-    obj.getCitysByProvId = function(id){
-        return list[id].children.map((item, index)=>{
-            return {
-                label: item.label,
-                value: item.value,
-                id: index
-            }
-        });
-    }
-    obj.getAreasByCityId = function(mid, sid){
-        return list[mid].children[sid].children.map((item, index)=>{
-            return {
-                label: item.label,
-                value: item.value,
-                id: index
-            }
-        });
-    }
-    return obj;
-}
-
-var provcityarea;
+import provcityarea from '../../lib/area'
 
 export default {
     data() {
         return {
             name: "",
             phone: "",
-            area0: {label: ""},
-            area1: {label: ""},
-            area2: {label: ""}
+            area0: {text: ""},
+            area1: {text: ""},
+            area2: {text: ""}
         };
     },
     components: {SlotView, PickerView},
@@ -77,15 +43,10 @@ export default {
             return this.$store.state.designVisible;
         }
     },
-    async mounted(){
+    mounted(){
         this.$on("close", ()=>{
             this.$store.commit("changeDesignVisible", false);
         });
-
-        let res = await this.$axios.get("/asset/area-serve.json");
-        provcityarea = new Provcityarea(res.data.datas);
-        console.log("json ==== ");
-        console.log(res);
     },
     methods: {
         onPhone(){
@@ -123,7 +84,7 @@ export default {
                     this.$toast('请先选择前面市区');
                     return;
                 }
-                list = this.getPickerList(provcityarea.getAreasByCityId(this.area0.id, this.area1.id));
+                list = this.getPickerList(provcityarea.getAreasByCityId(this.area1.id));
             }
             this.$refs.picker.show(n, list);
         },
@@ -133,19 +94,18 @@ export default {
                 this.area1 = this.getPickerList(provcityarea.getCitysByProvId(this.area0.id))[0];
             }
             if(obj.type < 2){
-                this.area2 = this.getPickerList(provcityarea.getAreasByCityId(this.area0.id, this.area1.id))[0];
+                this.area2 = this.getPickerList(provcityarea.getAreasByCityId(this.area1.id))[0];
             }
         },
         getPickerList(obj){
-            // let list = [];
-            // for(var i in obj){
-            //     list.push({
-            //         text: obj[i],
-            //         id: i
-            //     })
-            // }
-            // return list;
-            return obj;
+            let list = [];
+            for(var i in obj){
+                list.push({
+                    text: obj[i],
+                    id: i
+                })
+            }
+            return list;
         }
     }
 };

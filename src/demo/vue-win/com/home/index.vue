@@ -16,6 +16,7 @@
         <DesignView></DesignView>
         <EffectView></EffectView>
         <DetailView></DetailView>
+        <ColorView></ColorView>
     </div>
 </template>
 
@@ -34,6 +35,7 @@ import DesignView from '../design-view/index.vue'
 import EffectView from '../effect-view/index.vue'
 import DetailView from '../detail-view/index.vue'
 import RoleView from '../role-view/index.vue'
+import ColorView from '../color-view/index.vue'
 import listener from '../../lib/listener'
 
 export default {
@@ -61,7 +63,7 @@ export default {
             }
         };
     },
-    components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView, RoleView},
+    components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView, RoleView, ColorView},
     computed: {},
     mounted(){
         listener.on("full", () => {

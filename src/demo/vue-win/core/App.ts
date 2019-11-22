@@ -50,7 +50,7 @@ export default class App {
         // document.body.appendChild(this.renderer.domElement);
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
         this.orbit.enabled = true;
-        this.camera.position.set(0, 0, 12);
+        this.camera.position.set(0, 0, 8);
         this.camera.lookAt(new THREE.Vector3());
 
         this.focusLight = new FocusLight(0xffffff, this.focusLightIntensity);
@@ -268,8 +268,17 @@ export default class App {
 
         // this.addSkybox();
 
+        window.addEventListener("subLoad", (e:any) => {
+            this.addSubModel(e.detail);
+        })
+
         this.addLights();
         this.animate();
+    }
+
+    addSubModel(param:any):void{
+        var group = this.scene.getObjectByName("load_scene");
+        group.add(param.obj);
     }
 
     addLights(): void {
@@ -320,15 +329,10 @@ export default class App {
         var group = this.scene.getObjectByName("load_scene");
         group && group.traverse((child: any) => {
             if (child.isMesh) {
-                if (Array.isArray(child.material)) {
-                    for (var i: number = 0; i < child.material.length; i++) {
-                        child.material[i].roughness = n;
-                    }
+                let mats = Array.isArray(child.material) ? child.material : [child.material];
+                for (var i: number = 0; i < mats.length; i++) {
+                    mats[i].roughness = n;
                 }
-                else {
-                    child.material.roughness = n;
-                }
-
             }
         })
         this.roughness = n;
@@ -338,13 +342,9 @@ export default class App {
         var group = this.scene.getObjectByName("load_scene");
         group && group.traverse((child: any) => {
             if (child.isMesh) {
-                if (Array.isArray(child.material)) {
-                    for (var i: number = 0; i < child.material.length; i++) {
-                        child.material[i].metalness = n;
-                    }
-                }
-                else {
-                    child.material.metalness = n;
+                let mats = Array.isArray(child.material) ? child.material : [child.material];
+                for (var i: number = 0; i < mats.length; i++) {
+                    mats[i].metalness = n;
                 }
             }
         })

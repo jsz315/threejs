@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import Tooler from './Tooler';
 
 export default class FocusLight extends THREE.DirectionalLight{
-    far:number = 1;
+    far:number = 100;
     constructor(color?: THREE.Color | string | number, intensity?: number){
         super(color, intensity);
         // this.castShadow = true;
@@ -14,6 +14,6 @@ export default class FocusLight extends THREE.DirectionalLight{
     update(camera: THREE.Camera){
         this.position.copy(camera.position);
         this.rotation.copy(camera.rotation);
-        this.position.copy(Tooler.farAway(this.position, this.far));
+        // this.position.copy(Tooler.farAway(this.position, this.far));
     }
 }

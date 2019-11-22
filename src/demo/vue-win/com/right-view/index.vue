@@ -1,7 +1,13 @@
 <template>
     <div class="right-view">
+
         <div class="ico share"></div>
-        <div class="ico effect" @click="openEffect"></div>
+        <div class="ico effect" @click="openEffect">
+            <div class="menu" v-show="effectMenuVisible">
+                <div class="tip">效果</div>
+                <div class="tip">颜色</div>
+            </div>
+        </div>
         <div class="ico full" @click="fullSize"></div>
         <div class="ico picture" @click="openPicture"></div>
         <div class="ico camera" @click="openCamera"></div>
@@ -18,7 +24,7 @@ import listener from '../../lib/listener'
 export default {
     data() {
         return {
-            
+            effectMenuVisible: false
         };
     },
     components: {},
@@ -36,8 +42,20 @@ export default {
         }
     },
     methods: {
-        openEffect(){
-            this.$store.commit("changeEffectVisible", true);
+        openEffect(e){
+            console.log(e);
+            if(e.target.className == "tip"){
+                if(e.target.innerText == "效果"){
+                    this.$store.commit("changeEffectVisible", true);
+                }
+                else{
+                    this.$store.commit("changeColorVisible", true);
+                }
+                this.effectMenuVisible = false;
+            }
+            else{
+                this.effectMenuVisible = !this.effectMenuVisible;
+            }
         },
         fullSize(){
             listener.emit("full");

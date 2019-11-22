@@ -8,6 +8,7 @@ export default new Vuex.Store({
         designVisible: false,
         effectVisible: false,
         detailVisible: false,
+        colorVisible: false,
         effectParam: {
             ambient: 1.32,
             directional: 0.42,
@@ -27,6 +28,9 @@ export default new Vuex.Store({
         },
         changeEffectParam(state, value){
             state.effectParam = value;
+        },
+        changeColorVisible(state, value){
+            state.colorVisible = value;
         }
     },
     actions: {
