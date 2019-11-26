@@ -1,5 +1,5 @@
 const express = require('express');
-const proxy = require('express-http-proxy');
+// const proxy = require('express-http-proxy');
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
@@ -7,6 +7,11 @@ const app = express();
 const opn = require('opn');
 const http = require('./config/http');
 const mock = require('./mock')
+const axios = require("axios");
+var proxy = require('http-proxy-middleware');
+var cors = require('cors');
+
+app.use(cors());
 
 var proxyTable = {
 	'/kjy': {
@@ -19,10 +24,11 @@ var proxyTable = {
 	}
 }
 
-//使用proxy代理
-if(http.dev.PROXY){
-	app.use('/kjy', proxy(http.server));
-}
+//http://localhost:3000/mapi/** 请求被代理到 http://3d.mendaow.com/mapi/**
+app.use('/mapi', proxy({
+    target: 'http://3d.mendaow.com',
+    changeOrigin: true
+}));
 
 init();
 

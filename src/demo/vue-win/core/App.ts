@@ -267,6 +267,7 @@ export default class App {
         })
 
         // this.addSkybox();
+        this.addSkySphere();
 
         window.addEventListener("subLoad", (e:any) => {
             this.addSubModel(e.detail);
@@ -278,7 +279,12 @@ export default class App {
 
     addSubModel(param:any):void{
         var group = this.scene.getObjectByName("load_scene");
-        group.add(param.obj);
+        var obj = param.obj;
+        let {position, rotation, scale} = param.attr;
+        obj.position.set(position[0], position[1], position[2]);
+        obj.rotation.set(rotation[0], rotation[1], rotation[2]);
+        obj.scale.set(scale[0], scale[1], scale[2]);
+        group.add(obj);
     }
 
     addLights(): void {
@@ -296,17 +302,26 @@ export default class App {
         var path = "/asset/skybox/";
         var directions = ["px", "nx", "py", "ny", "pz", "nz"];
         var format = ".jpg";
-        var skyGeometry = new THREE.BoxGeometry(5000, 5000, 5000);
+        var skyGeometry = new THREE.BoxGeometry(500, 500, 500);
         var materialArray = [];
         for (var i = 0; i < 6; i++) {
             materialArray.push(new THREE.MeshBasicMaterial({
-                map: THREE.ImageUtils.loadTexture(path + directions[i] + format),
+                map: new THREE.TextureLoader().load(path + directions[i] + format),
                 side: THREE.BackSide
             }));
         }
 
-        var skyBox = new THREE.Mesh(skyGeometry, materialArray);
-        this.scene.add(skyBox);
+        var sky = new THREE.Mesh(skyGeometry, materialArray);
+        this.scene.add(sky);
+    }
+
+    addSkySphere(){
+        var mat = new THREE.MeshBasicMaterial({
+                map: new THREE.TextureLoader().load("/asset/sky.jpg"),
+                side: THREE.BackSide
+            });
+        var sky = new THREE.Mesh(new THREE.SphereGeometry(400, 32, 32), mat);
+        this.scene.add(sky); 
     }
 
     setAmbient(n: number): void {

@@ -55,6 +55,8 @@
     "cannon": "^0.6.2",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.0.4",
+    "cors": "^2.8.5",
+    "http-proxy-middleware": "^0.20.0",
     "jszip": "^3.2.2",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",

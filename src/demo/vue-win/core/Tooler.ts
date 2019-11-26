@@ -228,7 +228,7 @@ export default class Tooler{
             var modelPath = list[0];
             var modelName = list[1];
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', modelPath + modelName);
+            xhr.open('GET', modelPath + modelName + "?v=" + Math.random());
             xhr.responseType = 'blob';
             xhr.onprogress = (event) =>{
                 if (event.lengthComputable) {
@@ -236,6 +236,7 @@ export default class Tooler{
                     console.log(n);
                     // this.loading.update("加载中", n + "%");
                     // this.add(this.loading);
+                    window.dispatchEvent(new CustomEvent("model_progress", { bubbles: false, cancelable: false, detail: n}));
                 }
             };
             xhr.onreadystatechange = async () => {
@@ -254,6 +255,26 @@ export default class Tooler{
         })
     }
 
+    public static httpGet(url:string){
+        return new Promise((resolve)=>{
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url);
+            // xhr.responseType = 'blob';
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        // resolve({blob: xhr.response, isZip});
+                        resolve(xhr.response);
+                    } else {
+                        resolve(null);
+                    }
+                }
+            }
+            xhr.send();
+        })
+        
+    }
+
     public static parseModel(blob: any, isZip:boolean, url:string){
         return new Promise(async resolve => {
             let list = Tooler.getUrlPath(url);
@@ -270,7 +291,7 @@ export default class Tooler{
             let loader = new GLTFLoader();
             loader.setCrossOrigin('anonymous');
             loader.parse(buffer, list[0], (gltf:any) => {
-                console.log("gltf");
+                console.log("【GLTF数据】");
                 console.log(gltf);
                 resolve({
                     object3D: gltf.scene,

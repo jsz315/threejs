@@ -11,9 +11,8 @@ import listener from './lib/listener';
 import { Toast } from 'mint-ui';
 
 let app;
-
 Vue.use(MintUI)
-Vue.prototype.$axios = axios;
+// Vue.prototype.$axios = axios;
 Vue.prototype.$toast = (tip) => {
     Toast({
         message: tip,
@@ -21,7 +20,26 @@ Vue.prototype.$toast = (tip) => {
         duration: 2000
     });
 }
-import './index.less';
+
+Vue.prototype.$get = (url, param) => {
+    return axios.get(url, {
+        params: param
+    });
+}
+
+Vue.prototype.$post = (url, param, isForm = true) => {
+    let data;
+    if(isForm){
+        data = new FormData();
+        for(let i in param){
+            data.append(i, param[i]);
+        }
+    }
+    else{
+        data = param;
+    }
+    return axios.post(url, data);
+}
 
 new Vue({
     store,
@@ -71,21 +89,3 @@ window.onload = function(){
 function $(sel){
     return document.querySelector(sel);
 }
-
-
-// test();
-
-// async function test(){
-//     for(var i = 0; i < 7; i++){
-//         let res = await delays(i);
-//         console.log(res);
-//     }
-// }
-
-// function delays(n){
-//     return new Promise(resolve=>{
-//         setTimeout(()=>{
-//             resolve(n);
-//         }, 300)
-//     })
-// }

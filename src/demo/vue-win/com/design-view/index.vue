@@ -82,16 +82,17 @@ export default {
             this.$store.commit("changeDesignVisible", false);
         });
 
-        let res = await this.$axios.get("/asset/area-serve.json");
+        // let res = await this.$get("/asset/area-serve.json");
+        let data = new FormData();
+        data.append('deep', '3');
+        let res = await this.$post("/mapi/index.php?app=count_client&fnn=get_allarea", {deep: 3});
         provcityarea = new Provcityarea(res.data.datas);
-        console.log("json ==== ");
-        console.log(res);
     },
     methods: {
         onPhone(){
             console.log("phone: " + this.phone);
         },
-        onPost(){
+        async onPost(){
             if(/^\s*$/.test(this.name)){
                 this.$toast("名字不能为空");
                 return;
@@ -104,48 +105,51 @@ export default {
                 this.$toast("请选择地区");
                 return;
             }
-            console.log(this.name, this.phone);
+            let param = {
+                type: this.$store.state.modelType,
+                client_name: this.name,
+                model_id: this.$store.state.modelId,
+                city: [this.area0.label, this.area1.label, this.area2.label].join(""),
+                telephone: this.phone,
+                prodvince_id: this.area0.id,
+                city_id: this.area1.id,
+                area_id: this.area2.id
+            };
+            let res = await this.$post("/mapi/index.php?app=count_client&fnn=count_model_save", param);
+            console.log(res.data);
+            if(res.data.code == 200 && res.data.datas){
+                this.$toast('提交成功');
+            }
         },
         picker(n){
             let list;
             if(n == 0){
-                list = this.getPickerList(provcityarea.getProvs());
+                list = provcityarea.getProvs();
             }
             else if(n == 1){
                 if(!this.area0.id){
                     this.$toast('请先选择前面市区');
                     return;
                 }
-                list = this.getPickerList(provcityarea.getCitysByProvId(this.area0.id));
+                list = provcityarea.getCitysByProvId(this.area0.id);
             }
             else if(n == 2){
                 if(!this.area0.id || !this.area1.id){
                     this.$toast('请先选择前面市区');
                     return;
                 }
-                list = this.getPickerList(provcityarea.getAreasByCityId(this.area0.id, this.area1.id));
+                list = provcityarea.getAreasByCityId(this.area0.id, this.area1.id);
             }
             this.$refs.picker.show(n, list);
         },
         onSelect(obj){
             this["area" + obj.type] = obj.select;
             if(obj.type < 1){
-                this.area1 = this.getPickerList(provcityarea.getCitysByProvId(this.area0.id))[0];
+                this.area1 = provcityarea.getCitysByProvId(this.area0.id)[0];
             }
             if(obj.type < 2){
-                this.area2 = this.getPickerList(provcityarea.getAreasByCityId(this.area0.id, this.area1.id))[0];
+                this.area2 = provcityarea.getAreasByCityId(this.area0.id, this.area1.id)[0];
             }
-        },
-        getPickerList(obj){
-            // let list = [];
-            // for(var i in obj){
-            //     list.push({
-            //         text: obj[i],
-            //         id: i
-            //     })
-            // }
-            // return list;
-            return obj;
         }
     }
 };

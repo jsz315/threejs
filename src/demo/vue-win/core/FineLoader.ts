@@ -14,6 +14,13 @@ export class FineLoader extends THREE.Object3D{
         super();
         this.loading = new Loading();
         this.add(this.loading);
+        window.addEventListener("model_progress", (e: any) => {
+            this.loading.update("加载中", e.detail);
+            console.log(e.detail + "%");
+            if(e.detail == 100){
+                this.remove(this.loading);
+            }
+        })
     }
 
     async start(url:string, callback:Function){
@@ -22,9 +29,13 @@ export class FineLoader extends THREE.Object3D{
             console.log("【模型加载失败】 " + url);
             return;
         }
-        console.log("[json data]");
+        console.log("【模型json数据】");
         console.log(res.json);
         callback(res.object3D);
+
+        res.json.holes.forEach(async (item:any)=>{
+            await this.loadSubModel(item);
+        })
     }
 
     loadSubModel(item:any){

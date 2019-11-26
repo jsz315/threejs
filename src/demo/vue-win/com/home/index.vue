@@ -17,6 +17,7 @@
         <EffectView></EffectView>
         <DetailView></DetailView>
         <ColorView></ColorView>
+        <GuiderView></GuiderView>
     </div>
 </template>
 
@@ -36,7 +37,9 @@ import EffectView from '../effect-view/index.vue'
 import DetailView from '../detail-view/index.vue'
 import RoleView from '../role-view/index.vue'
 import ColorView from '../color-view/index.vue'
+import GuiderView from '../guider-view/index.vue'
 import listener from '../../lib/listener'
+import Tooler from '../../core/Tooler.ts'
 
 export default {
     data() {
@@ -63,9 +66,22 @@ export default {
             }
         };
     },
-    components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView, RoleView, ColorView},
+    components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView, RoleView, ColorView, GuiderView},
     computed: {},
+    beforeCreate(){
+        console.log("1111111 home beforeCreate");
+        var url = Tooler.getQueryString("u")||"";
+        var list = url.split("-");
+        var modelId = list[4];
+        var modelType =list[3];
+        this.$store.commit("changeModelId", modelId);
+        this.$store.commit("changeModelType", modelType);
+    },
+    created(){
+        console.log("1111111 home created");
+    },
     mounted(){
+        console.log("1111111 home mounted");
         listener.on("full", () => {
             this.top = {
                 transform: 'translateY(-20px)',

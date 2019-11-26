@@ -9,12 +9,15 @@ export default new Vuex.Store({
         effectVisible: false,
         detailVisible: false,
         colorVisible: false,
+        guiderVisible: false,
         effectParam: {
             ambient: 1.32,
             directional: 0.42,
             roughness: 0.35,
             metalness: 0.36
-        }
+        },
+        modelId: 0,
+        modelType: 0
     },
     mutations: {
         changeDesignVisible(state, value){
@@ -31,6 +34,15 @@ export default new Vuex.Store({
         },
         changeColorVisible(state, value){
             state.colorVisible = value;
+        },
+        changeModelId(state, value){
+            state.modelId = value;
+        },
+        changeModelType(state, value){
+            state.modelType = value;
+        },
+        changeGuiderVisible(state, value){
+            state.guiderVisible = value;
         }
     },
     actions: {

@@ -27,10 +27,12 @@ export default {
         }
     },
     mounted() {
-        console.log("url ==============");
-        let url = Tooler.getQueryString("url");
-        console.log(url);
-        let id = url.split("/").pop().split(".")[0];
+        // console.log("url ==============");
+        // let url = Tooler.getQueryString("url");
+        // console.log(url);
+        // let id = url.split("/").pop().split(".")[0];
+
+        let id = this.$store.state.modelId;
         this.getImg(id);
     },
     methods: {
@@ -38,23 +40,18 @@ export default {
             this.$store.commit("changeDetailVisible", false);
         },
         async getImg(id) {
-            // id = 16433;
             let res;
             let link = "";
             if (location.search.indexOf("//3d.") != -1) {
                 link = "/mapi/index.php";
-                res = await this.$axios.get(link, {
-                    params: {
+                res = await this.$get(link, {
                         id: id,
                         app: "index",
                         fnn: "sysdiss"
-                    }
-                });
+                    });
             } else {
                 link = "/api/index/sysdiss";
-                res = await this.$axios.post(link, {
-                    id: id
-                });
+                res = await this.$post(link, {id: id});
             }
 
             if (res.data && res.data.datas) {

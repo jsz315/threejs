@@ -39,6 +39,6 @@ export default class Loading extends THREE.Object3D{
         ctx.fillText(num, this.w / 2, this.h * 0.7);
 
         this.spriteMap.needsUpdate = true;
-        this.spriteMaterial.needsUpdate= true;
+        this.spriteMaterial.needsUpdate = true;
     }
 }

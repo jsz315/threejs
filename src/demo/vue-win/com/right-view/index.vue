@@ -1,7 +1,7 @@
 <template>
     <div class="right-view">
 
-        <div class="ico share"></div>
+        <div class="ico share" @click="openShare"></div>
         <div class="ico effect" @click="openEffect">
             <div class="menu" v-show="effectMenuVisible">
                 <div class="tip">效果</div>
@@ -9,9 +9,9 @@
             </div>
         </div>
         <div class="ico full" @click="fullSize"></div>
-        <div class="ico picture" @click="openPicture"></div>
-        <div class="ico camera" @click="openCamera"></div>
-        <div class="ico thumb"></div>
+        <div class="ico picture" @click="openPicture" v-if="false"></div>
+        <div class="ico camera" @click="openCamera" v-if="false"></div>
+        <div class="ico thumb" @click="sendThumb"></div>
 
         <input class="file" type="file" ref="usePhoto">
         <input class="file" type="file" ref="useCamera" accept="image/*" capture="camera">
@@ -29,7 +29,14 @@ export default {
     },
     components: {},
     computed: {},
-    mounted(){
+    beforeCreate(){
+        console.log("1111111 right-view beforeCreate");
+    },
+    created(){
+        console.log("1111111 right-view created");
+    },
+    async mounted(){
+        console.log("1111111 right-view mounted");
         let info = navigator.userAgent.toLowerCase();
         if(info.match(/iPhone\sOS/i)){
             this.$refs.useCamera.removeAttribute("capture");
@@ -39,6 +46,16 @@ export default {
         }
         this.$refs.useCamera.onchange = () => {
             this.previewImage(this.$refs.useCamera);
+        }
+        
+        let param = {
+            model_id: this.$store.state.modelId,
+            type_id: this.$store.state.modelType
+        };
+        
+        let res = await this.$post("/mapi/index.php?app=count_client&fnn=getlikes", param);
+        if(res.data.code == 200){
+            console.log("点赞数：" + res.data.datas.like_num);
         }
     },
     methods: {
@@ -56,6 +73,9 @@ export default {
             else{
                 this.effectMenuVisible = !this.effectMenuVisible;
             }
+        },
+        openShare(){
+            this.$store.commit("changeGuiderVisible", true);
         },
         fullSize(){
             listener.emit("full");
@@ -92,6 +112,16 @@ export default {
                 }
             }
             fileReader.readAsDataURL(file);
+        },
+        async sendThumb(){
+            let param = {
+                model_id: this.$store.state.modelId,
+                type_id: this.$store.state.modelType
+            };
+            let res = await this.$post("/mapi/index.php?app=count_client&fnn=model_like", param);
+            if(res.data.code == 200){
+                this.$toast("点赞成功");
+            }
         }
     }
 };

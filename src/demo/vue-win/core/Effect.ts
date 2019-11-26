@@ -113,8 +113,8 @@ export class Effect{
                     });
                 }
 
-                this.animates = animateList1.concat(animateList2);
-                // this.animates = animateList1.length ? animateList1 : animateList2;
+                // this.animates = animateList1.concat(animateList2);
+                this.animates = this.animates.concat(animateList1, animateList2);
                 console.log(this.animates);
             }
             else{
