@@ -1063,10 +1063,17 @@ caniuse-lite@^1.0.30000980, caniuse-lite@^1.0.30000984:
   resolved "https://registry.npm.taobao.org/caniuse-lite/download/caniuse-lite-1.0.30000989.tgz#b9193e293ccf7e4426c5245134b8f2a56c0ac4b9"
   integrity sha1-uRk+KTzPfkQmxSRRNLjypWwKxLk=
 
+<<<<<<< HEAD
 capture-stack-trace@^1.0.0:
   version "1.0.1"
   resolved "https://registry.npm.taobao.org/capture-stack-trace/download/capture-stack-trace-1.0.1.tgz#a6c0bbe1f38f3aa0b92238ecb6ff42c344d4135d"
   integrity sha1-psC74fOPOqC5Ijjstv9Cw0TUE10=
+=======
+cannon@^0.6.2:
+  version "0.6.2"
+  resolved "https://registry.npm.taobao.org/cannon/download/cannon-0.6.2.tgz#1e7bc72dd5841982f3c104c2bc578bfa4fb1c572"
+  integrity sha1-HnvHLdWEGYLzwQTCvFeL+k+xxXI=
+>>>>>>> 2376dc4355744ed2d669250f85733f89baebda3b
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -4916,6 +4923,11 @@ object.pick@^1.3.0:
   dependencies:
     isobject "^3.0.1"
 
+oimo@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.npm.taobao.org/oimo/download/oimo-1.0.9.tgz#0b592e361c799103fdb04fb3be1264245ef6884b"
+  integrity sha1-C1kuNhx5kQP9sE+zvhJkJF72iEs=
+
 on-finished@^2.3.0, on-finished@~2.3.0:
   version "2.3.0"
   resolved "https://registry.npm.taobao.org/on-finished/download/on-finished-2.3.0.tgz#20f1336481b083cd75337992a16971aa2d906947"
@@ -6636,10 +6648,22 @@ three@^0.107.0:
   resolved "https://registry.npm.taobao.org/three/download/three-0.107.0.tgz#0c862c348d61bd3f22058e01f5e771c1294315a1"
   integrity sha1-DIYsNI1hvT8iBY4B9edxwSlDFaE=
 
+three@^0.69.0:
+  version "0.69.0"
+  resolved "https://registry.npm.taobao.org/three/download/three-0.69.0.tgz#db556538cb4d7a3a6665c752ec39edfca307228f"
+  integrity sha1-21VlOMtNejpmZcdS7Dnt/KMHIo8=
+
 three@^0.83.0:
   version "0.83.0"
   resolved "https://registry.npm.taobao.org/three/download/three-0.83.0.tgz#3b7f94790af3e021dac1f44a2617569ca2032b0b"
   integrity sha1-O3+UeQrz4CHawfRKJhdWnKIDKws=
+
+threex.oimo@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npm.taobao.org/threex.oimo/download/threex.oimo-1.0.0.tgz#fde40f16092e60bb906a7342d685d84fb9926b60"
+  integrity sha1-/eQPFgkuYLuQanNC1oXYT7mSa2A=
+  dependencies:
+    three "^0.69.0"
 
 through2@^2.0.0:
   version "2.0.5"
