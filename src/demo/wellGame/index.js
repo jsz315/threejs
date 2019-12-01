@@ -1,4 +1,4 @@
 import './index.less'
-import App from'./core/App'
+import Car from'./core/Car'
 
-new App();
+new Car();

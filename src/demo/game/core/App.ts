@@ -1,7 +1,7 @@
 import * as BABYLON from 'babylonjs'
 import Stats from 'three/examples/jsm/libs/stats.module';
-import CameraMaker from './CameraMaker';
-import Fire from './Fire';
+// import CameraMaker from './CameraMaker';
+// import Fire from './Fire';
 // import * as CANNON from '../asset/lib/cannon.min'
 
 export default class App{
@@ -12,7 +12,7 @@ export default class App{
     camera:BABYLON.Camera;
     stats: any;
     sphere:BABYLON.Mesh;
-    fire:Fire;
+    // fire:Fire;
     shadowGenerator: BABYLON.ShadowGenerator;
 
     constructor(){
@@ -22,7 +22,7 @@ export default class App{
         // this.scene.shadowsEnabled = true;
         console.log("this.scene");
         console.log(this.scene);
-        this.camera = CameraMaker.getFreeCamera(this.scene);
+        // this.camera = CameraMaker.getFreeCamera(this.scene);
         this.camera.attachControl(this.canvas);
 
         var physicsPlugin = new BABYLON.AmmoJSPlugin();
@@ -34,7 +34,7 @@ export default class App{
         this.createStats();
         
         this.engine.runRenderLoop(()=>{
-            this.fire.update();
+            // this.fire.update();
             this.scene.render();
             this.stats.update();
             // this.sphere.translate(new BABYLON.Vector3(0, 0, 1), 0.05, BABYLON.Space.LOCAL);
@@ -46,7 +46,7 @@ export default class App{
 
     createScene(){
        
-        this.fire = new Fire(this.scene);
+        // this.fire = new Fire(this.scene);
         this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 1);
 
         // var light:BABYLON.HemisphericLight = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 1), this.scene);
@@ -63,7 +63,7 @@ export default class App{
         // var sphere:BABYLON.Mesh = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2}, this.scene);
         // sphere.material = material;
 
-        this.shadowGenerator = new BABYLON.ShadowGenerator(1024, this.fire.light);
+        // this.shadowGenerator = new BABYLON.ShadowGenerator(1024, this.fire.light);
         // this.shadowGenerator.setDarkness(0.8);
         // this.shadowGenerator.useCloseExponentialShadowMap = true;
         // this.shadowGenerator.blurScale = 2;
@@ -127,7 +127,7 @@ export default class App{
         // this.sphere = sphere;
         // sphere.parent = this.camera;
         // sphere.position.set(0, 0, 8);
-        this.fire.light.parent = this.camera;
+        // this.fire.light.parent = this.camera;
 
         new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, {
             mass: 0,

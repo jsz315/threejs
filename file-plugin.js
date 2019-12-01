@@ -42,15 +42,15 @@ class FilePlugin{
         })
         compiler.plugin("done", ()=>{
             console.log("FilePlugin done-------------");
-            var ofile = path.resolve("./dist", "win.html");
-            var file1 = path.resolve("./dist", "index.php");
-            var file2 = path.resolve("./dist", "index.html");
-            fs.copyFile(ofile, file1, err => {
-                console.log("复制文件成功")
-            })
-            fs.copyFile(ofile, file2, err => {
-                console.log("复制文件成功")
-            })
+            // var ofile = path.resolve("./dist", "win.html");
+            // var file1 = path.resolve("./dist", "index.php");
+            // var file2 = path.resolve("./dist", "index.html");
+            // fs.copyFile(ofile, file1, err => {
+            //     console.log("复制文件成功")
+            // })
+            // fs.copyFile(ofile, file2, err => {
+            //     console.log("复制文件成功")
+            // })
         })
     }
 }

@@ -25,10 +25,10 @@
                 var clientWidth = window.innerWidth * scale;
                 docEl.style.fontSize = 100 * (clientWidth * dpr / 750) + 'px';
                 metaEl.setAttribute('content', 'width=' + clientWidth * dpr + ',initial-scale=' + scale + ',maximum-scale=' + scale + ', minimum-scale=' + scale + ',user-scalable=no'); 
-            };    
-            if (!doc.addEventListener) return;    
-            win.addEventListener(resizeEvt, recalc, false);    
-            doc.addEventListener('DOMContentLoaded', recalc, false);    
+            };
+            if (!doc.addEventListener) return;
+            win.addEventListener(resizeEvt, recalc, false);
+            doc.addEventListener('DOMContentLoaded', recalc, false);
         })(document, window);    
     </script>
     
@@ -81,6 +81,7 @@
     <div class="colors" id="colors"></div>
 
     <div class="debug">
+        <input type="file" id="files">
         <div class="debug-label">相册</div>
         <input type="file" id="usePhoto">
         <div class="debug-label">照相机</div>
@@ -98,5 +99,6 @@
     <div class="img-box">
         <!-- <img class="img" src="asset/produce.jpg"> -->
     </div>
+    <script src="./asset/jszip.min.js"></script>
 </body>
 </html>
