@@ -7,8 +7,6 @@ export default class FocusLight extends THREE.DirectionalLight{
         super(color, intensity);
         // this.castShadow = true;
         // this.position.set(0, 1, 60);
-        console.log("SpotLight");
-        console.log(this);
     }
 
     update(camera: THREE.Camera){

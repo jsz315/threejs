@@ -7,7 +7,6 @@
 </template>
 
 <script>
-console.log("range " + Math.random());
 export default {
     data() {
         return {

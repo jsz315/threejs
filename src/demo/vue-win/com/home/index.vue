@@ -69,7 +69,6 @@ export default {
     components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView, RoleView, ColorView, GuiderView},
     computed: {},
     beforeCreate(){
-        console.log("1111111 home beforeCreate");
         var url = Tooler.getQueryString("u")||"";
         var list = url.split("-");
         var modelId = list[4];
@@ -78,10 +77,9 @@ export default {
         this.$store.commit("changeModelType", modelType);
     },
     created(){
-        console.log("1111111 home created");
+        
     },
     mounted(){
-        console.log("1111111 home mounted");
         listener.on("full", () => {
             this.top = {
                 transform: 'translateY(-20px)',

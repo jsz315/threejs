@@ -16,7 +16,6 @@ export class FineLoader extends THREE.Object3D{
         this.add(this.loading);
         window.addEventListener("model_progress", (e: any) => {
             this.loading.update("加载中", e.detail);
-            console.log(e.detail + "%");
             if(e.detail == 100){
                 this.remove(this.loading);
             }
@@ -40,7 +39,7 @@ export class FineLoader extends THREE.Object3D{
 
     loadSubModel(item:any){
         return new Promise(async resolve => {
-            let url:any = item.url;
+            let url:any = item.url.replace(/\.a3d/i, ".zip");
             if(!url){
                 resolve();
                 return;

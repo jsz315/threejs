@@ -30,13 +30,12 @@ export default {
     components: {},
     computed: {},
     beforeCreate(){
-        console.log("1111111 right-view beforeCreate");
+        
     },
     created(){
-        console.log("1111111 right-view created");
+        
     },
     async mounted(){
-        console.log("1111111 right-view mounted");
         let info = navigator.userAgent.toLowerCase();
         if(info.match(/iPhone\sOS/i)){
             this.$refs.useCamera.removeAttribute("capture");
@@ -55,12 +54,11 @@ export default {
         
         let res = await this.$post("/mapi/index.php?app=count_client&fnn=getlikes", param);
         if(res.data.code == 200){
-            console.log("点赞数：" + res.data.datas.like_num);
+            // console.log("点赞数：" + res.data.datas.like_num);
         }
     },
     methods: {
         openEffect(e){
-            console.log(e);
             if(e.target.className == "tip"){
                 if(e.target.innerText == "效果"){
                     this.$store.commit("changeEffectVisible", true);

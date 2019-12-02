@@ -17,19 +17,17 @@ export default {
     components: {},
     computed: {},
     beforeCreate(){
-        console.log("1111111 top-view beforeCreate");
+        
     },
     created(){
-        console.log("1111111 top-view created");
+        
     },
     async mounted(){
-        console.log("1111111 top-view mounted");
         let res = await this.$post("/mapi/index.php?app=count_client&fnn=model_views", {
             model_id: this.$store.state.modelId,
             type_id: this.$store.state.modelType
         });
-        
-        if(res.data.code == 200){
+        if(res && res.data && res.data.code == 200){
             this.num = res.data.datas.views;
         }
     },

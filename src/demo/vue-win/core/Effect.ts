@@ -13,57 +13,6 @@ export class Effect{
         
     }
 
-    init0(url:string, parent:THREE.Object3D){
-        this.parent = parent;
-        Tooler.loadData(url, (res: any) => {
-            if(res){
-                this.json = JSON.parse(res);
-                this.positions = {};
-                for(var i:number = 0; i < this.json.leafs.length; i++){
-                    this.json.leafs[i].fans.forEach((item:any, index:number) => {
-                        let content: THREE.Object3D = parent.getObjectByName(item.content);
-                        if(content){
-                            console.log("动画元素:" + item.content);
-                            this.positions[item.content] = content.position.clone();
-                        }
-                        else{
-                            console.log("无法定位动画元素:" + item.content);
-                        }
-                    });
-                }
-                console.log(this.json);
-                console.log(this.positions);
-            }
-            else{
-                (document.querySelector(".animate") as any).style.display = "none";
-            }
-        });
-
-    }
-
-    play0(){
-        if(!this.json){
-            return;
-        }
-
-        this.dir *= -1;
-        for(var i:number = 0; i < this.json.leafs.length; i++){
-            this.json.leafs[i].fans.forEach((item:any, index:number) => {
-                let content: THREE.Object3D = this.parent.getObjectByName(item.content);
-                let offset = item.animation[0].offset;
-                let rotate = item.animation[0].rotate;
-                let duration = item.animation[0].duration;
-
-                if(rotate){
-                    this.rotateAnimate(content, rotate, index, duration);
-                }
-                else if(offset){
-                    this.translateAnimate(content, offset, index, duration);
-                }
-            })
-        }
-    }
-
     update(){
         this.animates && this.animates.forEach((animate:Animate) => {
             animate.update();
@@ -86,7 +35,7 @@ export class Effect{
                         let content: THREE.Object3D = parent.getObjectByName(item.content);
                         if(content && views.indexOf(content) == -1){
                             views.push(content);
-                            console.log("动画元素:" + item.content);
+                            // console.log("动画元素:" + item.content);
                             this.positions[item.content] = content.position.clone();
 
                             let animate = new Animate(content);
@@ -108,7 +57,7 @@ export class Effect{
                             }
                         }
                         else{
-                            console.log("无法定位动画元素:" + item.content);
+                            // console.log("无法定位动画元素:" + item.content);
                         }
                     });
                 }
@@ -146,7 +95,6 @@ export class Effect{
                 if(this.dir == -1){
                     let p = this.positions[content.name];
                     // content.position.set(p.x, p.y, p.z);
-                    console.log(content.position);
                 }
             }
         }, 30)

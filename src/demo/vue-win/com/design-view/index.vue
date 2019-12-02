@@ -86,7 +86,9 @@ export default {
         let data = new FormData();
         data.append('deep', '3');
         let res = await this.$post("/mapi/index.php?app=count_client&fnn=get_allarea", {deep: 3});
-        provcityarea = new Provcityarea(res.data.datas);
+        if(res && res.data){
+            provcityarea = new Provcityarea(res.data.datas);
+        }
     },
     methods: {
         onPhone(){
@@ -116,7 +118,6 @@ export default {
                 area_id: this.area2.id
             };
             let res = await this.$post("/mapi/index.php?app=count_client&fnn=count_model_save", param);
-            console.log(res.data);
             if(res.data.code == 200 && res.data.datas){
                 this.$toast('提交成功');
             }

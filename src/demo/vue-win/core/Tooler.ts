@@ -20,6 +20,8 @@ export default class Tooler{
 
     public static getFitScale(obj: THREE.Object3D, num: number):number{
         let size = this.getBoxSize(obj);
+        console.log("scene size ==== ");
+        console.log(size);
         let max = Math.max(size.x, size.y, size.z);
         let scale = num / max;
         return scale;
@@ -30,8 +32,6 @@ export default class Tooler{
         let list = url.split("/");
         let aim = list.pop();
         let path = list.join("/") + "/";
-        console.log(path);
-        console.log(aim);
         return [path, aim];
     }
 
@@ -192,9 +192,6 @@ export default class Tooler{
             var dateBefore:number = Date.now();
             (<any>window).JSZip.loadAsync(f).then(async function(zip:any) {
                 var dateAfter:number = Date.now();
-                console.log("(loaded in " + (dateAfter - dateBefore) + "ms)");
-
-                console.log(zip);
                 // let res = await zip.file(fname.replace(".zip", ".glb")).async("arraybuffer");
                 let buffer = await zip.file("obj.glb").async("arraybuffer");
                 let json = await Tooler.getJsonFromZip(zip);
@@ -207,7 +204,7 @@ export default class Tooler{
 
                 resolve({buffer, json});
             }, function (e:any) {
-                console.log("Error reading " + f.name + ": " + e.message);
+                // console.log("Error reading " + f.name + ": " + e.message);
             });
         })
     }
@@ -233,7 +230,6 @@ export default class Tooler{
             xhr.onprogress = (event) =>{
                 if (event.lengthComputable) {
                     let n = Math.floor(event.loaded / event.total * 100);
-                    console.log(n);
                     // this.loading.update("加载中", n + "%");
                     // this.add(this.loading);
                     window.dispatchEvent(new CustomEvent("model_progress", { bubbles: false, cancelable: false, detail: n}));
@@ -243,7 +239,6 @@ export default class Tooler{
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         // resolve({blob: xhr.response, isZip});
-                        console.log("xhr.response === ");
                         let res = await Tooler.parseModel(xhr.response, isZip, url);
                         resolve(res);
                     } else {

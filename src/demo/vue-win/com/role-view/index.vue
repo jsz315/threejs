@@ -24,10 +24,13 @@ export default {
             model_id: this.$store.state.modelId,
             type_id: this.$store.state.modelType
         });
-        let datas = res.data.datas;
-        this.name = datas.member_name;
-        this.phone = datas.member_mobile;
-        this.header = datas.member_avatar;
+        if(res && res.data && res.data.datas){
+            let datas = res.data.datas;
+            this.name = datas.member_name;
+            this.phone = datas.member_mobile;
+            this.header = datas.member_avatar;
+        }
+        
     },
     methods: {
         

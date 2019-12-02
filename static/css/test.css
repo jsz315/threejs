@@ -1,0 +1,10 @@
+.box1{
+    background: url(../texture/p2.jpg);
+    width: 200px;
+    height: 200px;
+}
+.box2{
+    background: url(../texture/p3.jpg);
+    width: 200px;
+    height: 200px;
+}

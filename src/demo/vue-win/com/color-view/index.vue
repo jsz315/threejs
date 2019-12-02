@@ -32,7 +32,6 @@ export default {
     },
     methods: {
         changeMap(url){
-            console.log(url);
             listener.emit("map", url);
         },
         click(e){

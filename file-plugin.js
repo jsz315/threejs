@@ -42,7 +42,7 @@ class FilePlugin{
         })
         compiler.plugin("done", ()=>{
             console.log("FilePlugin done-------------");
-            var ofile = path.resolve("./dist", "win.html");
+            var ofile = path.resolve("./dist", "vue-win.html");
             var file1 = path.resolve("./dist", "index.php");
             var file2 = path.resolve("./dist", "index.html");
             fs.copyFile(ofile, file1, err => {

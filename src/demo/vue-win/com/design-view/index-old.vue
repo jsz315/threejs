@@ -50,7 +50,7 @@ export default {
     },
     methods: {
         onPhone(){
-            console.log("phone: " + this.phone);
+            
         },
         onPost(){
             if(/^\s*$/.test(this.name)){
@@ -65,7 +65,6 @@ export default {
                 this.$toast("请选择地区");
                 return;
             }
-            console.log(this.name, this.phone);
         },
         picker(n){
             let list;

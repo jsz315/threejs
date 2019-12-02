@@ -65,9 +65,9 @@ module.exports = {
                 include: [path.resolve('src'), path.resolve('static')],
                 options: {
                     limit: 10000,
-                    name: 'img/[name].[hash:7].[ext]',
+                    name: 'asset/img/[name].[ext]',
                     //图片最终请求的路径
-                    publicPath: '/'
+                    publicPath: '../'
                 }
             },
             {

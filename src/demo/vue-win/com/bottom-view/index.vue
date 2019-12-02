@@ -25,7 +25,6 @@ export default {
             // this.$store.commit("changeDetailVisible", true);
         },
         openAnimate(){
-            console.log("open");
             listener.emit("open");
         }
     }

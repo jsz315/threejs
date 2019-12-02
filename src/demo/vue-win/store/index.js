@@ -11,10 +11,10 @@ export default new Vuex.Store({
         colorVisible: false,
         guiderVisible: false,
         effectParam: {
-            ambient: 1.32,
+            ambient: 0.8,
             directional: 0.42,
-            roughness: 0.35,
-            metalness: 0.36
+            roughness: 0.64,
+            metalness: 0.08
         },
         modelId: 0,
         modelType: 0

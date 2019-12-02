@@ -25,7 +25,7 @@ export default class App {
     rayCaster: THREE.Raycaster;
     isMobile: boolean;
     frameMaterials: any = [];
-    effect: Effect;
+    effects: Array<Effect>;
     size: any;
     canvas: any;
     repeat: any;
@@ -50,8 +50,12 @@ export default class App {
         // document.body.appendChild(this.renderer.domElement);
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
         this.orbit.enabled = true;
-        this.camera.position.set(0, 0, 8);
+        this.orbit.minPolarAngle = 0;
+        this.orbit.maxPolarAngle = 90 * Math.PI /180;
+        this.camera.position.set(-14.267941883040285, 4.752462870020817, -8.486184913116992);
         this.camera.lookAt(new THREE.Vector3());
+        console.log("this.camera");
+        console.log(this.camera);
 
         this.focusLight = new FocusLight(0xffffff, this.focusLightIntensity);
         this.scene.add(this.focusLight);
@@ -62,12 +66,10 @@ export default class App {
         this.isMobile = Tooler.checkMobile();
         this.rayCaster = new THREE.Raycaster();
 
-        this.effect = new Effect();
+        this.effects = [];
 
         window.addEventListener("resize", e => this.onResize(e), false);
         canvas.addEventListener(this.isMobile ? "touchstart" : "mousedown", (e: any) => this.select(e), false);
-
-        console.log(this.scene);
     }
 
     getStageSize(usePixel?: boolean) {
@@ -90,7 +92,6 @@ export default class App {
         this.size = this.getStageSize(true);
         this.canvas.width = this.size.width;
         this.canvas.height = this.size.height;
-        console.log("resize");
         this.camera.aspect = this.size.width / this.size.height;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(this.size.width, this.size.height);
@@ -100,7 +101,7 @@ export default class App {
         requestAnimationFrame(() => {
             this.animate();
         });
-        this.effect.update();
+        this.effects.forEach((effect:Effect)=>{effect.update();});
         this.stats && this.stats.update();
         this.renderer.render(this.scene, this.camera);
         this.focusLight.update(this.camera);
@@ -135,18 +136,18 @@ export default class App {
     }
 
     playAnimate(): void {
-        this.effect.play();
+        this.effects.forEach((effect:Effect)=>{effect.play()});
     }
 
     fitModel(group: THREE.Object3D): void {
         let parent: THREE.Object3D = group;
 
-        while (parent.children.length == 1) {
-            parent = parent.children[0];
-        }
+        // while (parent.children.length == 1) {
+        //     parent = parent.children[0];
+        // }
 
         let scale: number = Tooler.getFitScale(parent, 10);
-        parent.position.set(0, 0, 0);
+        // parent.position.set(0, 0, 0);
         parent.scale.multiplyScalar(scale);
         parent.rotateX(-Math.PI / 2);
         this.scene.add(parent);
@@ -156,14 +157,31 @@ export default class App {
         aim.add(parent);
         this.scene.add(aim);
         let offset: THREE.Vector3 = Tooler.getOffsetVector3(aim);
+        console.log("offset ==== ");
         console.log(offset);
         aim.position.set(0 - offset.x, 0 - offset.y, 0 - offset.z);
+
+        let size = Tooler.getBoxSize(aim);
+        this.addGrass(size.y);
 
         this.setRoughness(this.roughness);
         this.setMetalness(this.metalness);
 
         this.resetName(this.scene);
         this.initMaterials(parent);
+    }
+
+    addGrass(h:number){
+        var mat = new THREE.MeshStandardMaterial({
+            map: new THREE.TextureLoader().load("./asset/grass2.jpg"),
+            side: THREE.DoubleSide
+        })
+        mat.map.wrapS = mat.map.wrapT = THREE.RepeatWrapping;
+        mat.map.repeat.set(100, 100);
+        var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), mat);
+        plane.rotateX(-90 * Math.PI / 180);
+        plane.position.y = -h / 2 - 0.1;
+        this.scene.add(plane);
     }
 
     resetName(parent: THREE.Object3D) {
@@ -174,15 +192,12 @@ export default class App {
             }
             item.name = item.name.split("-")[0];
         })
-        console.log("total: " + t);
     }
 
     initMaterials(parent: THREE.Object3D) {
         let list = Tooler.getAllMaterial(parent);
         let materials = list[0];
         this.repeat = list[1];
-        console.log(materials);
-
         let isRoom = false;
         let winMaterials: any = [];
         let roomMaterials: any = [];
@@ -205,27 +220,9 @@ export default class App {
         setTimeout(() => {
             if (isRoom) {
                 this.frameMaterials = roomMaterials;
-                // this.frameMaterials.forEach((m:any) => {
-                //     console.log("change roomMaterials");
-                //     if(m.map && m.map.image){
-                //         let src = m.map.image.src;
-                //         if(src.indexOf("/dif_") != -1){
-                //             this.resetMap(m, src);
-                //         }
-                //     }
-                // })
             }
             else {
                 this.frameMaterials = winMaterials;
-                // this.frameMaterials.forEach((m:any) => {
-                //     console.log("change winMaterials");
-                //     if(m.map && m.map.image){
-                //         let src = m.map.image.src;
-                //         if(src.indexOf("/IPR_") != -1){
-                //             this.resetMap(m, src);
-                //         }
-                //     }
-                // })
             }
 
             materials.forEach((m: any) => {
@@ -238,16 +235,18 @@ export default class App {
     }
 
     resetMap(material: any, url: string): void {
+        let map = material.map;
         let texture: any = new THREE.TextureLoader().load(url, () => {
             material.map.needsUpdate = true;
             material.needsUpdate = true;
         });
 
-        texture.wrapS = material.map.wrapS;
-        texture.wrapT = material.map.wrapT;
-        texture.repeat = new THREE.Vector2(material.map.repeat.x, material.map.repeat.y);
-        texture.flipY = material.map.flipY;
-        texture.flipX = material.map.flipY;
+        texture.wrapS = map.wrapS;
+        texture.wrapT = map.wrapT;
+        texture.repeat = new THREE.Vector2(map.repeat.x, map.repeat.y);
+        texture.flipY = map.flipY;
+        // texture.flipX = map.flipY;
+        texture.flipX = map.flipX;
         material.map = texture;
     }
 
@@ -262,8 +261,10 @@ export default class App {
         this.fineLoader.start(url, (object3D: THREE.Object3D) => {
             this.fitModel(object3D);
             url = url.replace(/\.(glb|zip)/, ".animation");
-            this.effect.init(url, this.scene);
-            window.dispatchEvent(new CustomEvent("animate"));
+            var effect = new Effect();
+            effect.init(url, this.scene);
+            this.effects.push(effect);
+            // window.dispatchEvent(new CustomEvent("animate"));
         })
 
         // this.addSkybox();
@@ -282,9 +283,17 @@ export default class App {
         var obj = param.obj;
         let {position, rotation, scale} = param.attr;
         obj.position.set(position[0], position[1], position[2]);
-        obj.rotation.set(rotation[0], rotation[1], rotation[2]);
+        obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
         obj.scale.set(scale[0], scale[1], scale[2]);
         group.add(obj);
+
+        // obj.rotateX(-Math.PI / 2);
+
+        var url = param.attr.url.replace(/\.(glb|zip|a3d)/i, ".animation");
+        var effect = new Effect();
+        effect.init(url, obj);
+        this.effects.push(effect);
+        // this.scene.add(obj);
     }
 
     addLights(): void {
@@ -299,7 +308,7 @@ export default class App {
     }
 
     addSkybox() {
-        var path = "/asset/skybox/";
+        var path = "./asset/skybox/";
         var directions = ["px", "nx", "py", "ny", "pz", "nz"];
         var format = ".jpg";
         var skyGeometry = new THREE.BoxGeometry(500, 500, 500);
@@ -317,11 +326,11 @@ export default class App {
 
     addSkySphere(){
         var mat = new THREE.MeshBasicMaterial({
-                map: new THREE.TextureLoader().load("/asset/sky.jpg"),
+                map: new THREE.TextureLoader().load("./asset/sky.jpg"),
                 side: THREE.BackSide
             });
         var sky = new THREE.Mesh(new THREE.SphereGeometry(400, 32, 32), mat);
-        this.scene.add(sky); 
+        this.scene.add(sky);
     }
 
     setAmbient(n: number): void {
