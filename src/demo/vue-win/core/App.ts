@@ -154,6 +154,7 @@ export default class App {
         parent.name = "load_scene";
 
         let aim = new THREE.Object3D();
+        aim.name = "aim_scene";
         aim.add(parent);
         this.scene.add(aim);
         let offset: THREE.Vector3 = Tooler.getOffsetVector3(aim);
@@ -177,7 +178,9 @@ export default class App {
             side: THREE.DoubleSide
         })
         mat.map.wrapS = mat.map.wrapT = THREE.RepeatWrapping;
-        mat.map.repeat.set(100, 100);
+        mat.map.repeat.set(200, 200);
+        mat.metalness = 0;
+        mat.roughness = 0.9;
         var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), mat);
         plane.rotateX(-90 * Math.PI / 180);
         plane.position.y = -h / 2 - 0.1;
@@ -213,16 +216,17 @@ export default class App {
                     winMaterials.push(m);
                 }
             }
+            m.flatShading = false;
             m.transparent = true;
             m.alphaTest = 0.2;
         })
 
         setTimeout(() => {
             if (isRoom) {
-                this.frameMaterials = roomMaterials;
+                this.frameMaterials = this.frameMaterials.concat(roomMaterials);
             }
             else {
-                this.frameMaterials = winMaterials;
+                this.frameMaterials = this.frameMaterials.concat(winMaterials);
             }
 
             materials.forEach((m: any) => {
@@ -280,12 +284,15 @@ export default class App {
 
     addSubModel(param:any):void{
         var group = this.scene.getObjectByName("load_scene");
+        // var group = this.scene.getObjectByName("aim_scene");
         var obj = param.obj;
         let {position, rotation, scale} = param.attr;
         obj.position.set(position[0], position[1], position[2]);
         obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
         obj.scale.set(scale[0], scale[1], scale[2]);
         group.add(obj);
+
+        this.initMaterials(obj);
 
         // obj.rotateX(-Math.PI / 2);
 

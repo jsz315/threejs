@@ -21,7 +21,7 @@ const walk = function(dir) {
 const getApps = function(app){
     const list = walk(path.join(__dirname, 'src'))
     
-    const r = new RegExp("src(\\\\|/).*(\\\\|/)" + app)
+    const r = new RegExp("src(\\\\|/)demo(\\\\|/)" + app)
     let aim = []
     list.forEach(item => {
         var match = r.exec(item);
@@ -43,6 +43,8 @@ const getApps = function(app){
 }
 
 const getEntry = function(apps){
+    console.log(" ------- apps");
+    console.log(apps);
     var obj = {};
     apps.forEach(item => {
         var key = item.split("/").pop()

@@ -32,7 +32,14 @@ export class FineLoader extends THREE.Object3D{
         console.log(res.json);
         callback(res.object3D);
 
-        res.json.holes.forEach(async (item:any)=>{
+        console.log("开始加载门窗-------");
+        res.json.holes && res.json.holes.forEach(async (item:any)=>{
+            console.log("加载门窗模型-------");
+            await this.loadSubModel(item);
+        })
+        console.log("开始加载家具-------");
+        res.json.layouts && res.json.layouts.forEach(async (item:any)=>{
+            console.log("加载家具模型-------");
             await this.loadSubModel(item);
         })
     }

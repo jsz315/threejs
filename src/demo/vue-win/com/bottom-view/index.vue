@@ -22,7 +22,7 @@ export default {
             this.$store.commit("changeDesignVisible", true);
         },
         openDetail(){
-            // this.$store.commit("changeDetailVisible", true);
+            this.$store.commit("changeDetailVisible", true);
         },
         openAnimate(){
             listener.emit("open");

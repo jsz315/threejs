@@ -25,10 +25,10 @@ var proxyTable = {
 }
 
 //http://localhost:3000/mapi/** 请求被代理到 http://3d.mendaow.com/mapi/**
-// app.use('/mapi', proxy({
-//     target: 'http://3d.mendaow.com',
-//     changeOrigin: true
-// }));
+app.use('/mapi', proxy({
+    target: 'http://3d.mendaow.com',
+    changeOrigin: true
+}));
 
 init();
 
