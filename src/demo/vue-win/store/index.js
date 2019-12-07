@@ -11,13 +11,15 @@ export default new Vuex.Store({
         colorVisible: false,
         guiderVisible: false,
         effectParam: {
-            ambient: 0.8,
-            directional: 0.42,
-            roughness: 0.64,
-            metalness: 0.08
+            ambient: 0.4,
+            directional: 0.8,
+            roughness: 0.3,
+            metalness: 0.6
         },
         modelId: 0,
-        modelType: 0
+        modelType: 0,
+        productImages: [],
+        logoImage: null
     },
     mutations: {
         changeDesignVisible(state, value){
@@ -43,6 +45,12 @@ export default new Vuex.Store({
         },
         changeGuiderVisible(state, value){
             state.guiderVisible = value;
+        },
+        changeProductImages(state, value){
+            state.productImages = value;
+        },
+        changeLogoImage(state, value){
+            state.logoImage = value;
         }
     },
     actions: {

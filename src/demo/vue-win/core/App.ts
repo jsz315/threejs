@@ -29,6 +29,7 @@ export default class App {
     size: any;
     canvas: any;
     repeat: any;
+    inited: boolean;
 
     constructor(canvas: any, size: any) {
         this.size = this.getStageSize(true);
@@ -59,6 +60,7 @@ export default class App {
 
         this.focusLight = new FocusLight(0xffffff, this.focusLightIntensity);
         this.scene.add(this.focusLight);
+        // this.scene.add(this.focusLight.helper);
 
         this.fineLoader = new FineLoader();
         this.scene.add(this.fineLoader);
@@ -70,6 +72,11 @@ export default class App {
 
         window.addEventListener("resize", e => this.onResize(e), false);
         canvas.addEventListener(this.isMobile ? "touchstart" : "mousedown", (e: any) => this.select(e), false);
+
+        window.addEventListener("all loaded", e => {
+            this.setRoughness(this.roughness);
+            this.setMetalness(this.metalness);
+        }, false);
     }
 
     getStageSize(usePixel?: boolean) {
@@ -137,6 +144,8 @@ export default class App {
 
     playAnimate(): void {
         this.effects.forEach((effect:Effect)=>{effect.play()});
+
+        console.log(Tooler.errorList);
     }
 
     fitModel(group: THREE.Object3D): void {
@@ -165,11 +174,9 @@ export default class App {
         let size = Tooler.getBoxSize(aim);
         this.addGrass(size.y);
 
-        this.setRoughness(this.roughness);
-        this.setMetalness(this.metalness);
-
         this.resetName(this.scene);
         this.initMaterials(parent);
+        this.inited = true;
     }
 
     addGrass(h:number){
@@ -206,19 +213,48 @@ export default class App {
         let roomMaterials: any = [];
 
         materials.forEach((m: any) => {
-            if (m.map && m.map.image) {
-                let src = m.map.image.src;
-                if (src.indexOf("/dif_") != -1) {
-                    isRoom = true;
-                    roomMaterials.push(m);
-                }
-                if (src.indexOf("/IPR_") != -1) {
-                    winMaterials.push(m);
+            if(FineLoader.isLayout || !this.inited){
+                console.log("家具材质");
+                m.roughness = 1;
+                m.metalness = 0.04;
+                m.flatShading = false;
+            }
+            else{
+                console.log("门窗材质");
+                if (m.map && m.map.image) {
+                    let src = m.map.image.src;
+                    // if (src.indexOf("/dif_") != -1) {
+                    //     isRoom = true;
+                    //     roomMaterials.push(m);
+                    // }
+
+                    // winMaterials.push(m);
+
+                    if (src.indexOf("/IPR_") != -1) {
+                        winMaterials.push(m);
+                    }
+                    
+                    // if(src.indexOf("/glass.") != -1){
+                    //     m.opacity = 0.4;
+                    // }
+                    // else if(src.indexOf("/product.png") != -1){
+                    //     m.opacity = 0.4;
+                    // }
+                    // else if(src.indexOf("/BL123.jpg") != -1){
+                    //     m.opacity = 0.4;
+                    // }
+                    // else if(src.indexOf("/bl_") != -1){
+                    //     m.opacity = 0.4;
+                    // }
                 }
             }
-            m.flatShading = false;
+            
             m.transparent = true;
             m.alphaTest = 0.2;
+
+            //模型变黑解决要点
+            m.emissive = m.color;
+            m.emissiveIntensity = 0.1;
         })
 
         setTimeout(() => {
@@ -229,13 +265,34 @@ export default class App {
                 this.frameMaterials = this.frameMaterials.concat(winMaterials);
             }
 
+            /*
             materials.forEach((m: any) => {
                 if (m.map && m.map.image) {
                     let src = m.map.image.src;
-                    this.resetMap(m, src);
+
+                    //模型变黑解决要点
+                    m.emissive = m.color;
+                    m.emissiveIntensity = 0.1;
+
+
+                    // m.emissiveMap = m.map;
+
+
+                    // this.resetMap(m, src);
+
+                    // setTimeout(() => {
+                    //     let map = m.map;
+                    //     var isJPEG = src.search( /\.jpe?g($|\?)/i ) > 0 || src.search( /^data\:image\/jpeg/ ) === 0;
+                    //     map.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
+                    //     map.needsUpdate = true;
+                    //     m.map = map;
+                    //     m.map.needsUpdate = true;
+                    //     m.needsUpdate = true;
+                    // }, 4000);
                 }
             })
-        }, 300);
+            */
+        }, 3000);
     }
 
     resetMap(material: any, url: string): void {
@@ -295,11 +352,12 @@ export default class App {
         this.initMaterials(obj);
 
         // obj.rotateX(-Math.PI / 2);
-
-        var url = param.attr.url.replace(/\.(glb|zip|a3d)/i, ".animation");
-        var effect = new Effect();
-        effect.init(url, obj);
-        this.effects.push(effect);
+        if(param.hasAnimate){
+            var url = param.attr.url.replace(/\.(glb|zip|a3d)/i, ".animation");
+            var effect = new Effect();
+            effect.init(url, obj);
+            this.effects.push(effect);
+        }
         // this.scene.add(obj);
     }
 
@@ -357,27 +415,34 @@ export default class App {
     // }
 
     setRoughness(n: number): void {
-        var group = this.scene.getObjectByName("load_scene");
-        group && group.traverse((child: any) => {
-            if (child.isMesh) {
-                let mats = Array.isArray(child.material) ? child.material : [child.material];
-                for (var i: number = 0; i < mats.length; i++) {
-                    mats[i].roughness = n;
-                }
-            }
+        // var group = this.scene.getObjectByName("load_scene");
+        // group && group.traverse((child: any) => {
+        //     if (child.isMesh) {
+        //         let mats = Array.isArray(child.material) ? child.material : [child.material];
+        //         for (var i: number = 0; i < mats.length; i++) {
+        //             mats[i].roughness = n;
+        //         }
+        //     }
+        // })
+
+        this.frameMaterials.forEach((mat:any)=>{
+            mat.roughness = n;
         })
         this.roughness = n;
     }
 
     setMetalness(n: number): void {
-        var group = this.scene.getObjectByName("load_scene");
-        group && group.traverse((child: any) => {
-            if (child.isMesh) {
-                let mats = Array.isArray(child.material) ? child.material : [child.material];
-                for (var i: number = 0; i < mats.length; i++) {
-                    mats[i].metalness = n;
-                }
-            }
+        // var group = this.scene.getObjectByName("load_scene");
+        // group && group.traverse((child: any) => {
+        //     if (child.isMesh) {
+        //         let mats = Array.isArray(child.material) ? child.material : [child.material];
+        //         for (var i: number = 0; i < mats.length; i++) {
+        //             mats[i].metalness = n;
+        //         }
+        //     }
+        // })
+        this.frameMaterials.forEach((mat:any)=>{
+            mat.metalness = n;
         })
         this.metalness = n;
     }

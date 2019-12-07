@@ -10,7 +10,7 @@
         <RightView class="ui" :style="right"></RightView>
         <BottomView class="ui" :style="bottom"></BottomView>
         <RoleView class="ui" :style="role"></RoleView>
-
+        <LoadingView class="ui" :style="loading"></LoadingView>
         <div class="menu" @click="showMenu" :style="menu"></div>
 
         <DesignView></DesignView>
@@ -38,6 +38,7 @@ import DetailView from '../detail-view/index.vue'
 import RoleView from '../role-view/index.vue'
 import ColorView from '../color-view/index.vue'
 import GuiderView from '../guider-view/index.vue'
+import LoadingView from '../loading-view/index.vue'
 import listener from '../../lib/listener'
 import Tooler from '../../core/Tooler.ts'
 
@@ -60,13 +61,19 @@ export default {
                 transform: 'translateY(0)',
                 opacity: 1
             },
+            loading: {
+                transform: 'translateY(0)',
+                opacity: 1
+            },
             menu: {
                 transform: 'translateX(20px)',
                 opacity: 0
-            }
+            },
+            retry: false,
+            imgs: []
         };
     },
-    components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView, RoleView, ColorView, GuiderView},
+    components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView, RoleView, ColorView, GuiderView, LoadingView},
     computed: {},
     beforeCreate(){
         var url = Tooler.getQueryString("u")||"";
@@ -97,12 +104,18 @@ export default {
                 transform: 'translateY(20px)',
                 opacity: 0
             };
-
+            this.loading = {
+                transform: 'translateY(20px)',
+                opacity: 0
+            };
             this.menu = {
                 transform: 'translateX(0)',
                 opacity: 1
             }
         })
+
+        let id = this.$store.state.modelId;
+        this.getImg(id);
     },
     methods: {
         showMenu(){
@@ -126,6 +139,38 @@ export default {
             this.menu = {
                 transform: 'translateX(20px)',
                 opacity: 0
+            }
+        },
+        async getImg(id) {
+            let res;
+            let link = "";
+            if (location.search.indexOf("//3d.") != -1) {
+                link = "/mapi/index.php";
+                res = await this.$get(link, {
+                        id: id,
+                        app: "index",
+                        fnn: "sysdiss",
+                        type_id: this.$store.state.modelType
+                    });
+            } else {
+                link = "/api/index/sysdiss";
+                res = await this.$post(link, {id: id});
+            }
+
+            if (res.data && res.data.datas) {
+                let datas = res.data.datas;
+                if (datas["sys_img"] || datas["brand_img"]) {
+                    datas["sys_img"] && this.imgs.push(datas["sys_img"]);
+                    datas["brand_img"] && this.imgs.push(datas["brand_img"]);
+
+                    this.$store.commit("changeProductImages", [].concat(this.imgs));
+                    this.$store.commit("changeLogoImage", datas["vr_img"]);
+                } else {
+                    if (!this.retry) {
+                        this.retry = true;
+                        this.getImg(26);
+                    }
+                }
             }
         }
     }

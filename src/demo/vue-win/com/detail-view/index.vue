@@ -16,14 +16,16 @@ import Tooler from "../../core/Tooler.ts"
 export default {
     data() {
         return {
-            retry: false,
-            imgs: []
+            retry: false
         };
     },
     components: {},
     computed: {
         visible() {
             return this.$store.state.detailVisible;
+        },
+        imgs(){
+            return this.$store.state.productImages;
         }
     },
     mounted() {
@@ -32,8 +34,8 @@ export default {
         // console.log(url);
         // let id = url.split("/").pop().split(".")[0];
 
-        let id = this.$store.state.modelId;
-        this.getImg(id);
+        // let id = this.$store.state.modelId;
+        // this.getImg(id);
     },
     methods: {
         close() {
@@ -47,7 +49,8 @@ export default {
                 res = await this.$get(link, {
                         id: id,
                         app: "index",
-                        fnn: "sysdiss"
+                        fnn: "sysdiss",
+                        type: this.$store.state.modelType
                     });
             } else {
                 link = "/api/index/sysdiss";

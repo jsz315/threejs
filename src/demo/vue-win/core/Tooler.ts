@@ -3,6 +3,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 export default class Tooler{
 
+    public static errorList:Array<string> = [];
+
     public static getOffsetVector3(obj: THREE.Object3D):THREE.Vector3{
         let box = new THREE.Box3().setFromObject(obj);
         let x = (box.min.x + box.max.x) / 2;
@@ -80,14 +82,14 @@ export default class Tooler{
                         // m.map.flipX = true;
                     }
                 })
-                let temp = Math.max(...item.geometry.attributes.uv.array);
-                size = Math.max(temp, size);
+                // let temp = Math.max(...item.geometry.attributes.uv.array);
+                // size = Math.max(temp, size);
             }
         })
 
-        if(size > 2){
-            size = 2;
-        }
+        // if(size > 2){
+        //     size = 2;
+        // }
 
         return [materials, size];
     }
@@ -98,7 +100,7 @@ export default class Tooler{
         xhr.onprogress = (event) =>{
             if (event.lengthComputable) {
                 let n = Math.floor(event.loaded / event.total * 100);
-                console.log(n + "%");
+                // console.log(n + "%");
                 // this.loading.update("加载中", n + "%");
                 // this.add(this.loading);
                 progressHandler && progressHandler(n);
@@ -176,7 +178,7 @@ export default class Tooler{
         return new Promise(async resolve => {
             let fname = "design.json";
             for(var i in zip.files){
-                console.log(zip.files[i]);
+                // console.log(zip.files[i]);
                 if(zip.files[i].name == fname){
                     let json = await zip.file(fname).async("string");
                     resolve(JSON.parse(json));
@@ -213,18 +215,30 @@ export default class Tooler{
         return new Promise(async resolve => {
             let flink = url.replace(/\.(glb|zip)/i, "");
             let isZip = false;
-            if(await Tooler.validateLink(flink + ".zip")){
-                url = flink + ".zip";
-                isZip = true;
-            }
-            else{
-                url = flink + ".glb";
-            }
+
+            url = flink + ".zip";
+            isZip = true;
+
+            // if(await Tooler.validateLink(flink + ".zip")){
+            //     url = flink + ".zip";
+            //     isZip = true;
+            // }
+            // else{
+            //     url = flink + ".glb";
+            // }
 
             let list = Tooler.getUrlPath(url);
             var modelPath = list[0];
             var modelName = list[1];
+
+            if(Tooler.errorList.indexOf(modelPath + modelName) != -1){
+                resolve(null);
+                console.log("不存在：" + modelPath + modelName);
+                return;
+            }
+
             var xhr = new XMLHttpRequest();
+            // xhr.open('GET', modelPath + modelName);
             xhr.open('GET', modelPath + modelName + "?v=" + Math.random());
             xhr.responseType = 'blob';
             xhr.onprogress = (event) =>{
@@ -240,8 +254,10 @@ export default class Tooler{
                     if (xhr.status === 200) {
                         // resolve({blob: xhr.response, isZip});
                         let res = await Tooler.parseModel(xhr.response, isZip, url);
+                        console.log("loaded: " + url);
                         resolve(res);
                     } else {
+                        Tooler.errorList.push(modelPath + modelName);
                         resolve(null);
                     }
                 }
@@ -285,6 +301,7 @@ export default class Tooler{
             }
             let loader = new GLTFLoader();
             loader.setCrossOrigin('anonymous');
+            console.log("list[0] " + list[0]);
             loader.parse(buffer, list[0], (gltf:any) => {
                 console.log("【GLTF数据】");
                 console.log(gltf);

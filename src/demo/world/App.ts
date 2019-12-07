@@ -27,7 +27,7 @@ export default class App {
     
     constructor() {
         this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 900);
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0, 1000);
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
             alpha: true
@@ -95,6 +95,7 @@ export default class App {
     
 
     setup():void {
+        console.log("start");
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setClearColor(new THREE.Color(0xffffff));
@@ -102,7 +103,7 @@ export default class App {
         document.body.appendChild(this.renderer.domElement);
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
         this.orbit.enabled = false;
-        this.camera.position.set(7.742, 9.887, 13.769);
+        this.camera.position.set(10, 10, 10);
 
         this.pots = [];
         this.dragItems = [];
@@ -111,7 +112,8 @@ export default class App {
         this.addDrag();
         this.animate();
 
-        this.camera.lookAt(App.ZERO);
+        this.camera.lookAt(new THREE.Vector3());
+        console.log(this.camera);
     }
 
     toggerControl(use: boolean):void{
@@ -155,12 +157,11 @@ export default class App {
 
    
     addPlane():void{
-        let gridHelper = new THREE.GridHelper(80, 80);
+        let gridHelper = new THREE.GridHelper(4000, 4000);
         (gridHelper.material as any).transparent = true;
-        (gridHelper.material as any).opacity = 0.1;
+        (gridHelper.material as any).opacity = 0.4;
         this.scene.add(gridHelper);
         this.scene.add(new THREE.AxesHelper(40));
-
 
         new THREE.FontLoader().load((window as any).CFG.baseURL + "/obj/font/gentilis_bold.typeface.json", (font) => {
             let param = {
@@ -225,18 +226,25 @@ export default class App {
     }
 
     addPots(list: Array<number>){
+        console.log("total: " + list.length / 3);
+        let box = new THREE.BoxGeometry();
+        let mat = new THREE.MeshNormalMaterial();
         for(let i = 0; i < list.length; i += 3){
-            let pot = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({
-                color: App.SELECTED_COLOR,
-                map: new THREE.CanvasTexture(this.getCanvas(++App.TOTAL))
-            }));
+            // let pot = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({
+            //     color: App.SELECTED_COLOR,
+            //     map: new THREE.CanvasTexture(this.getCanvas(++App.TOTAL))
+            // }));
+
+            let pot = new THREE.Mesh(box, mat);
             pot.position.set(list[i], list[i + 1], list[i + 2]);
             this.scene.add(pot);
-            this.pots.push(pot);
-            this.dragItems.push(pot);
-            this.changeCurObject(pot);
+            // this.pots.push(pot);
+            // this.dragItems.push(pot);
+            // this.changeCurObject(pot);
             pot.name = "pot" + App.TOTAL;
         }
+
+        console.log(this.scene);
     }
 
     drawObject(){

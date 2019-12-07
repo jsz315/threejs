@@ -1,6 +1,6 @@
 <template>
     <div class="top-view">
-        <div class="logo"></div>
+        <div class="logo" :style="{backgroundImage: 'url(' + logo + ')'}" v-if="logo"></div>
         <div class="info">
             <div class="hot"></div>人气：{{num}}
         </div>
@@ -15,7 +15,11 @@ export default {
         };
     },
     components: {},
-    computed: {},
+    computed: {
+        logo(){
+            return this.$store.state.logoImage || "./asset/img/logo.png";
+        }
+    },
     beforeCreate(){
         
     },
@@ -30,6 +34,7 @@ export default {
         if(res && res.data && res.data.code == 200){
             this.num = res.data.datas.views;
         }
+
     },
     methods: {
 

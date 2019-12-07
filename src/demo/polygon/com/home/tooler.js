@@ -13,22 +13,27 @@ function computeShape(type, list) {
             c.AddPaths(obj, ClipperLib.PolyType.ptClip, true);
         }
     }
+
+    var subject_fillType = ClipperLib.PolyFillType.pftNonZero;
+    var clip_fillType = ClipperLib.PolyFillType.pftNonZero;
     
-    c.Execute(ClipperLib.ClipType[type], solution);
+    c.Execute(ClipperLib.ClipType[type], solution, subject_fillType, clip_fillType);
     let str = JSON.stringify(solution).toLowerCase();
     console.log("solution", solution);
     console.log(str);
     return eval(str);
 }
 
-function getAimList(list) {
-    let aim = list.map(item => {
-        return {
-            X: item.x,
-            Y: item.y
-        }
+function getAimList(pots) {
+    let aim = pots.map(list=>{
+        return list.map(item => {
+            return {
+                X: item.x,
+                Y: item.y
+            }
+        })
     })
-    return [aim];
+    return aim;
 }
 
 export default {

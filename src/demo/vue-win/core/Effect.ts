@@ -64,7 +64,7 @@ export class Effect{
 
                 // this.animates = animateList1.concat(animateList2);
                 this.animates = this.animates.concat(animateList1, animateList2);
-                console.log(this.animates);
+                // console.log(this.animates);
             }
             else{
                 // (document.querySelector(".animate") as any).style.display = "none";
