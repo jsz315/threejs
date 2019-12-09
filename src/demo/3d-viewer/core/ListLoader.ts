@@ -20,13 +20,14 @@ export default class ListLoader{
 
     async start(){
         if(this.curId < this.list.length){
+            console.log("start load " + this.type + " " + this.curId);
             await this.load(this.list[this.curId], this.type == "hole");
-            console.log("load " + this.type + " " + this.curId + "/" + this.list.length);
+            console.log("end load " + this.type + " " + this.curId);
             this.curId++;
             this.start();
         }
         else{
-            console.log("[" + this.type + " all loaded]");
+            console.log(this.type + " all loaded");
             window.dispatchEvent(new CustomEvent("listLoad", { bubbles: false, cancelable: false, detail: this.type}));
         }
     }
@@ -38,7 +39,6 @@ export default class ListLoader{
                 resolve();
                 return;
             }
-            console.log("url=>" + this.list[this.curId].url);
             let res:any = await Tooler.loadModel(url);
             if(!res){
                 resolve(); 

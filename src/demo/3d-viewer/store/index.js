@@ -11,11 +11,17 @@ export default new Vuex.Store({
         colorVisible: false,
         guiderVisible: false,
         effectParam: {
-            ambient: 0.64,
+            ambient: 0.4,
             directional: 0.8,
             roughness: 0.3,
             metalness: 0.6
         },
+        transformParam: {
+            x: 0,
+            y: 0,
+            z: 0
+        },
+        transformVisible: false,
         modelId: 0,
         modelType: 0,
         productImages: [],
@@ -36,6 +42,12 @@ export default new Vuex.Store({
         },
         changeColorVisible(state, value){
             state.colorVisible = value;
+        },
+        changeTransformVisible(state, value){
+            state.transformVisible = value;
+        },
+        changeTransformParam(state, value){
+            state.transformParam = value;
         },
         changeModelId(state, value){
             state.modelId = value;

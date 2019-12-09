@@ -4,6 +4,7 @@ import FocusLight from './FocusLight';
 import Tooler from './Tooler';
 import { FineLoader } from './FineLoader';
 import { Effect } from './Effect';
+import listener from '../lib/listener';
 
 export default class App {
     public static ZERO: THREE.Vector3 = new THREE.Vector3();
@@ -29,7 +30,6 @@ export default class App {
     size: any;
     canvas: any;
     repeat: any;
-    inited: boolean;
 
     constructor(canvas: any, size: any) {
         this.size = this.getStageSize(true);
@@ -175,8 +175,7 @@ export default class App {
         this.addGrass(size.y);
 
         this.resetName(this.scene);
-        this.initMaterials(parent);
-        this.inited = true;
+        this.initMaterials(parent, true);
     }
 
     addGrass(h:number){
@@ -204,16 +203,15 @@ export default class App {
         })
     }
 
-    initMaterials(parent: THREE.Object3D) {
+    initMaterials(parent: THREE.Object3D, isWall:boolean = false) {
         let list = Tooler.getAllMaterial(parent);
         let materials = list[0];
         this.repeat = list[1];
-        let isRoom = false;
+
         let winMaterials: any = [];
-        let roomMaterials: any = [];
 
         materials.forEach((m: any) => {
-            if(FineLoader.isLayout || !this.inited){
+            if(FineLoader.isLayout || isWall){
                 console.log("家具材质");
                 m.roughness = 1;
                 m.metalness = 0.04;
@@ -234,18 +232,18 @@ export default class App {
                         winMaterials.push(m);
                     }
                     
-                    // if(src.indexOf("/glass.") != -1){
-                    //     m.opacity = 0.4;
-                    // }
-                    // else if(src.indexOf("/product.png") != -1){
-                    //     m.opacity = 0.4;
-                    // }
-                    // else if(src.indexOf("/BL123.jpg") != -1){
-                    //     m.opacity = 0.4;
-                    // }
-                    // else if(src.indexOf("/bl_") != -1){
-                    //     m.opacity = 0.4;
-                    // }
+                    if(src.indexOf("/glass.") != -1){
+                        m.opacity = 0.36;
+                    }
+                    else if(src.indexOf("/product.png") != -1){
+                        m.opacity = 0.36;
+                    }
+                    else if(src.indexOf("/BL123.jpg") != -1){
+                        m.opacity = 0.36;
+                    }
+                    else if(src.indexOf("/bl_") != -1){
+                        m.opacity = 0.36;
+                    }
                 }
             }
             
@@ -254,45 +252,16 @@ export default class App {
 
             //模型变黑解决要点
             m.emissive = m.color;
-            m.emissiveIntensity = 0.1;
+            // m.emissive = new THREE.Color(0xffffff);
+            m.emissiveIntensity = 0.12;
         })
 
-        setTimeout(() => {
-            if (isRoom) {
-                this.frameMaterials = this.frameMaterials.concat(roomMaterials);
-            }
-            else {
-                this.frameMaterials = this.frameMaterials.concat(winMaterials);
-            }
-
-            /*
-            materials.forEach((m: any) => {
-                if (m.map && m.map.image) {
-                    let src = m.map.image.src;
-
-                    //模型变黑解决要点
-                    m.emissive = m.color;
-                    m.emissiveIntensity = 0.1;
-
-
-                    // m.emissiveMap = m.map;
-
-
-                    // this.resetMap(m, src);
-
-                    // setTimeout(() => {
-                    //     let map = m.map;
-                    //     var isJPEG = src.search( /\.jpe?g($|\?)/i ) > 0 || src.search( /^data\:image\/jpeg/ ) === 0;
-                    //     map.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
-                    //     map.needsUpdate = true;
-                    //     m.map = map;
-                    //     m.map.needsUpdate = true;
-                    //     m.needsUpdate = true;
-                    // }, 4000);
-                }
-            })
-            */
-        }, 3000);
+        this.frameMaterials = this.frameMaterials.concat(winMaterials);
+        if(isWall){
+            setTimeout(() => {
+                listener.emit("init");
+            }, 4000);
+        }
     }
 
     resetMap(material: any, url: string): void {

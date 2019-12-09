@@ -254,7 +254,7 @@ export default class Tooler{
                     if (xhr.status === 200) {
                         // resolve({blob: xhr.response, isZip});
                         let res = await Tooler.parseModel(xhr.response, isZip, url);
-                        // console.log("loaded: " + url);
+                        console.log("loaded: " + url);
                         resolve(res);
                     } else {
                         Tooler.errorList.push(modelPath + modelName);
@@ -301,7 +301,7 @@ export default class Tooler{
             }
             let loader = new GLTFLoader();
             loader.setCrossOrigin('anonymous');
-            // console.log("list[0] " + list[0]);
+            console.log("list[0] " + list[0]);
             loader.parse(buffer, list[0], (gltf:any) => {
                 console.log("【GLTF数据】");
                 console.log(gltf);

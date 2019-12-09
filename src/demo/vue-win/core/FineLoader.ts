@@ -14,30 +14,39 @@ export class FineLoader extends THREE.Object3D{
     modelName: string = "";
     holeList: ListLoader;
     layoutList: ListLoader;
+    sunList: ListLoader;
+    partList: ListLoader;
 
     constructor(){
         super();
         this.loading = new Loading();
-        this.add(this.loading);
+        // this.add(this.loading);
 
         this.holeList = new ListLoader("hole");
+        this.sunList = new ListLoader("sun");
+        this.partList = new ListLoader("part");
         this.layoutList = new ListLoader("layout");
 
         window.addEventListener("model_progress", (e: any) => {
-            this.loading.update("加载中", e.detail);
+            // this.loading.update("加载中", e.detail);
             if(e.detail == 100){
-                this.remove(this.loading);
+                // this.remove(this.loading);
             }
         })
 
         window.addEventListener("listLoad", (e: any) => {
-            this.loading.update("加载中", e.detail);
+            // this.loading.update("加载中", e.detail);
             if(e.detail == "hole"){
-                // this.remove(this.loading);
+                this.sunList.start();
+            }
+            else if(e.detail == "sun"){
+                this.partList.start();
+            }
+            else if(e.detail == "part"){
                 FineLoader.isLayout = true;
                 this.layoutList.start();
             }
-            else{
+            else if(e.detail == "layout"){
                 window.dispatchEvent(new CustomEvent("all loaded", { bubbles: false, cancelable: false, detail: {}}));
             }
         })
@@ -53,17 +62,19 @@ export class FineLoader extends THREE.Object3D{
         console.log(res.json);
         callback(res.object3D);
 
-        // console.log("开始加载门窗-------");
         res.json.holes && res.json.holes.forEach(async (item:any)=>{
-            // console.log("加载门窗模型-------");
-            // await this.loadSubModel(item, true);
             this.holeList.add(item);
         })
 
-        // console.log("开始加载家具-------");
+        res.json.suns && res.json.suns.forEach(async (item:any)=>{
+            this.sunList.add(item);
+        })
+
+        res.json.parts && res.json.parts.forEach(async (item:any)=>{
+            this.partList.add(item);
+        })
+
         res.json.layouts && res.json.layouts.forEach(async (item:any)=>{
-            // console.log("加载家具模型-------");
-            // await this.loadSubModel(item, false);
             this.layoutList.add(item);
         })
 

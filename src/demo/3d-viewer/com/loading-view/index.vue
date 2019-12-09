@@ -1,11 +1,7 @@
 <template>
     <div class="loading-view" v-if="visible">
-        <div class="tip">
-            模型加载中{{this.pots}}
-        </div>
-        <div class="gif" v-if="!isInit"></div>
+        模型加载中{{this.pots}}
     </div>
-    
 </template>
 
 <script>
@@ -16,8 +12,7 @@ export default {
     data() {
         return {
             pots: "",
-            visible: true,
-            isInit: false
+            visible: true
         };
     },
     components: {},
@@ -31,10 +26,7 @@ export default {
             this.visible = false;
             clearInterval(tid);
         })
-
-        listener.on("init", ()=>{
-            this.isInit = true;
-        })
+       
     },
     methods: {
         
