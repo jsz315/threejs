@@ -10,11 +10,14 @@ export default class FocusLight extends THREE.SpotLight{
         // this.castShadow = true;
         // this.position.set(0, 1, 60);
         // this.helper = new THREE.SpotLightHelper(this);
+        // this.power = 100;
+        console.log("=====================", this);
     }
 
     update(camera: THREE.Camera){
         this.rotation.copy(camera.rotation);
-        this.position.set(camera.position.x * 10, camera.position.y * 10, camera.position.z * 10);
+        // this.position.copy(camera.position);
+        this.position.set(camera.position.x * 100, camera.position.y * 100, camera.position.z * 100);
 
         /*
         let pot = camera.position.clone();

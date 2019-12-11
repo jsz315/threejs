@@ -1,6 +1,9 @@
 <template>
     <div class="loading-view" v-if="visible">
-        <div class="tip">
+        <div class="tip" v-if="isInit">
+            请不要关闭窗口
+            <br/>
+            <br/>
             模型加载中{{this.pots}}
         </div>
         <div class="gif" v-if="!isInit"></div>

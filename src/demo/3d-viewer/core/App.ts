@@ -17,6 +17,8 @@ export default class App {
     isMobile: boolean;
     size: any;
     canvas: any;
+    clock:THREE.Clock = new THREE.Clock();
+    mixer: any;
 
     constructor(canvas: any) {
         this.size = this.getStageSize(true);
@@ -33,7 +35,8 @@ export default class App {
         });
         // this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setClearColor(new THREE.Color(0x999999), 0);
-        this.renderer.shadowMap.enabled = false;
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFShadowMap;
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
         this.orbit.enabled = true;
         this.orbit.minPolarAngle = 0;
@@ -62,14 +65,16 @@ export default class App {
 
     transform(attr:string, num:number){
         var obj = this.scene.getObjectByName("load_obj");
+        console.log(attr, num);
+        var r = Math.PI * num / 180;
         if(attr == "x"){
-            obj.rotateX(-Math.PI / 2);
+            obj.rotation.x = r;
         }
         else if(attr == "y"){
-            obj.rotateY(-Math.PI / 2);
+            obj.rotation.y = r;
         }
         else if(attr == "z"){
-            obj.rotateZ(-Math.PI / 2);
+            obj.rotation.z = r;
         }
     }
 
@@ -93,6 +98,8 @@ export default class App {
     }
 
     animate(): void {
+        var delta = this.clock.getDelta();
+        if ( this.mixer ) this.mixer.update( delta );
         requestAnimationFrame(() => {
             this.animate();
         });
@@ -129,8 +136,13 @@ export default class App {
         }
     }
 
-    addObj(obj:THREE.Object3D){
+    addObj(obj:any){
         this.fitModel(obj);
+        this.mixer = new THREE.AnimationMixer( obj );
+        if(obj.animations && obj.animations.length){
+            var action = this.mixer.clipAction( obj.animations[ 0 ] );
+            action.play();
+        }
     }
 
     fitModel(group: THREE.Object3D): void {
@@ -139,13 +151,21 @@ export default class App {
         parent.scale.multiplyScalar(scale);
         // parent.rotateX(-Math.PI / 2);
         parent.name = "load_obj";
-        this.scene.add(parent);
+
+        parent.traverse(function(item:any):void{
+            if(item.isMesh){
+                item.castShadow = true;
+                item.receiveShadow = true;
+            }
+        });
 
         let aim = new THREE.Object3D();
         aim.add(parent);
         this.scene.add(aim);
         let offset: THREE.Vector3 = Tooler.getOffsetVector3(aim);
         aim.position.set(0 - offset.x, 0 - offset.y, 0 - offset.z);
+
+        this.scene.add(new THREE.BoxHelper(aim));
 
         let size = Tooler.getBoxSize(aim);
         this.addGrass(size.y);
@@ -164,6 +184,7 @@ export default class App {
         plane.rotateX(-90 * Math.PI / 180);
         plane.position.y = -h / 2 - 0.1;
         plane.name = "grass";
+        plane.receiveShadow = true;
         this.scene.add(plane);
     }
 

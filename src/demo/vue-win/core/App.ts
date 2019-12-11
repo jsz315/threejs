@@ -5,6 +5,7 @@ import Tooler from './Tooler';
 import { FineLoader } from './FineLoader';
 import { Effect } from './Effect';
 import listener from '../lib/listener';
+import TextureList from './TextureList';
 
 export default class App {
     public static ZERO: THREE.Vector3 = new THREE.Vector3();
@@ -30,6 +31,7 @@ export default class App {
     size: any;
     canvas: any;
     repeat: any;
+    textureList: TextureList;
 
     constructor(canvas: any, size: any) {
         this.size = this.getStageSize(true);
@@ -69,6 +71,8 @@ export default class App {
         this.rayCaster = new THREE.Raycaster();
 
         this.effects = [];
+
+        this.textureList = new TextureList();
 
         window.addEventListener("resize", e => this.onResize(e), false);
         canvas.addEventListener(this.isMobile ? "touchstart" : "mousedown", (e: any) => this.select(e), false);
@@ -138,6 +142,12 @@ export default class App {
             if (mat.map) {
                 let img = mat.map.image;
                 console.log(img.currentSrc);
+                // console.log(JSON.stringify(mat));
+                // this.resetMap(mat, img.currentSrc);
+                // setTimeout(() => {
+                //     mat.map.needsUpdate = true;
+                //     mat.needsUpdate = true;
+                // }, 2000);
             }
         }
     }
@@ -179,14 +189,14 @@ export default class App {
     }
 
     addGrass(h:number){
-        var mat = new THREE.MeshStandardMaterial({
+        var mat = new THREE.MeshBasicMaterial({
             map: new THREE.TextureLoader().load("./asset/grass2.jpg"),
             side: THREE.DoubleSide
         })
         mat.map.wrapS = mat.map.wrapT = THREE.RepeatWrapping;
         mat.map.repeat.set(200, 200);
-        mat.metalness = 0;
-        mat.roughness = 0.9;
+        // mat.metalness = 0;
+        // mat.roughness = 1;
         var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), mat);
         plane.rotateX(-90 * Math.PI / 180);
         plane.position.y = -h / 2 - 0.1;
@@ -211,16 +221,20 @@ export default class App {
         let winMaterials: any = [];
 
         materials.forEach((m: any) => {
+            let src:any;
+            if (m.map && m.map.image) {
+                src = m.map.image.src;
+            }
             if(FineLoader.isLayout || isWall){
                 console.log("家具材质");
-                m.roughness = 1;
+                m.roughness = 0.96;
                 m.metalness = 0.04;
                 m.flatShading = false;
             }
             else{
                 console.log("门窗材质");
-                if (m.map && m.map.image) {
-                    let src = m.map.image.src;
+                if (src) {
+                    // src = m.map.image.src;
                     // if (src.indexOf("/dif_") != -1) {
                     //     isRoom = true;
                     //     roomMaterials.push(m);
@@ -231,29 +245,47 @@ export default class App {
                     if (src.indexOf("/IPR_") != -1) {
                         winMaterials.push(m);
                     }
-                    
+                    if(src.indexOf("dif_wood") != -1){
+                        winMaterials.push(m);
+                    }
+
+                    let isGlass = false;
                     if(src.indexOf("/glass.") != -1){
-                        m.opacity = 0.36;
+                        isGlass = true;
                     }
                     else if(src.indexOf("/product.png") != -1){
-                        m.opacity = 0.36;
+                        isGlass = true;
                     }
-                    else if(src.indexOf("/BL123.jpg") != -1){
-                        m.opacity = 0.36;
+                    else if(src.indexOf("/IGL_") != -1){
+                        // m.transparent = true;
+                        isGlass = true;
+                    }
+                    else if(src.indexOf("/BL123") != -1){
+                        isGlass = true;
                     }
                     else if(src.indexOf("/bl_") != -1){
-                        m.opacity = 0.36;
+                        isGlass = true;
                     }
+
+                    if(isGlass){
+                        // m.opacity = 0.36;
+                        m.alphaTest = 0.2;
+                        m.transparent = true;
+                    }
+
+                    m.roughness = this.roughness;
+                    m.metalness = this.metalness;
                 }
             }
-            
-            m.transparent = true;
-            m.alphaTest = 0.2;
+            src && this.resetMap(m, src);
 
             //模型变黑解决要点
-            m.emissive = m.color;
-            // m.emissive = new THREE.Color(0xffffff);
-            m.emissiveIntensity = 0.12;
+            // m.emissive = m.color;
+            // m.emissiveIntensity = 0.12;
+
+            // setTimeout(() => {
+            //     src && this.resetMap(m, src);
+            // }, 3000);
         })
 
         this.frameMaterials = this.frameMaterials.concat(winMaterials);
@@ -262,10 +294,12 @@ export default class App {
                 listener.emit("init");
             }, 4000);
         }
+        
     }
 
     resetMap(material: any, url: string): void {
         let map = material.map;
+
         let texture: any = new THREE.TextureLoader().load(url, () => {
             material.map.needsUpdate = true;
             material.needsUpdate = true;
@@ -275,9 +309,28 @@ export default class App {
         texture.wrapT = map.wrapT;
         texture.repeat = new THREE.Vector2(map.repeat.x, map.repeat.y);
         texture.flipY = map.flipY;
-        // texture.flipX = map.flipY;
         texture.flipX = map.flipX;
+
         material.map = texture;
+
+        /*
+        let texture:any = new THREE.Texture();
+        texture.image = map.image;
+        for(let i in map){
+            if(i != "image"){
+                texture[i] = map[i];
+            }
+        }
+        
+        // var isJPEG = url.search( /\.jpe?g($|\?)/i ) > 0 || url.search( /^data\:image\/jpeg/ ) === 0;
+
+        // texture.format = isJPEG ? RGBFormat : RGBAFormat;
+
+        // material.map = texture;
+
+        // texture.needsUpdate = true;
+        // material.needsUpdate = true;
+        */
     }
 
     changeMap(url: string): void {

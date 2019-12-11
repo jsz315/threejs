@@ -40,10 +40,11 @@ export class FineLoader extends THREE.Object3D{
                 this.sunList.start();
             }
             else if(e.detail == "sun"){
+                FineLoader.isLayout = true;
                 this.partList.start();
             }
             else if(e.detail == "part"){
-                FineLoader.isLayout = true;
+                // FineLoader.isLayout = true;
                 this.layoutList.start();
             }
             else if(e.detail == "layout"){

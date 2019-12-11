@@ -13,7 +13,7 @@ export default new Vuex.Store({
         effectParam: {
             ambient: 0.4,
             directional: 0.8,
-            roughness: 0.3,
+            roughness: 0.2,
             metalness: 0.6
         },
         transformParam: {

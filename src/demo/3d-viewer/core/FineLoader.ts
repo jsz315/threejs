@@ -82,7 +82,7 @@ export class FineLoader extends THREE.Object3D{
             var reader = new FileReader();
             reader.onload = ()=>{
                 var loader = new FBXLoader(this.loadingManager);
-                var obj = loader.parse(reader.result, "");
+                var obj:any = loader.parse(reader.result, "");
                 this.parseOver(obj);
             }
             reader.readAsArrayBuffer(file);

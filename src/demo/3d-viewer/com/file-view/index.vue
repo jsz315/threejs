@@ -97,7 +97,7 @@ export default {
                 console.log(`读取完成，文件总数为${fileList.length}`);
                 listener.emit("file", fileList);
                 this.visible = false;
-            }, 1000)
+            }, 600)
         }
     }
 };

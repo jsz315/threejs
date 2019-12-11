@@ -2,12 +2,7 @@
     <div class="right-view">
 
         <div class="ico share" @click="openShare"></div>
-        <div class="ico effect" @click="openEffect">
-            <div class="menu" v-show="effectMenuVisible">
-                <div class="tip">效果</div>
-                <div class="tip">颜色</div>
-            </div>
-        </div>
+        <div class="ico effect" @click="openEffect"></div>
         <div class="ico full" @click="fullSize"></div>
         <div class="ico picture" @click="openPicture" v-if="false"></div>
         <div class="ico camera" @click="openCamera" v-if="false"></div>
@@ -59,22 +54,22 @@ export default {
     },
     methods: {
         openEffect(e){
-            if(e.target.className == "tip"){
-                if(e.target.innerText == "效果"){
-                    this.$store.commit("changeEffectVisible", true);
-                }
-                else{
-                    this.$store.commit("changeColorVisible", true);
-                }
-                this.effectMenuVisible = false;
-            }
-            else{
-                this.effectMenuVisible = !this.effectMenuVisible;
-            }
+            this.$store.commit("changeEffectVisible", true);
+            // if(e.target.className == "tip"){
+            //     if(e.target.innerText == "效果"){
+            //         this.$store.commit("changeEffectVisible", true);
+            //     }
+            //     else{
+            //         this.$store.commit("changeColorVisible", true);
+            //     }
+            //     this.effectMenuVisible = false;
+            // }
+            // else{
+            //     this.effectMenuVisible = !this.effectMenuVisible;
+            // }
         },
         openShare(){
             // this.$store.commit("changeGuiderVisible", true);
-            console.log("okkko");
             this.$store.commit("changeTransformVisible", true);
         },
         fullSize(){

@@ -3,9 +3,9 @@
         <SlotView title="变换">
             <div slot="content">
 
-                <RangeView :num="param.x" attr="x" @change="onChange" class="range" label="X轴" :min="-90" :max="90"></RangeView>
-                <RangeView :num="param.y" attr="y" @change="onChange" class="range" label="Y轴" :min="-90" :max="90"></RangeView>
-                <RangeView :num="param.z" attr="z" @change="onChange" class="range" label="Z轴" :min="-90" :max="90"></RangeView>
+                <RangeView :num="param.x" attr="x" @change="onChange" class="range" label="X轴" :min="-180" :max="180" :step="10"></RangeView>
+                <RangeView :num="param.y" attr="y" @change="onChange" class="range" label="Y轴" :min="-180" :max="180" :step="10"></RangeView>
+                <RangeView :num="param.z" attr="z" @change="onChange" class="range" label="Z轴" :min="-180" :max="180" :step="10"></RangeView>
 
                 <div class="btns">
                     <div class="btn" @click="close(false)">取消</div>
