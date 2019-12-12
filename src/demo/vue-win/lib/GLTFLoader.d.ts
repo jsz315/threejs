@@ -3,10 +3,10 @@ import {
   Camera,
   LoadingManager,
   Scene
-} from '../../../src/Three';
+} from 'three';
 
-import { DRACOLoader } from './DRACOLoader';
-import { DDSLoader } from './DDSLoader';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
+import { DDSLoader } from 'three/examples/jsm/loaders/DDSLoader';
 
 export interface GLTF {
   animations: AnimationClip[];

@@ -154,8 +154,10 @@ export default class App {
 
     playAnimate(): void {
         this.effects.forEach((effect:Effect)=>{effect.play()});
-
         console.log(Tooler.errorList);
+        console.log(Tooler.errorList.map(item => {
+            return item.replace(".zip", ".a3d");
+        }));
     }
 
     fitModel(group: THREE.Object3D): void {
@@ -222,9 +224,33 @@ export default class App {
 
         materials.forEach((m: any) => {
             let src:any;
+            let transparent = false;
+
             if (m.map && m.map.image) {
                 src = m.map.image.src;
+                if(src.indexOf(".png") != -1){
+                    transparent = true;
+                }
+                else if(src.indexOf("/glass.") != -1){
+                    m.opacity = 0.36;
+                    transparent = true;
+                }
+                else if(src.indexOf("/IGL_") != -1){
+                    transparent = true;
+                }
+                else if(src.indexOf("/BL123") != -1){
+                    transparent = true;
+                }
+                else if(src.indexOf("/bl_") != -1){
+                    transparent = true;
+                }
             }
+
+            if(transparent){
+                m.alphaTest = 0.2;
+                m.transparent = true;
+            }
+
             if(FineLoader.isLayout || isWall){
                 console.log("家具材质");
                 m.roughness = 0.96;
@@ -245,32 +271,8 @@ export default class App {
                     if (src.indexOf("/IPR_") != -1) {
                         winMaterials.push(m);
                     }
-                    if(src.indexOf("dif_wood") != -1){
+                    else if(src.indexOf("dif_wood") != -1){
                         winMaterials.push(m);
-                    }
-
-                    let isGlass = false;
-                    if(src.indexOf("/glass.") != -1){
-                        isGlass = true;
-                    }
-                    else if(src.indexOf("/product.png") != -1){
-                        isGlass = true;
-                    }
-                    else if(src.indexOf("/IGL_") != -1){
-                        // m.transparent = true;
-                        isGlass = true;
-                    }
-                    else if(src.indexOf("/BL123") != -1){
-                        isGlass = true;
-                    }
-                    else if(src.indexOf("/bl_") != -1){
-                        isGlass = true;
-                    }
-
-                    if(isGlass){
-                        // m.opacity = 0.36;
-                        m.alphaTest = 0.2;
-                        m.transparent = true;
                     }
 
                     m.roughness = this.roughness;

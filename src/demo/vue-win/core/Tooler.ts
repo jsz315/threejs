@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { GLTFLoader } from '../lib/GLTFLoader'
 
 export default class Tooler{
 
@@ -191,12 +191,14 @@ export default class Tooler{
     
     public static readZip(f:any){
         return new Promise(async resolve => {
-            var dateBefore:number = Date.now();
+            // var dateBefore:number = Date.now();
             (<any>window).JSZip.loadAsync(f).then(async function(zip:any) {
-                var dateAfter:number = Date.now();
+                // var dateAfter:number = Date.now();
                 // let res = await zip.file(fname.replace(".zip", ".glb")).async("arraybuffer");
+              
                 let buffer = await zip.file("obj.glb").async("arraybuffer");
                 let json = await Tooler.getJsonFromZip(zip);
+                resolve({buffer, json});
 
                 // let list:Array<any> = [];
                 // //加载其他子模型
@@ -204,10 +206,14 @@ export default class Tooler{
                 //     await loadSubModel(list[i]);
                 // }
 
-                resolve({buffer, json});
+                
             }, function (e:any) {
+                resolve(null);
                 // console.log("Error reading " + f.name + ": " + e.message);
             });
+        }).catch(e=>{
+            console.log("失败");
+            console.log(e);
         })
     }
 
@@ -292,13 +298,20 @@ export default class Tooler{
             let buffer:any, json:any, object3D;
             if(isZip){
                 let res:any = await Tooler.readZip(blob);
-                buffer = res.buffer;
-                json = res.json;
+                if(res){
+                    buffer = res.buffer;
+                    json = res.json;
+                }
+                else{
+                    resolve(null);
+                    return;
+                }
             }
             else{
                 buffer = await Tooler.blob2ArrayBuffer(blob);
                 json = {};
             }
+           
             let loader = new GLTFLoader();
             loader.setCrossOrigin('anonymous');
             // console.log("list[0] " + list[0]);
@@ -309,7 +322,12 @@ export default class Tooler{
                     object3D: gltf.scene,
                     json: json
                 });
+            }, e=>{
+                console.log("parse 错误");
+                resolve(null);
             })
+        }).catch(e=>{
+            console.log("错误");
         })
     }
 
