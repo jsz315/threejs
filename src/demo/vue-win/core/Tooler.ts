@@ -25,6 +25,9 @@ export default class Tooler{
         console.log("scene size ==== ");
         console.log(size);
         let max = Math.max(size.x, size.y, size.z);
+        if(max == 0){
+            return 0;
+        }
         let scale = num / max;
         return scale;
     }

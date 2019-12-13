@@ -32,6 +32,7 @@ export default class App {
     canvas: any;
     repeat: any;
     textureList: TextureList;
+    isFitScene: boolean;
 
     constructor(canvas: any, size: any) {
         this.size = this.getStageSize(true);
@@ -162,14 +163,7 @@ export default class App {
 
     fitModel(group: THREE.Object3D): void {
         let parent: THREE.Object3D = group;
-
-        // while (parent.children.length == 1) {
-        //     parent = parent.children[0];
-        // }
-
-        let scale: number = Tooler.getFitScale(parent, 10);
-        // parent.position.set(0, 0, 0);
-        parent.scale.multiplyScalar(scale);
+        
         parent.rotateX(-Math.PI / 2);
         this.scene.add(parent);
         parent.name = "load_scene";
@@ -178,19 +172,43 @@ export default class App {
         aim.name = "aim_scene";
         aim.add(parent);
         this.scene.add(aim);
-        let offset: THREE.Vector3 = Tooler.getOffsetVector3(aim);
-        console.log("offset ==== ");
-        console.log(offset);
-        aim.position.set(0 - offset.x, 0 - offset.y, 0 - offset.z);
-
-        let size = Tooler.getBoxSize(aim);
-        this.addGrass(size.y);
-
+        this.addGrass();
         this.resetName(this.scene);
         this.initMaterials(parent, true);
+
+        let scale: number = Tooler.getFitScale(parent, 10);
+        if(scale != 0){
+            // parent.scale.multiplyScalar(scale);
+            // this.isFitScene = true;
+            // let offset: THREE.Vector3 = Tooler.getOffsetVector3(aim);
+            // console.log("offset ==== ");
+            // console.log(offset);
+            // aim.position.set(0 - offset.x, 0 - offset.y, 0 - offset.z);
+
+            this.resetScene();
+        }
+
+        // !this.isFitScene && this.resetScene();
     }
 
-    addGrass(h:number){
+    resetScene(){
+        var aim = this.scene.getObjectByName("aim_scene");
+        var parent = this.scene.getObjectByName("load_scene");
+        let scale: number = Tooler.getFitScale(parent, 10);
+        // parent.position.set(0, 0, 0);
+        if(scale != 0){
+            parent.scale.multiplyScalar(scale);
+            this.isFitScene = true;
+            let offset: THREE.Vector3 = Tooler.getOffsetVector3(aim);
+            aim.position.set(0 - offset.x, 0 - offset.y, 0 - offset.z);
+
+            let size = Tooler.getBoxSize(aim);
+            this.scene.getObjectByName("grass").position.y = -size.y / 2 - 0.1;
+        }
+        
+    }
+
+    addGrass(){
         var mat = new THREE.MeshBasicMaterial({
             map: new THREE.TextureLoader().load("./asset/grass2.jpg"),
             side: THREE.DoubleSide
@@ -201,7 +219,7 @@ export default class App {
         // mat.roughness = 1;
         var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), mat);
         plane.rotateX(-90 * Math.PI / 180);
-        plane.position.y = -h / 2 - 0.1;
+        plane.name = "grass";
         this.scene.add(plane);
     }
 
@@ -314,25 +332,6 @@ export default class App {
         texture.flipX = map.flipX;
 
         material.map = texture;
-
-        /*
-        let texture:any = new THREE.Texture();
-        texture.image = map.image;
-        for(let i in map){
-            if(i != "image"){
-                texture[i] = map[i];
-            }
-        }
-        
-        // var isJPEG = url.search( /\.jpe?g($|\?)/i ) > 0 || url.search( /^data\:image\/jpeg/ ) === 0;
-
-        // texture.format = isJPEG ? RGBFormat : RGBAFormat;
-
-        // material.map = texture;
-
-        // texture.needsUpdate = true;
-        // material.needsUpdate = true;
-        */
     }
 
     changeMap(url: string): void {
@@ -382,7 +381,8 @@ export default class App {
             effect.init(url, obj);
             this.effects.push(effect);
         }
-        // this.scene.add(obj);
+
+        !this.isFitScene && this.resetScene();
     }
 
     addLights(): void {
@@ -432,23 +432,8 @@ export default class App {
         this.focusLight.intensity = n;
         this.focusLightIntensity = n;
     }
-
-    // setDistance(n:number):void{
-    //     this.focusLight.far = n;
-    //     this.far = n;
-    // }
-
+    
     setRoughness(n: number): void {
-        // var group = this.scene.getObjectByName("load_scene");
-        // group && group.traverse((child: any) => {
-        //     if (child.isMesh) {
-        //         let mats = Array.isArray(child.material) ? child.material : [child.material];
-        //         for (var i: number = 0; i < mats.length; i++) {
-        //             mats[i].roughness = n;
-        //         }
-        //     }
-        // })
-
         this.frameMaterials.forEach((mat:any)=>{
             mat.roughness = n;
         })
@@ -456,15 +441,6 @@ export default class App {
     }
 
     setMetalness(n: number): void {
-        // var group = this.scene.getObjectByName("load_scene");
-        // group && group.traverse((child: any) => {
-        //     if (child.isMesh) {
-        //         let mats = Array.isArray(child.material) ? child.material : [child.material];
-        //         for (var i: number = 0; i < mats.length; i++) {
-        //             mats[i].metalness = n;
-        //         }
-        //     }
-        // })
         this.frameMaterials.forEach((mat:any)=>{
             mat.metalness = n;
         })

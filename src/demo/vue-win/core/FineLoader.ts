@@ -47,6 +47,7 @@ export class FineLoader extends THREE.Object3D{
                 this.layoutList.start();
             }
             else if(e.detail == "layout"){
+                console.log("all loaded");
                 window.dispatchEvent(new CustomEvent("all loaded", { bubbles: false, cancelable: false, detail: {}}));
             }
         })
