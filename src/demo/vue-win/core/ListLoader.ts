@@ -20,7 +20,8 @@ export default class ListLoader{
 
     async start(){
         if(this.curId < this.list.length){
-            await this.load(this.list[this.curId], this.type == "hole");
+            console.log("加载模型", this.type);
+            await this.load(this.list[this.curId], this.type == "hole" || this.type == "sun");
             console.log("load " + this.type + " " + this.curId + "/" + this.list.length);
             this.curId++;
             this.start();

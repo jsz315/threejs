@@ -82,25 +82,25 @@ export class FineLoader extends THREE.Object3D{
         this.holeList.start();
     }
 
-    loadSubModel(item:any, hasAnimate: boolean = true){
-        return new Promise(async resolve => {
-            let url:any = item.url.replace(/\.a3d/i, ".zip");
-            if(!url){
-                resolve();
-                return;
-            }
-            let res:any = await Tooler.loadModel(url);
-            if(!res){
-                resolve(); 
-                return;
-            }
-            let detail = {
-                obj: res.object3D,
-                attr: item,
-                hasAnimate: hasAnimate
-            }
-            window.dispatchEvent(new CustomEvent("subLoad", { bubbles: false, cancelable: false, detail: detail}));
-            resolve();
-        })
-    }
+    // loadSubModel(item:any, hasAnimate: boolean = true){
+    //     return new Promise(async resolve => {
+    //         let url:any = item.url.replace(/\.a3d/i, ".zip");
+    //         if(!url){
+    //             resolve();
+    //             return;
+    //         }
+    //         let res:any = await Tooler.loadModel(url);
+    //         if(!res){
+    //             resolve(); 
+    //             return;
+    //         }
+    //         let detail = {
+    //             obj: res.object3D,
+    //             attr: item,
+    //             hasAnimate: hasAnimate
+    //         }
+    //         window.dispatchEvent(new CustomEvent("subLoad", { bubbles: false, cancelable: false, detail: detail}));
+    //         resolve();
+    //     })
+    // }
 }

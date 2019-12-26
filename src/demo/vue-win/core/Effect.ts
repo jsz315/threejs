@@ -60,7 +60,10 @@ export class Effect{
                             // console.log("无法定位动画元素:" + item.content);
                         }
                     });
+
                 }
+
+                // console.log("动画解析");
 
                 // this.animates = animateList1.concat(animateList2);
                 this.animates = this.animates.concat(animateList1, animateList2);
@@ -68,7 +71,7 @@ export class Effect{
             }
             else{
                 // (document.querySelector(".animate") as any).style.display = "none";
-                console.log("无法解析动画数据");
+                console.log("无法解析动画数据" + url);
             }
         });
 

@@ -6,13 +6,15 @@ import { FineLoader } from './FineLoader';
 import { Effect } from './Effect';
 import listener from '../lib/listener';
 import TextureList from './TextureList';
+import { FreeCamera }  from './FreeCamera';
+const TWEEN = require('../lib/Tween.js');
 
 export default class App {
     public static ZERO: THREE.Vector3 = new THREE.Vector3();
     scene: THREE.Scene;
-    camera: THREE.PerspectiveCamera;
+    camera: FreeCamera;
     renderer: THREE.WebGLRenderer;
-    orbit: OrbitControls;
+    // orbit: OrbitControls;
     stats: any;
     focusLight: FocusLight;
     fineLoader: FineLoader;
@@ -41,29 +43,21 @@ export default class App {
         this.canvas.height = this.size.height;
 
         this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(75, this.size.width / this.size.height, 0.1, 2400);
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
             alpha: true,
             canvas: this.canvas
         });
+        this.camera = new FreeCamera(this.renderer.domElement);
         // this.renderer.setSize(window.innerWidth, window.innerHeight);
         // this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setClearColor(new THREE.Color(0x999999), 0);
         this.renderer.shadowMap.enabled = false;
-        // document.body.appendChild(this.renderer.domElement);
-        this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
-        this.orbit.enabled = true;
-        this.orbit.minPolarAngle = 0;
-        this.orbit.maxPolarAngle = 90 * Math.PI /180;
-        this.camera.position.set(-14.267941883040285, 4.752462870020817, -8.486184913116992);
-        this.camera.lookAt(new THREE.Vector3());
         console.log("this.camera");
         console.log(this.camera);
 
         this.focusLight = new FocusLight(0xffffff, this.focusLightIntensity);
         this.scene.add(this.focusLight);
-        // this.scene.add(this.focusLight.helper);
 
         this.fineLoader = new FineLoader();
         this.scene.add(this.fineLoader);
@@ -81,6 +75,7 @@ export default class App {
         window.addEventListener("all loaded", e => {
             this.setRoughness(this.roughness);
             this.setMetalness(this.metalness);
+            // this.orbit.enabled = true;
         }, false);
     }
 
@@ -117,6 +112,7 @@ export default class App {
         this.stats && this.stats.update();
         this.renderer.render(this.scene, this.camera);
         this.focusLight.update(this.camera);
+        TWEEN.update();
     }
 
     setStats(stats: any): void {
@@ -163,49 +159,30 @@ export default class App {
 
     fitModel(group: THREE.Object3D): void {
         let parent: THREE.Object3D = group;
-        
         parent.rotateX(-Math.PI / 2);
         this.scene.add(parent);
         parent.name = "load_scene";
 
+        parent.position.set(-5000, 0, -5000);
+
         let aim = new THREE.Object3D();
         aim.name = "aim_scene";
         aim.add(parent);
+
+        // aim.position.set(-5000, 0, -5000);
+
         this.scene.add(aim);
         this.addGrass();
-        this.resetName(this.scene);
+        this.resetName(group);
         this.initMaterials(parent, true);
 
-        let scale: number = Tooler.getFitScale(parent, 10);
-        if(scale != 0){
-            // parent.scale.multiplyScalar(scale);
-            // this.isFitScene = true;
-            // let offset: THREE.Vector3 = Tooler.getOffsetVector3(aim);
-            // console.log("offset ==== ");
-            // console.log(offset);
-            // aim.position.set(0 - offset.x, 0 - offset.y, 0 - offset.z);
+        this.addSkySphere(12000);
 
-            this.resetScene();
-        }
-
-        // !this.isFitScene && this.resetScene();
+        this.resetScene();
     }
 
     resetScene(){
-        var aim = this.scene.getObjectByName("aim_scene");
-        var parent = this.scene.getObjectByName("load_scene");
-        let scale: number = Tooler.getFitScale(parent, 10);
-        // parent.position.set(0, 0, 0);
-        if(scale != 0){
-            parent.scale.multiplyScalar(scale);
-            this.isFitScene = true;
-            let offset: THREE.Vector3 = Tooler.getOffsetVector3(aim);
-            aim.position.set(0 - offset.x, 0 - offset.y, 0 - offset.z);
-
-            let size = Tooler.getBoxSize(aim);
-            this.scene.getObjectByName("grass").position.y = -size.y / 2 - 0.1;
-        }
-        
+        this.camera.reset(this.scene.getObjectByName("load_scene"));
     }
 
     addGrass(){
@@ -214,12 +191,13 @@ export default class App {
             side: THREE.DoubleSide
         })
         mat.map.wrapS = mat.map.wrapT = THREE.RepeatWrapping;
-        mat.map.repeat.set(200, 200);
+        mat.map.repeat.set(100, 100);
         // mat.metalness = 0;
         // mat.roughness = 1;
-        var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), mat);
+        var plane = new THREE.Mesh(new THREE.PlaneGeometry(24000, 24000), mat);
         plane.rotateX(-90 * Math.PI / 180);
         plane.name = "grass";
+        plane.position.y = -10;
         this.scene.add(plane);
     }
 
@@ -351,9 +329,6 @@ export default class App {
             // window.dispatchEvent(new CustomEvent("animate"));
         })
 
-        // this.addSkybox();
-        this.addSkySphere();
-
         window.addEventListener("subLoad", (e:any) => {
             this.addSubModel(e.detail);
         })
@@ -372,6 +347,7 @@ export default class App {
         obj.scale.set(scale[0], scale[1], scale[2]);
         group.add(obj);
 
+        this.resetName(obj);
         this.initMaterials(obj);
 
         // obj.rotateX(-Math.PI / 2);
@@ -391,34 +367,18 @@ export default class App {
         ambient.name = "ambient";
         this.scene.add(ambient);
 
-        // var hemishpereLight:THREE.HemisphereLight = new THREE.HemisphereLight(0xffffff, 0xffff00);
-        // hemishpereLight.intensity = 1.8;
-        // this.scene.add(hemishpereLight);
+        var hemishpereLight:THREE.HemisphereLight = new THREE.HemisphereLight(0xffffff, 0xffff00);
+        hemishpereLight.intensity = 0.12;
+        this.scene.add(hemishpereLight);
     }
 
-    addSkybox() {
-        var path = "./asset/skybox/";
-        var directions = ["px", "nx", "py", "ny", "pz", "nz"];
-        var format = ".jpg";
-        var skyGeometry = new THREE.BoxGeometry(500, 500, 500);
-        var materialArray = [];
-        for (var i = 0; i < 6; i++) {
-            materialArray.push(new THREE.MeshBasicMaterial({
-                map: new THREE.TextureLoader().load(path + directions[i] + format),
-                side: THREE.BackSide
-            }));
-        }
-
-        var sky = new THREE.Mesh(skyGeometry, materialArray);
-        this.scene.add(sky);
-    }
-
-    addSkySphere(){
+    addSkySphere(size:number){
         var mat = new THREE.MeshBasicMaterial({
                 map: new THREE.TextureLoader().load("./asset/sky.jpg"),
                 side: THREE.BackSide
             });
-        var sky = new THREE.Mesh(new THREE.SphereGeometry(400, 32, 32), mat);
+        var sky = new THREE.Mesh(new THREE.SphereGeometry(size, 32, 32), mat);
+        sky.name = "sky";
         this.scene.add(sky);
     }
 
