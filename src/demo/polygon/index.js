@@ -166,6 +166,54 @@ function Main()
     
 }
 
+function compute(a, b, t){
+    var subj = changePath(a);
+    var clip = changePath(b);
 
+    console.log(a);
+    console.log(subj);
+
+    console.log("============");
+
+    console.log(b);
+    console.log(clip);
+
+    var solution = new ClipperLib.Paths();
+    var c = new ClipperLib.Clipper();
+    c.AddPaths(subj, ClipperLib.PolyType.ptSubject, true);
+    c.AddPaths(clip, ClipperLib.PolyType.ptClip, true);
+    c.Execute(t, solution);
+
+    console.log("solution", solution);
+    console.log(JSON.stringify(solution));
+    return solution;
+}
+
+function changePath(list){
+    var aim = [];
+    if(list && list.length){
+        if(Array.isArray(list[0])){
+            aim = list;
+        }
+        else{
+            aim.push(list);
+        }
+    }
+    else{
+        return null;
+    }
+
+    var pots = [];
+    for(var i = 0; i < aim.length; i++){
+        var t = aim[i].map((item) => {
+            return {
+                X: item.x,
+                Y: item.y
+            }
+        })
+        pots.push(t);
+    }
+    return pots;
+}
 
 Main();

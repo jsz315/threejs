@@ -8,9 +8,12 @@ import './index.less'
 import App from'./core/App'
 import store from "./store/index";
 import listener from './lib/listener';
+import Stats from 'three/examples/jsm/libs/stats.module';
 import { Toast } from 'mint-ui';
 
+let stats;
 let app;
+
 Vue.use(MintUI)
 // Vue.prototype.$axios = axios;
 Vue.prototype.$toast = (tip) => {
@@ -75,9 +78,21 @@ listener.on("map", (url) => {
 });
 
 window.onload = function(){
+    stats = new Stats();
+    stats.setMode(0); 
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.left = '0px';
+    stats.domElement.style.top = '0px';
+    if(window.location.search.indexOf("debug=1") == -1){
+        stats.domElement.style.display = 'none';
+    }
+    
+    document.body.appendChild(stats.domElement);
+
     let canvas = $("#canvas");
     app = new App(canvas);
     app.setup();
+    app.setStats(stats);
 
     let param = store.state.effectParam;
     app.setAmbient(param.ambient);

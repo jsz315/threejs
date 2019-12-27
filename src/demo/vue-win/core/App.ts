@@ -1,12 +1,11 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import FocusLight from './FocusLight';
 import Tooler from './Tooler';
 import { FineLoader } from './FineLoader';
 import { Effect } from './Effect';
 import listener from '../lib/listener';
 import TextureList from './TextureList';
 import { FreeCamera }  from './FreeCamera';
+import Stage from './Stage';
 const TWEEN = require('../lib/Tween.js');
 
 export default class App {
@@ -16,15 +15,11 @@ export default class App {
     renderer: THREE.WebGLRenderer;
     // orbit: OrbitControls;
     stats: any;
-    focusLight: FocusLight;
     fineLoader: FineLoader;
 
-    ambientLightIntensity: number = 0;
-    focusLightIntensity: number = 0;
     roughness: number = 0;
     metalness: number = 0;
-
-    far: number = 2.62;
+    stage: Stage;
 
     rayCaster: THREE.Raycaster;
     isMobile: boolean;
@@ -50,17 +45,16 @@ export default class App {
         });
         this.camera = new FreeCamera(this.renderer.domElement);
         // this.renderer.setSize(window.innerWidth, window.innerHeight);
-        // this.renderer.setPixelRatio(window.devicePixelRatio);
+        // this.renderer.setPixelRatio(window.devicePixelRatio > 2 ? 2: 1);
         this.renderer.setClearColor(new THREE.Color(0x999999), 0);
         this.renderer.shadowMap.enabled = false;
         console.log("this.camera");
         console.log(this.camera);
 
-        this.focusLight = new FocusLight(0xffffff, this.focusLightIntensity);
-        this.scene.add(this.focusLight);
-
         this.fineLoader = new FineLoader();
         this.scene.add(this.fineLoader);
+        this.stage = new Stage();
+        this.scene.add(this.stage);
 
         this.isMobile = Tooler.checkMobile();
         this.rayCaster = new THREE.Raycaster();
@@ -111,7 +105,7 @@ export default class App {
         this.effects.forEach((effect:Effect)=>{effect.update();});
         this.stats && this.stats.update();
         this.renderer.render(this.scene, this.camera);
-        this.focusLight.update(this.camera);
+        this.stage.focusLight.update(this.camera);
         TWEEN.update();
     }
 
@@ -172,33 +166,17 @@ export default class App {
         // aim.position.set(-5000, 0, -5000);
 
         this.scene.add(aim);
-        this.addGrass();
+        // this.addGrass();
         this.resetName(group);
         this.initMaterials(parent, true);
 
-        this.addSkySphere(12000);
+        // this.addSkySphere(30000);
 
         this.resetScene();
     }
 
     resetScene(){
         this.camera.reset(this.scene.getObjectByName("load_scene"));
-    }
-
-    addGrass(){
-        var mat = new THREE.MeshBasicMaterial({
-            map: new THREE.TextureLoader().load("./asset/grass2.jpg"),
-            side: THREE.DoubleSide
-        })
-        mat.map.wrapS = mat.map.wrapT = THREE.RepeatWrapping;
-        mat.map.repeat.set(100, 100);
-        // mat.metalness = 0;
-        // mat.roughness = 1;
-        var plane = new THREE.Mesh(new THREE.PlaneGeometry(24000, 24000), mat);
-        plane.rotateX(-90 * Math.PI / 180);
-        plane.name = "grass";
-        plane.position.y = -10;
-        this.scene.add(plane);
     }
 
     resetName(parent: THREE.Object3D) {
@@ -333,7 +311,7 @@ export default class App {
             this.addSubModel(e.detail);
         })
 
-        this.addLights();
+        // this.addLights();
         this.animate();
     }
 
@@ -361,36 +339,12 @@ export default class App {
         !this.isFitScene && this.resetScene();
     }
 
-    addLights(): void {
-        var ambient: THREE.AmbientLight = new THREE.AmbientLight(0xffffff);
-        ambient.intensity = this.ambientLightIntensity;
-        ambient.name = "ambient";
-        this.scene.add(ambient);
-
-        var hemishpereLight:THREE.HemisphereLight = new THREE.HemisphereLight(0xffffff, 0xffff00);
-        hemishpereLight.intensity = 0.12;
-        this.scene.add(hemishpereLight);
-    }
-
-    addSkySphere(size:number){
-        var mat = new THREE.MeshBasicMaterial({
-                map: new THREE.TextureLoader().load("./asset/sky.jpg"),
-                side: THREE.BackSide
-            });
-        var sky = new THREE.Mesh(new THREE.SphereGeometry(size, 32, 32), mat);
-        sky.name = "sky";
-        this.scene.add(sky);
-    }
-
     setAmbient(n: number): void {
-        var ambient: any = this.scene.getObjectByName("ambient");
-        ambient.intensity = n;
-        this.ambientLightIntensity = n;
+        this.stage.setAmbient(n);
     }
 
     setDirectional(n: number): void {
-        this.focusLight.intensity = n;
-        this.focusLightIntensity = n;
+        this.stage.setDirectional(n);
     }
     
     setRoughness(n: number): void {
