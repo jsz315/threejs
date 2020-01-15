@@ -102,6 +102,7 @@ export default class App {
         requestAnimationFrame(() => {
             this.animate();
         });
+        this.camera.update();
         this.effects.forEach((effect:Effect)=>{effect.update();});
         this.stats && this.stats.update();
         this.renderer.render(this.scene, this.camera);
@@ -224,6 +225,8 @@ export default class App {
                 m.alphaTest = 0.2;
                 m.transparent = true;
             }
+
+            // m.flatShading = false;
 
             if(FineLoader.isLayout || isWall){
                 console.log("家具材质");

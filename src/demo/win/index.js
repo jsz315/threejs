@@ -13,7 +13,7 @@ window.onload = function(){
     app = new App(canvas);
     app.setup();
     init();
-    addMap();
+    // addMap();
 
     let url = Tooler.getQueryString("url");
     let id = url.split("/").pop().split(".")[0];
@@ -154,24 +154,43 @@ async function getImg(id){
     }
 }
 
-function addMap(){
+function addMap(isSingleColor){
     var list = [];
     for(let i = 0; i < 12; i++){
         let src = `./asset/map/p${i + 1}.jpg`;
-        let div = `<div class="color" style="background-image: url(${src})"></div>`;
+        let div = `<div class="color color-main" style="background-image: url(${src})"></div>`;
         list.push(div);
     }
-    $("#colors").innerHTML = list.join("");
-    $("#colors").addEventListener("click", (e)=>{
-        console.log(e.target);
-        if(e.target.className == "color"){
-            console.log(e.target.className);
-            console.log(e.target.style.backgroundImage);
-            let url = e.target.style.backgroundImage.replace(/(url\()|\)|"/g, "");
-            app.changeMap(url);
-        }
-    })
 
+    if(isSingleColor){
+        $("#main-tip").innerHTML = "替换颜色";
+        $("#colors-main").innerHTML = list.join("");
+
+        $("#sub-tip").style.display = "none";
+        $("#colors-sub").style.display = "none";
+    }
+    else{
+        $("#main-tip").innerHTML = "替换内框颜色";
+        $("#colors-main").innerHTML = list.join("");
+
+        $("#sub-tip").innerHTML = "替换外框颜色";
+        $("#colors-sub").innerHTML = list.join("").replace(/color-main/g, "color-sub");
+      
+        $("#colors-sub").addEventListener("click", clickColor);
+    }
+
+    $("#colors-main").addEventListener("click", clickColor);
+}
+
+function clickColor(e){
+    console.log(e.target);
+    if(e.target.className.indexOf("color-") != -1){
+        console.log(e.target.className);
+        console.log(e.target.style.backgroundImage);
+        let url = e.target.style.backgroundImage.replace(/(url\()|\)|"/g, "");
+        let isSub = e.target.className.indexOf("color-sub") != -1;
+        app.changeMap(url, isSub);
+    }
 }
 
 function init(){
@@ -258,6 +277,10 @@ function init(){
 
     window.addEventListener("animate", (e) => {
         $(".animate").className = "animate";
+    });
+
+    window.addEventListener("colorMap", (e) => {
+        addMap(e.detail);
     });
 }
 

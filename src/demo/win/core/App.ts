@@ -4,6 +4,7 @@ import FocusLight from './FocusLight';
 import Tooler from './Tooler';
 import { FineLoader } from './FineLoader';
 import { Effect } from './Effect';
+import Components from './Components';
 
 export default class App {
     public static ZERO: THREE.Vector3 = new THREE.Vector3();
@@ -19,6 +20,8 @@ export default class App {
     focusLightIntensity: number = 0.42;
     roughness: number = 0.35;
     metalness: number = 0.36;
+
+    components: Components = new Components();
 
     // ambientLightIntensity: number = 0.3;
     // focusLightIntensity: number = 1.32;
@@ -184,11 +187,14 @@ export default class App {
         let list = Tooler.getAllMaterial(parent);
         let materials = list[0];
         this.repeat = list[1];
-        console.log(materials);
+        
+        this.components.initMap(materials);
 
+        /*
         let isRoom = false;
         let winMaterials: any = [];
         let roomMaterials: any = [];
+        let singleColor = true;
 
         materials.forEach((m: any) => {
             if (m.map && m.map.image) {
@@ -200,6 +206,12 @@ export default class App {
                 if (src.indexOf("/IPR_") != -1) {
                     winMaterials.push(m);
                 }
+                if(src.indexOf("/IPR_A_") != -1){
+                    singleColor = false;
+                }
+                else if(src.indexOf("/IPR_B_") != -1){
+                    singleColor = false;
+                }
             }
             m.transparent = true;
             m.alphaTest = 0.2;
@@ -208,27 +220,9 @@ export default class App {
         setTimeout(() => {
             if (isRoom) {
                 this.frameMaterials = roomMaterials;
-                // this.frameMaterials.forEach((m:any) => {
-                //     console.log("change roomMaterials");
-                //     if(m.map && m.map.image){
-                //         let src = m.map.image.src;
-                //         if(src.indexOf("/dif_") != -1){
-                //             this.resetMap(m, src);
-                //         }
-                //     }
-                // })
             }
             else {
                 this.frameMaterials = winMaterials;
-                // this.frameMaterials.forEach((m:any) => {
-                //     console.log("change winMaterials");
-                //     if(m.map && m.map.image){
-                //         let src = m.map.image.src;
-                //         if(src.indexOf("/IPR_") != -1){
-                //             this.resetMap(m, src);
-                //         }
-                //     }
-                // })
             }
 
             materials.forEach((m: any) => {
@@ -238,26 +232,32 @@ export default class App {
                 }
             })
         }, 300);
+
+        window.dispatchEvent(new CustomEvent("colorMap", { bubbles: false, cancelable: false, detail: singleColor}));
+        */
     }
 
     resetMap(material: any, url: string): void {
-        let texture: any = new THREE.TextureLoader().load(url, () => {
-            material.map.needsUpdate = true;
-            material.needsUpdate = true;
-        });
+        this.components.resetMap(material, url);
+        // let texture: any = new THREE.TextureLoader().load(url, () => {
+        //     material.map.needsUpdate = true;
+        //     material.needsUpdate = true;
+        // });
 
-        texture.wrapS = material.map.wrapS;
-        texture.wrapT = material.map.wrapT;
-        texture.repeat = new THREE.Vector2(material.map.repeat.x, material.map.repeat.y);
-        texture.flipY = material.map.flipY;
-        texture.flipX = material.map.flipY;
-        material.map = texture;
+        // texture.wrapS = material.map.wrapS;
+        // texture.wrapT = material.map.wrapT;
+        // texture.repeat = new THREE.Vector2(material.map.repeat.x, material.map.repeat.y);
+        // texture.flipY = material.map.flipY;
+        // texture.flipX = material.map.flipY;
+        // material.map = texture;
     }
 
-    changeMap(url: string): void {
-        this.frameMaterials.length && this.frameMaterials.forEach((material: any) => {
-            this.resetMap(material, url);
-        })
+    changeMap(url: string, type: Number): void {
+        this.components.changeMap(url, type);
+
+        // this.frameMaterials.length && this.frameMaterials.forEach((material: any) => {
+        //     this.resetMap(material, url);
+        // })
     }
 
     setup(): void {

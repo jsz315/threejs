@@ -11,6 +11,7 @@
         <div class="ico full" @click="fullSize"></div>
         <div class="ico picture" @click="openPicture" v-if="false"></div>
         <div class="ico camera" @click="openCamera" v-if="false"></div>
+        <div class="ico walk" @click="startWalk"></div>
         <div class="ico thumb" @click="sendThumb"></div>
 
         <input class="file" type="file" ref="usePhoto">
@@ -110,6 +111,9 @@ export default {
                 }
             }
             fileReader.readAsDataURL(file);
+        },
+        startWalk(){
+            listener.emit("startWalk");
         },
         async sendThumb(){
             let param = {

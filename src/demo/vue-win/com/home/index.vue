@@ -11,6 +11,7 @@
         <BottomView class="ui" :style="bottom"></BottomView>
         <RoleView class="ui" :style="role"></RoleView>
         <LoadingView class="ui" :style="loading"></LoadingView>
+        <WalkView class="ui" :style="walk"></WalkView>
         <div class="menu" @click="showMenu" :style="menu"></div>
 
         <DesignView></DesignView>
@@ -39,8 +40,11 @@ import RoleView from '../role-view/index.vue'
 import ColorView from '../color-view/index.vue'
 import GuiderView from '../guider-view/index.vue'
 import LoadingView from '../loading-view/index.vue'
+import WalkView from '../walk-view/index.vue'
 import listener from '../../lib/listener'
 import Tooler from '../../core/Tooler.ts'
+
+var isWalk;
 
 export default {
     data() {
@@ -69,11 +73,15 @@ export default {
                 transform: 'translateX(20px)',
                 opacity: 0
             },
+            walk: {
+                transform: 'translateY(300px)',
+                opacity: 0
+            },
             retry: false,
             imgs: []
         };
     },
-    components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView, RoleView, ColorView, GuiderView, LoadingView},
+    components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView, RoleView, ColorView, GuiderView, LoadingView, WalkView},
     computed: {},
     beforeCreate(){
         var url = Tooler.getQueryString("u")||"";
@@ -88,6 +96,20 @@ export default {
     },
     mounted(){
         listener.on("full", () => {
+            this.hideMenu(false);
+            isWalk = false;
+        })
+
+        listener.on("startWalk", () => {
+            this.hideMenu(true);
+            isWalk = true;
+        })
+
+        let id = this.$store.state.modelId;
+        this.getImg(id);
+    },
+    methods: {
+        hideMenu(isWalk){
             this.top = {
                 transform: 'translateY(-20px)',
                 opacity: 0
@@ -111,13 +133,15 @@ export default {
             this.menu = {
                 transform: 'translateX(0)',
                 opacity: 1
+            };
+            if(isWalk){
+                this.walk = {
+                    transform: 'translateY(0)',
+                    opacity: 1
+                };
             }
-        })
 
-        let id = this.$store.state.modelId;
-        this.getImg(id);
-    },
-    methods: {
+        },
         showMenu(){
             this.top = {
                 transform: 'translateY(0)',
@@ -139,6 +163,14 @@ export default {
             this.menu = {
                 transform: 'translateX(20px)',
                 opacity: 0
+            };
+
+            if(isWalk){
+                this.walk ={
+                    transform: 'translateY(300px)',
+                    opacity: 0
+                };
+                listener.emit("stopWalk");
             }
         },
         async getImg(id) {
