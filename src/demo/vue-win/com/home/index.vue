@@ -119,7 +119,7 @@ export default {
                 opacity: 0
             };
             this.bottom = {
-                transform: 'translateY(20px)',
+                transform: 'translateY(120px)',
                 opacity: 0
             };
             this.role = {
