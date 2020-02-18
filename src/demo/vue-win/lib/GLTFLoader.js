@@ -289,6 +289,14 @@ var GLTFLoader = ( function () {
 
 			}
 
+			console.warn("json-----------------------")
+
+			if(json.images){
+				json.images.forEach(item => {
+					item.uri = item.uri.replace("http:", "https:");
+				})
+			}
+
 			var parser = new GLTFParser( json, extensions, {
 
 				path: path || this.resourcePath || '',

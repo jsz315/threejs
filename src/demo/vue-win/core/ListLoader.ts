@@ -39,7 +39,8 @@ export default class ListLoader{
                 resolve();
                 return;
             }
-            console.log("url=>" + this.list[this.curId].url);
+            url = url.replace("http:", "https:");
+            console.log("url=>" + url);
             let res:any = await Tooler.loadModel(url);
             if(!res){
                 resolve(); 
