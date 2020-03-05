@@ -22,6 +22,7 @@ export default class Components{
                 let src = m.map.image.src;
                 if (src.indexOf("/dif_") != -1) {
                     this.isRoom = true;
+                    this.all.push(m);
                 }
                 if (src.indexOf("/IPR_") != -1) {
                     this.all.push(m);
@@ -81,20 +82,34 @@ export default class Components{
         // material.map = texture;
     }
 
-    changeMap(url: string, type: Number){
+    changeMap(url: string, isSub: boolean){
         let list:any[] = [];
-        if(type == 1){
-            list = this.sub;
+        //是否外框
+        // if(isSub){
+        //     list = this.sub;
+        // }
+        // else{
+        //     if(this.isSingleColor){
+        //         list = this.all;
+        //     }
+        //     else{
+        //         list = this.main;
+        //     }
+            
+        // }
+
+        if(this.isSingleColor){
+            list = this.all;
         }
         else{
-            if(this.isSingleColor){
-                list = this.all;
+            if(isSub){
+                list = this.sub;
             }
             else{
                 list = this.main;
             }
-            
         }
+
         list.forEach((material: any) => {
             this.resetMap(material, url);
         })

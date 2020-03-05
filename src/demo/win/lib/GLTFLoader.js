@@ -69,7 +69,7 @@ import {
 	VectorKeyframeTrack,
 	VertexColors,
 	sRGBEncoding
-} from "../../../build/three.module.js";
+} from "three";
 
 var GLTFLoader = ( function () {
 
@@ -287,6 +287,14 @@ var GLTFLoader = ( function () {
 
 				}
 
+			}
+
+			console.warn("json-----------------------")
+
+			if(json.images){
+				json.images.forEach(item => {
+					item.uri = item.uri.replace("http:", "https:");
+				})
 			}
 
 			var parser = new GLTFParser( json, extensions, {
@@ -883,7 +891,7 @@ var GLTFLoader = ( function () {
 				material.glossinessMap = params.glossinessMap === undefined ? null : params.glossinessMap;
 				material.glossiness = params.glossiness;
 
-				material.alphaMap = null;
+				material.alphaMap = params.alphaMap === undefined ? null : params.alphaMap;
 
 				material.envMap = params.envMap === undefined ? null : params.envMap;
 				material.envMapIntensity = 1.0;
@@ -2145,6 +2153,7 @@ var GLTFLoader = ( function () {
 					case 'emissiveMap':
 					case 'metalnessMap':
 					case 'normalMap':
+					case 'alphaMap':
 					case 'roughnessMap':
 						texture.format = RGBFormat;
 						break;
@@ -2420,6 +2429,12 @@ var GLTFLoader = ( function () {
 
 		}
 
+		if ( materialDef.alphaTexture !== undefined && materialType !== MeshBasicMaterial ) {
+
+			pending.push( parser.assignTexture( materialParams, 'alphaMap', materialDef.alphaTexture ) );
+
+		}
+
 		return Promise.all( pending ).then( function () {
 
 			var material;
@@ -2590,9 +2605,6 @@ var GLTFLoader = ( function () {
 		var json = this.json;
 
 		var meshDef = json.meshes[ meshIndex ];
-
-		var meshNode = json.nodes.find(i => i.mesh == meshIndex);
-
 		var primitives = meshDef.primitives;
 
 		var pending = [];
@@ -2693,9 +2705,7 @@ var GLTFLoader = ( function () {
 				}
 
 				if ( meshes.length === 1 ) {
-					if(meshNode){
-						meshes[ 0 ].name = meshNode.name;
-					}
+
 					return meshes[ 0 ];
 
 				}
@@ -2708,9 +2718,6 @@ var GLTFLoader = ( function () {
 
 				}
 
-				if(meshNode){
-					group.name = meshNode.name;
-				}
 				return group;
 
 			} );

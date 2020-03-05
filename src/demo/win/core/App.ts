@@ -252,8 +252,8 @@ export default class App {
         // material.map = texture;
     }
 
-    changeMap(url: string, type: Number): void {
-        this.components.changeMap(url, type);
+    changeMap(url: string, isSub: boolean): void {
+        this.components.changeMap(url, isSub);
 
         // this.frameMaterials.length && this.frameMaterials.forEach((material: any) => {
         //     this.resetMap(material, url);
@@ -262,6 +262,7 @@ export default class App {
 
     setup(): void {
         let url = Tooler.getQueryString("url");
+        url = url.replace("http:", "https:");
         this.fineLoader.start(url, (object3D: THREE.Object3D) => {
             this.fitModel(object3D);
             url = url.replace(/\.(glb|zip)/, ".animation");

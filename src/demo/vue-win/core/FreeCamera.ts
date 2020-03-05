@@ -54,7 +54,7 @@ export class FreeCamera extends THREE.PerspectiveCamera{
     }
 
     startWalk(){
-        this.orbit.enabled = false;
+        // this.orbit.enabled = false;
 
         console.log(this);
         console.log(this.target);
@@ -79,10 +79,12 @@ export class FreeCamera extends THREE.PerspectiveCamera{
 
     update(){
         if(this.actions["left"]){
-            this.rotateY(0.02);
+            // this.rotateY(0.02);
+            this.translateX(-10);
         }
         if(this.actions["right"]){
-            this.rotateY(-0.02);
+            // this.rotateY(-0.02);
+            this.translateX(10);
         }
         if(this.actions["front"]){
             this.translateZ(-10);

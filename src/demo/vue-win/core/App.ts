@@ -301,6 +301,7 @@ export default class App {
 
     setup(): void {
         let url = Tooler.getQueryString("url");
+        url = url.replace("http:", "https:");
         this.fineLoader.start(url, (object3D: THREE.Object3D) => {
             this.fitModel(object3D);
             url = url.replace(/\.(glb|zip)/, ".animation");
@@ -324,7 +325,10 @@ export default class App {
         var obj = param.obj;
         let {position, rotation, scale} = param.attr;
         obj.position.set(position[0], position[1], position[2]);
-        obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
+        // obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
+
+        obj.rotation.set(rotation[0], rotation[1], rotation[2]);
+
         obj.scale.set(scale[0], scale[1], scale[2]);
         group.add(obj);
 

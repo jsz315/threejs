@@ -119,23 +119,26 @@ async function getImg(id){
     // id = 16433;
     let res;
     let link = "";
+    var u = Tooler.getQueryString("u");
+    var type_id = u.split("-")[3];
     if(location.search.indexOf("//3d.") != -1){
         link = "/mapi/index.php";
         res = await axios.get(link, {
             params: {
                 id: id,
                 app: "index",
-                fnn: "sysdiss"
+                fnn: "sysdiss",
+                type_id: type_id
             }
         });
     }
     else{
         link = "/api/index/sysdiss";
         res = await axios.post(link, {
-            id: id
+            id: id,
+            type_id: type_id
         });
     }
-    
     if(res.data && res.data.datas){
         let datas = res.data.datas;
         if(datas["sys_img"] || datas["brand_img"]){
