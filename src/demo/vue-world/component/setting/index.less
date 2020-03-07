@@ -1,0 +1,79 @@
+.setting{
+    font-size: 12px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 320px;
+    z-index: 4;
+    box-shadow: 2px 2px 9px #999999;
+    overflow: auto;
+    max-height: 100%;
+    .title{
+        background: #616161;
+        color: #ffffff;
+        position: relative;
+        padding: 10px;
+        .close{
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30px;
+            height: 100%;
+            background: url(../../asset/close.png) no-repeat center;
+            background-size: 12px 12px;
+        }
+    }
+    .content{
+        background: #ffffff;
+        padding: 20px;
+        .param{
+            padding: 10px;
+            border-bottom: solid 1px #f0f0f0;
+            .label{
+                color: #999999;
+                margin-bottom: 10px;
+            }
+            .range{
+                width: 100%;
+            }
+            .choose{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                .item{
+                    flex: 1;
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    .btn{
+                        display: inline-block;
+                        width: 20px;
+                        height: 20px;
+                        border: solid 1px #999999;
+                        margin-right: 8px;
+                        position: relative;
+                        &.selected::after{
+                            display: block;
+                            content: "";
+                            position: absolute;
+                            width: 10px;
+                            height: 10px;
+                            background: #ff0000;
+                            left: 0;
+                            right: 0;
+                            top: 0;
+                            bottom: 0;
+                            margin: auto;
+                        }
+                    }
+                    .number{
+                        display: block;
+                        width: 100%;
+                        margin-left: 10px;
+                    }
+                    margin-right: 20px;
+                }
+            }
+        }
+    }
+}
