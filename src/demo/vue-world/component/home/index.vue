@@ -2,7 +2,8 @@
     <div class="home">
         <div class="content">
             <input class="txt" type="text" v-model="points">
-            <div class="btn" @click="onAdd">确定</div>
+            <div class="btn" @click="onAdd(0)">添加3D点</div>
+            <div class="btn" @click="onAdd(1)">添加2D点</div>
             <div class="btn" @click="onRand">随机</div>
         </div>
         <div class="ico" @click="showSetting"></div>
@@ -43,8 +44,28 @@ export default {
         showSetting(){
             this.$refs.setting.show();
         },
-        onAdd(){
-            listener.emit("points", this.points);
+        onAdd(type){
+            var ps = this.points;
+            if(type == 1){
+                ps = ps.replace(/\s/g, "");
+                var list = ps.split(",");
+                var total = list.length;
+                var aim = [];
+                if(total % 2 == 0){
+                    for(var i = 0; i < total; i++){
+                        aim.push(list[i]);
+                        if(i % 2 == 1){
+                            aim.push(0);
+                        }
+                    }
+                    ps = aim.join(",");
+                }
+                else{
+                    alert("顶点应为2的倍数");
+                    return;
+                }
+            }
+            listener.emit("points", ps);
             this.save();
         },
         onRand(){

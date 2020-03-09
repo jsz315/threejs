@@ -53,6 +53,11 @@ export class FineLoader extends THREE.Object3D{
         })
     }
 
+    /**
+     * 
+     * @param url 初始化所有模型数据
+     * @param callback 
+     */
     async start(url:string, callback:Function){
         let res:any = await Tooler.loadModel(url);
         if(!res){
@@ -63,24 +68,31 @@ export class FineLoader extends THREE.Object3D{
         console.log(res.json);
         callback(res.object3D);
 
-        res.json.holes && res.json.holes.forEach(async (item:any)=>{
-            this.holeList.add(item);
-        })
-
-        res.json.suns && res.json.suns.forEach(async (item:any)=>{
-            this.sunList.add(item);
-        })
-
-        res.json.parts && res.json.parts.forEach(async (item:any)=>{
-            this.partList.add(item);
-        })
-
-        res.json.layouts && res.json.layouts.forEach(async (item:any)=>{
-            this.layoutList.add(item);
-        })
+        this.removeOutsize(res.json.holes, this.holeList);
+        this.removeOutsize(res.json.suns, this.sunList);
+        this.removeOutsize(res.json.parts, this.partList);
+        this.removeOutsize(res.json.layouts, this.layoutList);
 
         this.holeList.start();
     }
+
+    removeOutsize(list:any, loader: ListLoader){
+        list && list.forEach(async (item:any)=>{
+            var out = false; 
+            item.position.forEach((p:number)=>{
+                if(Math.abs(p) > 10000){
+                    out = true;
+                }
+            })
+            if(out){
+                console.log("【丢弃超出舞台范围的模型】");
+                console.log(item);
+            }
+            else{
+                loader.add(item);
+            }
+        })
+    } 
 
     // loadSubModel(item:any, hasAnimate: boolean = true){
     //     return new Promise(async resolve => {

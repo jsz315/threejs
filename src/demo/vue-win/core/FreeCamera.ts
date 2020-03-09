@@ -110,6 +110,12 @@ export class FreeCamera extends THREE.PerspectiveCamera{
             let offset = Tooler.getOffsetVector3(obj);
             let pot = this.startPot.clone();
 
+            // console.log("【加载模型位置】");
+            // console.log(offset);
+
+            console.log("当前舞台尺寸 size = " + s);
+            console.log(pot);
+
             this.orbit.enabled = false;
 
             TWEEN.removeAll();
