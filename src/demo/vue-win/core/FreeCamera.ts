@@ -22,7 +22,7 @@ export class FreeCamera extends THREE.PerspectiveCamera{
     
 
     constructor(domElement:HTMLCanvasElement){
-        super(75, window.innerWidth / window.innerHeight, 20, 30000);
+        super(75, window.innerWidth / window.innerHeight, 20, 80000);
         this.position.copy(this.startPot);
         this.startPot = this.position.clone().normalize();
         console.log("startPot", this.startPot);

@@ -276,6 +276,20 @@ export default class Tooler{
         })
     }
 
+    public static getRootModel(obj:THREE.Object3D):THREE.Object3D{
+        var aim = obj;
+        var level = 0;
+        while (aim = aim.parent) {
+            if(aim.type == "Scene"){
+                break;
+            }
+            if(++level > 10){
+                break;
+            }
+        }
+        return aim;
+    }
+
     public static httpGet(url:string){
         return new Promise((resolve)=>{
             var xhr = new XMLHttpRequest();

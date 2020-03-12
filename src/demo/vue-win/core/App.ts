@@ -130,16 +130,14 @@ export default class App {
         if (intersectObjects[0]) {
             obj = intersectObjects[0].object;
             console.log(obj);
+            console.log("当前模型：");
+            var aim:THREE.Object3D = Tooler.getRootModel(obj);
+            console.log(aim);
+            console.log(aim.rotation, aim.scale);
             let mat = Array.isArray(obj.material) ? obj.material[0] : obj.material;
             if (mat.map) {
                 let img = mat.map.image;
                 console.log(img.currentSrc);
-                // console.log(JSON.stringify(mat));
-                // this.resetMap(mat, img.currentSrc);
-                // setTimeout(() => {
-                //     mat.map.needsUpdate = true;
-                //     mat.needsUpdate = true;
-                // }, 2000);
             }
         }
     }
@@ -326,8 +324,17 @@ export default class App {
         let {position, rotation, scale} = param.attr;
         obj.position.set(position[0], position[1], position[2]);
         // obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
+        console.log("rotation", rotation);
+        console.log("scale", scale);
+        
+        if(Math.PI / 2 - Math.abs(rotation[2] % Math.PI) < 0.02){
+            obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
+        }
+        else{
+            obj.rotation.set(rotation[0], rotation[1], rotation[2]);
+        }
 
-        obj.rotation.set(rotation[0], rotation[1], rotation[2]);
+        // obj.rotation.set(rotation[0], rotation[1], rotation[2]);
 
         obj.scale.set(scale[0], scale[1], scale[2]);
         group.add(obj);

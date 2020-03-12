@@ -15,7 +15,13 @@ export default class Stage extends THREE.Object3D{
         this.addSkySphere(25000);
         this.addGrass(50000);
         this.addLights();
-        
+        this.addAxis(30000);
+    }
+
+    addAxis(size:number):void{
+        if(window.location.search.indexOf("debug=1") != -1){
+            this.add(new THREE.AxesHelper(size));
+        }
     }
 
     setAmbient(n: number): void {
