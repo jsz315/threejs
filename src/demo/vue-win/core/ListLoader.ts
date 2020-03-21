@@ -39,7 +39,9 @@ export default class ListLoader{
                 resolve();
                 return;
             }
-            url = url.replace("http:", "https:");
+            if(location.search.indexOf("mendaoyun.com") != -1){
+                url = url.replace("http:", "https:");
+            }
             console.log("url=>" + url);
             let res:any = await Tooler.loadModel(url);
             if(!res){

@@ -18,7 +18,7 @@
             </div>
             <div class="param">
                 <div class="label">顶点尺寸({{size}})</div>
-                <input type="range" class="range" min="0.01" max="20" step="0.01" @change="changeSize">
+                <input type="range" class="range" :min="sizeMin" :max="sizeMax" :step="sizeStep" @change="changeSize">
             </div>
             <div class="param">
                 <div class="label">顶点颜色</div>
@@ -99,7 +99,10 @@ export default {
             total: 0,
             visible: false,
             min: 3,
-            max: 100
+            max: 100,
+            sizeMin: 0.1,
+            sizeMax: 10,
+            sizeStep: 0.01
         };
     },
     components: {},
@@ -121,6 +124,11 @@ export default {
         listener.on("setIndex", (index, total) => {
             this.index = index;
             this.total = total;
+        })
+        listener.on("setRange", num => {
+            this.sizeMin = num / 10;
+            this.sizeMax = num * 10;
+            this.sizeStep = (this.sizeMax - this.sizeMin) / 100;
         })
     },
     methods: {

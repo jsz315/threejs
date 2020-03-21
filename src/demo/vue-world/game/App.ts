@@ -22,7 +22,7 @@ export default class App {
 
     constructor(canvas:HTMLCanvasElement) {
         this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 12000);
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
             alpha: true,
@@ -207,10 +207,42 @@ export default class App {
 
             this.frame = new THREE.BoxHelper(this.group, new THREE.Color(0xff9900));
             this.scene.add(this.frame);
+
+            this.resizeStage();
         }
         else{
             alert("顶点数应该为3的倍数");
         }
+    }
+
+    resizeStage(){
+        console.log("frame size");
+        var size:THREE.Vector3 = Tooler.getBoxSize(this.group);
+        console.log(size);
+        var max:number = Math.max(size.x, size.y, size.z);
+        var far = Math.max(max * 4, 500);
+        this.camera.far = far;
+        var scale:number = this.camera.far / 1000;
+        console.log("scale = " + scale);
+        console.log("far = " + far);
+        this.scene.remove(this.grid);
+        this.grid = new THREE.GridHelper(far, 500);
+        (this.grid.material as any).transparent = true;
+        (this.grid.material as any).opacity = 0.1;
+        this.scene.add(this.grid);
+        
+        var startPot:THREE.Vector3 = new THREE.Vector3(10, 10, 20);
+        var normalizePot:THREE.Vector3 = startPot.normalize();
+        var endPot:THREE.Vector3 = normalizePot.setScalar(far * 0.2);
+        console.log(endPot);
+        this.camera.position.copy(endPot);
+        this.orbit.update();
+
+        this.camera.updateProjectionMatrix();
+
+        var range:number = max / 100;
+        listener.emit("setRange", range);
+        this.changeSize(0, range);
     }
     
     onResize(e:Event):void{
@@ -243,7 +275,7 @@ export default class App {
 
    
     addHelper():void{
-        var grid:THREE.GridHelper = new THREE.GridHelper(400, 400);
+        var grid:THREE.GridHelper = new THREE.GridHelper(500, 500);
         // grid.scale.addScalar(10);
         (grid.material as any).transparent = true;
         (grid.material as any).opacity = 0.1;

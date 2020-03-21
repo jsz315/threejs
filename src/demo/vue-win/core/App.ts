@@ -190,6 +190,7 @@ export default class App {
 
     initMaterials(parent: THREE.Object3D, isWall:boolean = false) {
         let list = Tooler.getAllMaterial(parent);
+
         let materials = list[0];
         this.repeat = list[1];
 
@@ -299,7 +300,10 @@ export default class App {
 
     setup(): void {
         let url = Tooler.getQueryString("url");
-        url = url.replace("http:", "https:");
+        if(location.search.indexOf("mendaoyun.com") != -1){
+            url = url.replace("http:", "https:");
+        }
+        // url = url.replace("http:", "https:");
         this.fineLoader.start(url, (object3D: THREE.Object3D) => {
             this.fitModel(object3D);
             url = url.replace(/\.(glb|zip)/, ".animation");
@@ -327,7 +331,9 @@ export default class App {
         console.log("rotation", rotation);
         console.log("scale", scale);
         
-        if(Math.PI / 2 - Math.abs(rotation[2] % Math.PI) < 0.02){
+        // var angle = 0.02;
+        var angle = 0.9;
+        if(Math.PI / 2 - Math.abs(rotation[2] % Math.PI) < angle){
             obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
         }
         else{

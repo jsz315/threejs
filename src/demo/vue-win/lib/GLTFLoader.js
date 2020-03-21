@@ -289,11 +289,16 @@ var GLTFLoader = ( function () {
 
 			}
 
-			console.warn("json-----------------------")
+			console.warn("json-----------------------");
+			console.log(json)
+
+			// var isDebug = location.search.indexOf("mendaoyun.com") == -1;
 
 			if(json.images){
 				json.images.forEach(item => {
 					item.uri = item.uri.replace("http:", "https:");
+
+					// item.uri = item.uri.replace('MD_3D_color14_NRM.jpg', 'dif_wood.jpg');
 				})
 			}
 

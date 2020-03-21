@@ -8,6 +8,7 @@ export default new Vuex.Store({
         designVisible: false,
         effectVisible: false,
         detailVisible: false,
+        priceVisible: false,
         colorVisible: false,
         guiderVisible: false,
         effectParam: {
@@ -30,6 +31,9 @@ export default new Vuex.Store({
         },
         changeDetailVisible(state, value){
             state.detailVisible = value;
+        },
+        changePriceVisible(state, value){
+            state.priceVisible = value;
         },
         changeEffectParam(state, value){
             state.effectParam = value;

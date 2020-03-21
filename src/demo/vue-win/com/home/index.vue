@@ -17,6 +17,7 @@
         <DesignView></DesignView>
         <EffectView></EffectView>
         <DetailView></DetailView>
+        <PriceView></PriceView>
         <ColorView></ColorView>
         <GuiderView></GuiderView>
     </div>
@@ -36,6 +37,7 @@ import TopView from '../top-view/index.vue'
 import DesignView from '../design-view/index.vue'
 import EffectView from '../effect-view/index.vue'
 import DetailView from '../detail-view/index.vue'
+import PriceView from '../price-view/index.vue'
 import RoleView from '../role-view/index.vue'
 import ColorView from '../color-view/index.vue'
 import GuiderView from '../guider-view/index.vue'
@@ -81,7 +83,7 @@ export default {
             imgs: []
         };
     },
-    components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView, RoleView, ColorView, GuiderView, LoadingView, WalkView},
+    components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView, RoleView, ColorView, GuiderView, LoadingView, WalkView, PriceView},
     computed: {},
     beforeCreate(){
         var url = Tooler.getQueryString("u")||"";
