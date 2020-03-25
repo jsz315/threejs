@@ -4,6 +4,7 @@
             <div class="title">门窗整体报价</div>
             <div class="close" @click="close"></div>
         </div>
+        <div class="find" v-if="list.length==0">此方案暂无报价</div>
         <div class="content">
             <div class="box" v-for="(item, index) in list" v-bind:key="index">
                 <div class="logo">
@@ -36,6 +37,12 @@
                 </div>
                 <div class="all">共{{item.setnum}}件 计:<span class="color">￥{{item.all}}</span></div>
             </div>
+
+            <div class="result">
+                <div class="item">总数量：{{totalNum}}</div>
+                <div class="item">总面积：{{totalArea}}</div>
+                <div class="item color">合计：￥{{totalPrice}}</div>
+            </div>
         </div>
     </div>
 </template>
@@ -47,7 +54,10 @@ export default {
     data() {
         return {
             retry: false,
-            list: []
+            list: [],
+            totalNum: '-',
+            totalArea: '-',
+            totalPrice: '-'
         };
     },
     components: {},
@@ -93,6 +103,26 @@ export default {
             obj.count = data.items[0].discount;           
             obj.all = obj.count * obj.price * obj.setnum;
             obj.size = [data.length, data.height, data.width].join(" x ");
+
+            var over = this.list.every(item=>{
+                return item.all != '-';
+            })
+            if(over){
+                var totalNum = 0;
+                var totalArea = 0;
+                var totalPrice = 0;
+                this.list.forEach(item=>{
+                    totalNum += item.setnum;
+                    totalArea += item.area;
+                    totalPrice += item.all;
+                })
+                this.totalNum = totalNum;
+                this.totalArea = totalArea;
+                this.totalPrice = totalPrice;
+            }
+            else{
+                console.log("价格未初始化完成");
+            }
         },
         getSize(obj){
             var h = obj.height;
@@ -102,6 +132,9 @@ export default {
         },
         async init() {
             let u = Tooler.getQueryString("u");
+            if(!u){
+                return;
+            }
             let id = u.split("-").pop();
             let link = "/mapi/index.php";
             let res = await this.$get(link, {
@@ -110,7 +143,7 @@ export default {
                     yun3d_id:id
                 });
             console.log(res);
-            if (res.data && res.data.datas) {
+            if (res.data && res.data.code == 200) {
                res.data.datas.forEach(item=>{
                    item.price = '-';
                    item.count = '-';

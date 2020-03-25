@@ -6,6 +6,7 @@ import listener from '../lib/listener';
 import TextureList from './TextureList';
 import { FreeCamera }  from './FreeCamera';
 import Stage from './Stage';
+import ViewHelper from './ViewHelper';
 const TWEEN = require('../lib/Tween.js');
 
 export default class App {
@@ -30,6 +31,8 @@ export default class App {
     repeat: any;
     textureList: TextureList;
     isFitScene: boolean;
+
+    helper:ViewHelper;
 
     constructor(canvas: any, size: any) {
         this.size = this.getStageSize(true);
@@ -103,6 +106,7 @@ export default class App {
             this.animate();
         });
         this.camera.update();
+        this.helper.update();
         this.effects.forEach((effect:Effect)=>{effect.update();});
         this.stats && this.stats.update();
         this.renderer.render(this.scene, this.camera);
@@ -122,6 +126,8 @@ export default class App {
         let mouse = new THREE.Vector2();
         mouse.x = (e.clientX / size.width) * 2 - 1;
         mouse.y = -(e.clientY / size.height) * 2 + 1;
+
+        // this.camera.orbit.update();
 
         let obj: any;
         this.rayCaster.setFromCamera(mouse, this.camera);
@@ -148,6 +154,8 @@ export default class App {
         console.log(Tooler.errorList.map(item => {
             return item.replace(".zip", ".a3d");
         }));
+
+        // this.helper.play();
     }
 
     fitModel(group: THREE.Object3D): void {
@@ -221,7 +229,7 @@ export default class App {
             }
 
             if(transparent){
-                m.alphaTest = 0.2;
+                m.alphaTest = 0.24;
                 m.transparent = true;
             }
 
@@ -300,7 +308,7 @@ export default class App {
 
     setup(): void {
         let url = Tooler.getQueryString("url");
-        if(location.search.indexOf("mendaoyun.com") != -1){
+        if(!Tooler.isTest()){
             url = url.replace("http:", "https:");
         }
         // url = url.replace("http:", "https:");
@@ -318,7 +326,12 @@ export default class App {
         })
 
         // this.addLights();
-        this.animate();
+
+        this.helper = new ViewHelper();
+        this.scene.add(this.helper);
+        this.helper.addCamera(this.camera);
+        this.helper.addLight(this.stage.focusLight);
+        this.animate();       
     }
 
     addSubModel(param:any):void{
@@ -332,15 +345,17 @@ export default class App {
         console.log("scale", scale);
         
         // var angle = 0.02;
-        var angle = 0.9;
-        if(Math.PI / 2 - Math.abs(rotation[2] % Math.PI) < angle){
-            obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
-        }
-        else{
-            obj.rotation.set(rotation[0], rotation[1], rotation[2]);
-        }
+        // var angle = 0.9;
+        // if(Math.PI / 2 - Math.abs(rotation[2] % Math.PI) < angle){
+        //     obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
+        // }
+        // else{
+        //     obj.rotation.set(rotation[0], rotation[1], rotation[2]);
+        // }
 
-        // obj.rotation.set(rotation[0], rotation[1], rotation[2]);
+        obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
+
+        // obj.rotation.set(rotation[0], rotation[2], rotation[1]);
 
         obj.scale.set(scale[0], scale[1], scale[2]);
         group.add(obj);
@@ -379,5 +394,9 @@ export default class App {
             mat.metalness = n;
         })
         this.metalness = n;
+    }
+
+    setFar(n: number):void{
+        this.stage.focusLight.changeFar(this.camera, n);
     }
 }

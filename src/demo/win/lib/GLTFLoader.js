@@ -70,6 +70,7 @@ import {
 	VertexColors,
 	sRGBEncoding
 } from "three";
+import Tooler from "../../3d-viewer/core/Tooler";
 
 var GLTFLoader = ( function () {
 
@@ -290,12 +291,16 @@ var GLTFLoader = ( function () {
 			}
 
 			console.warn("json-----------------------")
-
-			if(json.images){
-				json.images.forEach(item => {
-					item.uri = item.uri.replace("http:", "https:");
-				})
-			}
+			// console.warn(json);
+			// var isTest = Tooler.isTest();
+			// if(json.images){
+			// 	json.images.forEach(item => {
+			// 		if(!isTest){
+			// 			item.uri = item.uri.replace("http:", "https:");
+			// 		}
+			// 		console.log(item.uri);
+			// 	})
+			// }
 
 			var parser = new GLTFParser( json, extensions, {
 

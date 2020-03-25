@@ -67,11 +67,11 @@ export default class App {
         this.camera.position.set(20, 20, 20);
 
         this.addLights();
-        // this.addObj();
+        this.addObj();
         this.animate();
         // this.test();
         // this.addPots();
-        this.loadZip();
+        // this.loadZip3();
         this.camera.lookAt(new THREE.Vector3());
         document.body.appendChild(this.renderer.domElement);
     }
@@ -79,7 +79,7 @@ export default class App {
     loadZip3(){
         new THREE.FileLoader()
         .setResponseType( 'arraybuffer' )
-        .load( 'obj/fbx/box.zip', ( data )=> {
+        .load( 'obj/fbx/man.zip', ( data )=> {
             JSZip.loadAsync(data).then((zip:any)=>{
                 const loadingManager = new THREE.LoadingManager();
                 loadingManager.setURLModifier(url => {
@@ -91,7 +91,7 @@ export default class App {
                 });
 
                 var loader = new FBXLoader(loadingManager);
-                var ab = zip.file('box.fbx').async("arraybuffer");
+                var ab = zip.file('man.fbx').async("arraybuffer");
                 ab.then((res:any)=>{
                     console.log(res);
                     var obj = loader.parse(res, "");
@@ -241,7 +241,7 @@ export default class App {
     }
     
     addObj(){
-        let url = '/obj/fbx/Running.fbx';
+        let url = '/obj/fbx/man.fbx';
         if(url.indexOf(".fbx") != -1){
             this.loadFbxObj(url);
         }
@@ -287,6 +287,7 @@ export default class App {
     }
 
     loadFbxObj(url:string){
+        console.log(url);
         var loader = new FBXLoader();
         loader.load(url, ( object:any )=> {
             this.mixer = new THREE.AnimationMixer( object );

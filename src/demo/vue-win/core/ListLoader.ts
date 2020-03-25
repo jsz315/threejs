@@ -39,7 +39,7 @@ export default class ListLoader{
                 resolve();
                 return;
             }
-            if(location.search.indexOf("mendaoyun.com") != -1){
+            if(!Tooler.isTest()){
                 url = url.replace("http:", "https:");
             }
             console.log("url=>" + url);

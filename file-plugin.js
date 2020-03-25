@@ -1,10 +1,12 @@
 const path = require('path')
 const fs = require("fs")
+const global = require('./global')
 
 class FilePlugin{
     constructor(options){
         console.log("FilePlugin constructor-------------")
         console.log(options);
+        this.app = options.pages[0];
         options.pages.forEach(page => {
             mkdirsSync('./dist/js');
             mkdirsSync('./dist/css');
@@ -41,16 +43,16 @@ class FilePlugin{
             })
         })
         compiler.plugin("done", ()=>{
-            console.log("FilePlugin done-------------");
-            // var ofile = path.resolve("./dist", "win.html");
-            // var file1 = path.resolve("./dist", "index.php");
-            // var file2 = path.resolve("./dist", "index.html");
-            // fs.copyFile(ofile, file1, err => {
-            //     console.log("复制文件成功")
-            // })
-            // fs.copyFile(ofile, file2, err => {
-            //     console.log("复制文件成功")
-            // })
+            console.log("FilePlugin done-------------" + this.app);
+            var ofile = path.resolve("./dist", this.app + ".html");
+            var file1 = path.resolve("./dist", "index.php");
+            var file2 = path.resolve("./dist", "index.html");
+            fs.copyFile(ofile, file1, err => {
+                console.log("复制文件成功")
+            })
+            fs.copyFile(ofile, file2, err => {
+                console.log("复制文件成功")
+            })
         })
     }
 }

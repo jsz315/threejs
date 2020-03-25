@@ -15,7 +15,8 @@ export default new Vuex.Store({
             ambient: 0.4,
             directional: 0.6,
             roughness: 0.2,
-            metalness: 0.2
+            metalness: 0.2,
+            far: 0.1
         },
         modelId: 0,
         modelType: 0,

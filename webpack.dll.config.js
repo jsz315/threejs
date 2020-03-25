@@ -10,18 +10,18 @@ module.exports = {
     },
     output: {
         filename: '[name].dll.[hash:8].js',
-        path: path.join(__dirname, 'dist/dll'),
+        path: path.join(__dirname, 'static/dll'),
         library: '_dll_[name]_[hash:8]'
     },
     plugins: [
         new CleanWebpackPlugin({
-            root: path.resolve(__dirname, 'dist/dll'),
+            root: path.resolve(__dirname, 'static/dll'),
             verbose: true,
             dry: false
         }),
         new webpack.DllPlugin({
             name: '_dll_[name]_[hash:8]',
-            path: path.join(__dirname, './dist/dll/[name].manifest.json')
+            path: path.join(__dirname, 'static/dll/[name].manifest.json')
         }),
         new BundleAnalyzerPlugin()
     ]

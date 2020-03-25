@@ -71,6 +71,9 @@ listener.on("param", (attr, num) => {
     else if(attr == "metalness"){
         app.setMetalness(num);
     }
+    else if(attr == "far"){
+        app.setFar(num);
+    }
 })
 
 listener.on("map", (url) => {

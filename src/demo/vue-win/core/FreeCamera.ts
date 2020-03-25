@@ -6,7 +6,7 @@ import listener from '../lib/listener';
 
 export class FreeCamera extends THREE.PerspectiveCamera{
 
-    target:THREE.Vector3 = new THREE.Vector3();
+    aim:THREE.Vector3 = new THREE.Vector3();
     size: number = 0;
     orbit: OrbitControls;
     domElement: HTMLCanvasElement;
@@ -34,7 +34,7 @@ export class FreeCamera extends THREE.PerspectiveCamera{
         this.orbit.minPolarAngle = 1;
         this.orbit.maxPolarAngle = 90 * Math.PI / 180;
 
-        this.lookAt(this.target);
+        this.lookAt(this.aim);
         
         listener.on("startWalk", ()=>{
             this.startWalk();
@@ -57,19 +57,19 @@ export class FreeCamera extends THREE.PerspectiveCamera{
         // this.orbit.enabled = false;
 
         console.log(this);
-        console.log(this.target);
+        console.log(this.aim);
         console.log(this.orbit.target);
 
-        this.target = this.orbit.target.clone();
+        this.aim = this.orbit.target.clone();
         new TWEEN.Tween(this.position).to({
             y: 60,
         }).start();
-        new TWEEN.Tween(this.target).to({
+        new TWEEN.Tween(this.aim).to({
             x: 0,
             y: 60,
             z: 10
         }).onUpdate(()=>{
-            this.lookAt(this.target);
+            this.lookAt(this.aim);
         }).start();
     }
 
@@ -119,7 +119,7 @@ export class FreeCamera extends THREE.PerspectiveCamera{
             this.orbit.enabled = false;
 
             TWEEN.removeAll();
-            new TWEEN.Tween(this.target).to({
+            new TWEEN.Tween(this.aim).to({
                 x: offset.x,
                 y: offset.y,
                 z: offset.z
@@ -129,7 +129,7 @@ export class FreeCamera extends THREE.PerspectiveCamera{
                 y: pot.y * s, 
                 z: pot.z * s
             }, 3000).onUpdate(()=>{
-                this.lookAt(this.target);
+                this.lookAt(this.aim);
             }).onComplete(()=>{
                 this.orbit.target = offset;
                 this.orbit.enabled = true;

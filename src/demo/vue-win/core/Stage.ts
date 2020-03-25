@@ -62,7 +62,7 @@ export default class Stage extends THREE.Object3D{
         hemishpereLight.intensity = 0.12;
         this.add(hemishpereLight);
 
-        this.focusLight = new FocusLight(0xffffff, this.focusLightIntensity);
+        this.focusLight = new FocusLight(this, 0xffffff, this.focusLightIntensity);
         this.add(this.focusLight);
     }
 

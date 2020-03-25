@@ -65,6 +65,8 @@ const getHtml = function(apps){
 
 const getCopy = function(apps){
     return apps.map(item => {
+        console.log("copy");
+        console.log(path.resolve(__dirname, item + "/asset"));
         return {
             from: path.resolve(__dirname, item + "/asset"),
             to: path.resolve(__dirname, 'dist/asset'),

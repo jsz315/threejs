@@ -60,6 +60,11 @@ export default class Tooler{
         return !!res;
     }
 
+    public static isTest():boolean{
+        // return this.getQueryString('test') == 1;
+        return location.search.indexOf('mendaow.com') != -1;
+    }
+
     public static getAllMaterial(obj: THREE.Object3D):any{
         let size:number = 1;
         let materials:any = [];

@@ -66,6 +66,11 @@ export default class Tooler{
         return !!res;
     }
 
+    public static isTest():boolean{
+        // return this.getQueryString('test') == 1;
+        return location.search.indexOf('mendaow.com') != -1;
+    }
+
     public static getAllMaterial(obj: THREE.Object3D):any{
         let size:number = 1;
         let materials:any = [];
@@ -249,8 +254,8 @@ export default class Tooler{
             var xhr = new XMLHttpRequest();
             // xhr.open('GET', modelPath + modelName);
 
-            // var v = (new Date()).toLocaleString().split(" ")[0];
-            var v = Math.random();
+            var v = (new Date()).toLocaleString().split(" ")[0];
+            // var v = Math.random();
             xhr.open('GET', modelPath + modelName + "?v=" + v);
             xhr.responseType = 'blob';
             xhr.onprogress = (event) =>{

@@ -1,34 +1,38 @@
 import * as THREE from 'three';
 import Tooler from './Tooler';
+import { FreeCamera } from './FreeCamera';
+import { Scene } from 'three';
 
-export default class FocusLight extends THREE.SpotLight{
-    far:number = 100;
-    helper:THREE.SpotLightHelper;
+export default class FocusLight extends THREE.DirectionalLight{
+    lightFar:number = 100;
+    aim:THREE.Object3D = new THREE.Object3D();
 
-    constructor(color?: THREE.Color | string | number, intensity?: number){
+    constructor(parent:THREE.Object3D, color?: THREE.Color | string | number, intensity?: number){
         super(color, intensity);
         // this.castShadow = true;
         // this.position.set(0, 1, 60);
-        // this.helper = new THREE.SpotLightHelper(this);
-        // this.power = 100;
-        console.log("=====================", this);
+        parent.add(this.aim);
     }
 
-    update(camera: THREE.Camera){
-        this.rotation.copy(camera.rotation);
-        // this.position.copy(camera.position);
-        this.position.set(camera.position.x * 100, camera.position.y * 100, camera.position.z * 100);
+    update(camera: FreeCamera){
+        this.position.copy(camera.position.clone());
+        this.aim.position.copy(camera.orbit.target.clone());
+        this.target = this.aim;
+    }
 
-        /*
-        let pot = camera.position.clone();
-        // var pot = new THREE.Vector3(0, 0, 0);
-        var mat1 = new THREE.Matrix4().makeTranslation(pot.x, pot.y, pot.z);
-        var mat2 = new THREE.Matrix4().makeTranslation(0, 0, 40);
-        // this.position.copy(p);
-        this.applyMatrix(mat1.multiply(mat2));
-        // this.position.copy(Tooler.farAway(this.position, this.far));
-        */
+    changeFar(camera: FreeCamera, n:number):void{
+        // var pot:THREE.Vector3 = camera.position.clone().normalize();
+        // var x:number = pot.x * n * 120000;
+        // var y:number = pot.y * n * 120000;
+        // var z:number = pot.z * n * 120000;
+        // this.position.set(x, y, z);
+        // this.lookAt(camera.orbit.target.clone());
+        this.lightFar = 100 * n;
+        // this.distance = this.lightFar;
+        console.log("lightFar = " + this.lightFar);
 
-        // this.helper.update();
+        console.log(camera.orbit.target);
+        console.log(camera.position);
+        console.log("distance: " + camera.position.distanceTo(camera.orbit.target));
     }
 }

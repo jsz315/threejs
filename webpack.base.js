@@ -85,15 +85,11 @@ module.exports = {
         }),
         new CleanWebpackPlugin({
             root: path.resolve(__dirname, 'dist'),
-            verbose: true,
-            dry: false,
-            exclude: ['dll'],
-            cleanOnceBeforeBuildPatterns: ['!dll/*.*']
         }),
         new CopyWebpackPlugin([
             {
-              from: path.resolve(__dirname, './static/js'),
-              to: path.resolve(__dirname, 'dist/js'),
+              from: path.resolve(__dirname, './static/dll'),
+              to: path.resolve(__dirname, 'dist/dll'),
               ignore: ['.*']
             },
             ...global.copy
@@ -106,11 +102,11 @@ module.exports = {
         }),
         new webpack.DllReferencePlugin({
             context: __dirname,
-            manifest: path.join(__dirname, './dist/dll/three.manifest.json')
+            manifest: path.join(__dirname, './static/dll/three.manifest.json')
         }),
         new AddAssetHtmlPlugin([
             {
-                filepath: path.resolve(__dirname, './dist/dll/*.js'),
+                filepath: path.resolve(__dirname, './static/dll/*.js'),
                 // 文件输出目录
                 outputPath: 'dll',
                 // 脚本或链接标记的公共路径
