@@ -1,5 +1,6 @@
 import Tooler from "./Tooler";
 import Animate from "./Animate";
+import Cache from "./Cache";
 
 export class Effect{
 
@@ -19,55 +20,70 @@ export class Effect{
         });
     }
 
+    setData():void{
+        this.positions = {};
+
+        let animateList1:any = [];
+        let animateList2:any = [];
+        let views:any = [];
+
+        for(var i:number = 0; i < this.json.leafs.length; i++){
+            this.json.leafs[i].fans.forEach((item:any, index:number) => {
+                let content: THREE.Object3D = this.parent.getObjectByName(item.content);
+                if(content && views.indexOf(content) == -1){
+                    views.push(content);
+                    // console.log("动画元素:" + item.content);
+                    this.positions[item.content] = content.position.clone();
+
+                    let animate = new Animate(content);
+                    item.animation.forEach((m:any)=>{
+                        animate.addAnimation(m, item.openMode);
+                    })
+                    
+                    if(item.openMode == 666){
+                        animateList1.push(animate);
+                        animate.createBack(true);
+                    }
+                    else if(Animate.isPullDown(item.openMode)){
+                        animateList2.push(animate);
+                        animate.createBack(false);
+                    }
+                    else{
+                        animateList2.push(animate);
+                        animate.createBack(true);
+                    }
+                }
+                else{
+                    // console.log("无法定位动画元素:" + item.content);
+                }
+            });
+
+        }
+
+        // console.log("动画解析");
+
+        // this.animates = animateList1.concat(animateList2);
+        this.animates = this.animates.concat(animateList1, animateList2);
+        // console.log(this.animates);
+
+        // Cache.getInstance().setAnimate(url, this.animates);
+    }
+
     init(url:string, parent:THREE.Object3D){
         this.parent = parent;
+
+        var json = Cache.getInstance().getAnimate(url);
+        if(json){
+            this.json = json;
+            this.setData();
+            return;
+        }
+
         Tooler.loadData(url, (res: any) => {
             if(res){
                 this.json = JSON.parse(res);
-                this.positions = {};
-
-                let animateList1:any = [];
-                let animateList2:any = [];
-                let views:any = [];
-
-                for(var i:number = 0; i < this.json.leafs.length; i++){
-                    this.json.leafs[i].fans.forEach((item:any, index:number) => {
-                        let content: THREE.Object3D = parent.getObjectByName(item.content);
-                        if(content && views.indexOf(content) == -1){
-                            views.push(content);
-                            // console.log("动画元素:" + item.content);
-                            this.positions[item.content] = content.position.clone();
-
-                            let animate = new Animate(content);
-                            item.animation.forEach((m:any)=>{
-                                animate.addAnimation(m, item.openMode);
-                            })
-                            
-                            if(item.openMode == 666){
-                                animateList1.push(animate);
-                                animate.createBack(true);
-                            }
-                            else if(Animate.isPullDown(item.openMode)){
-                                animateList2.push(animate);
-                                animate.createBack(false);
-                            }
-                            else{
-                                animateList2.push(animate);
-                                animate.createBack(true);
-                            }
-                        }
-                        else{
-                            // console.log("无法定位动画元素:" + item.content);
-                        }
-                    });
-
-                }
-
-                // console.log("动画解析");
-
-                // this.animates = animateList1.concat(animateList2);
-                this.animates = this.animates.concat(animateList1, animateList2);
-                // console.log(this.animates);
+                this.setData();
+                Cache.getInstance().setAnimate(url, this.json);
             }
             else{
                 // (document.querySelector(".animate") as any).style.display = "none";

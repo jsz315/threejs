@@ -5,6 +5,7 @@
             <div class="close" @click="close"></div>
         </div>
         <div class="content">
+            <DebugView></DebugView>
             <img class="img" v-for="item in imgs" v-bind:Key="item" :src="item">
         </div>
     </div>
@@ -12,6 +13,7 @@
 
 <script>
 import Tooler from "../../core/Tooler.ts"
+import DebugView from '../debug-view/index.vue'
 
 export default {
     data() {
@@ -19,7 +21,7 @@ export default {
             retry: false
         };
     },
-    components: {},
+    components: {DebugView},
     computed: {
         visible() {
             return this.$store.state.detailVisible;

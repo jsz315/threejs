@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { GLTFLoader } from '../lib/GLTFLoader'
+import { GLTFExporter } from '../lib/GLTFExporter';
 
 export default class Tooler{
 
@@ -73,7 +74,8 @@ export default class Tooler{
 
     public static getAllMaterial(obj: THREE.Object3D):any{
         let size:number = 1;
-        let materials:any = [];
+        let materials:any = {};
+        let temp:any = [];
         obj.traverse((item:any) => {
             if(item.isMesh){
                 let list;
@@ -84,22 +86,22 @@ export default class Tooler{
                     list = [item.material];
                 }
                 list.forEach((m:any) => {
-                    if(m.map){
-                        materials.push(m);
-                        // m.map.flipY = true;
-                        // m.map.flipX = true;
+                    if(m.map && m.map.image){
+                        // var src = m.map.image.currentSrc;
+                        // if(materials[src]){
+                        //     console.log("相同材质");
+                        //     materials[src] = m;
+                        // }
+                        // else{
+                        //     materials[src] = m;
+                        // }
+                        temp.push(m);
                     }
                 })
-                // let temp = Math.max(...item.geometry.attributes.uv.array);
-                // size = Math.max(temp, size);
             }
         })
 
-        // if(size > 2){
-        //     size = 2;
-        // }
-
-        return [materials, size];
+        return [temp, size];
     }
 
     public static loadData(url:string, complateHandler:Function, progressHandler?:Function):void{
@@ -356,4 +358,75 @@ export default class Tooler{
         })
     }
 
+    public static toGLTFData(scene:any, fname:string){
+        var embed = false;
+        var exporter = new GLTFExporter();
+        exporter.parse(scene, (result) => {
+            console.log(result);
+            if ( result instanceof ArrayBuffer ) {
+                this.saveArrayBuffer( result, fname + '.glb' );
+                this.getJsonFromArrayBuffer(result);
+            } else {
+                var output = JSON.stringify( result, null, 2 );
+                this.saveString( output, fname + '.gltf' );
+            }
+        }, {
+            binary: true,
+            embedImages: embed,
+            forcePowerOfTwoTextures: false,
+            truncateDrawRange: false,
+            trs: true
+        });
+    }
+
+    public static getJsonFromArrayBuffer(data:ArrayBuffer):any{
+        let dataView = new DataView(data);
+        let len = dataView.getUint32(12, true);
+        let contentArray = new Uint8Array( data, 20, len );
+        let json = this.arrayBufferToString( contentArray );
+        console.log(json);
+    }
+
+    public static arrayBufferToString(array: any):any {
+        if ( typeof TextDecoder !== 'undefined' ) {
+			return new TextDecoder().decode( array );
+        }
+        var s = '';
+		for ( var i = 0, il = array.length; i < il; i ++ ) {
+			s += String.fromCharCode( array[ i ] );
+		}
+		try {
+			return decodeURIComponent( escape( s ) );
+		} catch ( e ) {
+			return s;
+		}
+    }
+    
+    public static save( blob:Blob, filename:string ) {
+        var link = document.createElement( 'a' );
+        link.style.display = 'none';
+        document.body.appendChild( link );
+        link.href = URL.createObjectURL( blob );
+        link.download = filename;
+        link.click();
+    }
+    
+    public static saveString( text:string, filename:string ) {
+        this.save( new Blob( [ text ], { type: 'text/plain' } ), filename );
+    }
+
+    public static saveArrayBuffer( buffer:any, filename:string ) {
+        this.save( new Blob( [ buffer ], { type: 'application/octet-stream' } ), filename );
+    }
+
+    public static getStageSize(usePixel?: boolean) {
+        var size: any = { width: window.innerWidth };
+        size.height = window.innerHeight;
+        if (usePixel) {
+            var dpr = window.devicePixelRatio > 2 ? 2 : window.devicePixelRatio;
+            size.width = size.width * dpr;
+            size.height = size.height * dpr;
+        }
+        return size;
+    }
 }

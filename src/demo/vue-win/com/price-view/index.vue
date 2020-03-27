@@ -49,6 +49,7 @@
 
 <script>
 import Tooler from "../../core/Tooler.ts"
+import price from "../../lib/price"
 
 export default {
     data() {
@@ -72,26 +73,26 @@ export default {
             return this.$store.state.logoImage || "./asset/img/logo.png";
         }
     },
-    mounted() {
-        // console.log("url ==============");
-        // let url = Tooler.getQueryString("url");
-        // console.log(url);
-        // let id = url.split("/").pop().split(".")[0];
-
-        // let id = this.$store.state.modelId;
-        // this.getImg(id);
-        this.init();
+    async mounted() {
+        // this.init();
+        let res = await price.getList();
+        if(res){
+            this.list = res.list;
+            this.totalNum = res.totalNum;
+            this.totalArea = res.totalArea;
+            this.totalPrice = res.totalPrice;
+        }
     },
     methods: {
         close() {
             this.$store.commit("changePriceVisible", false);
         },
         getImage(obj){
-            var host = Tooler.getQueryString("debug")== 1 ? 'http://3d.mendaow.com' : 'https://3d.mendaoyun.com';
+            var host = Tooler.isTest() ? 'http://3d.mendaow.com' : 'https://3d.mendaoyun.com';
             var url = host + '/data/upload' + obj.plan_path + "/" + obj.plan_img;
-            console.log(url);
-            var json = host + '/data/upload' + obj.plan_path + "/" + obj.pricejson_file;
-            this.getPrice(json, obj);
+            // console.log(url);
+            // var json = host + '/data/upload' + obj.plan_path + "/" + obj.pricejson_file;
+            // this.getPrice(json, obj);
             return url;
         },
         async getPrice(url, obj){
@@ -135,24 +136,34 @@ export default {
             if(!u){
                 return;
             }
-            let id = u.split("-").pop();
+            
+            var temp = u.split("-");
+            let id = temp.pop();
+            let sourcetype = temp.pop();
+
             let link = "/mapi/index.php";
             let res = await this.$get(link, {
-                    app:"scheme",
-                    fnn:"getPrice",
+                    app:"modelshow",
+                    fnn:"modelDetailById",
+                    sourcetype: sourcetype,
                     yun3d_id:id
                 });
             console.log(res);
             if (res.data && res.data.code == 200) {
-               res.data.datas.forEach(item=>{
+                
+                var list = [];
+
+               for(var i in res.data.datas){
+                   var item = res.data.datas[i];
                    item.price = '-';
                    item.count = '-';
                    item.area = '-';
                    item.all = '-';
                    item.size = '-';
-               })
+                   list.push(item);
+               }
 
-               this.list = res.data.datas;
+               this.list = list;
             }
         }
     }

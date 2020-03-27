@@ -8,6 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const global = require('./global')
 const FilePlugin = require('./file-plugin')
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 console.log("配置文件");
 console.log(global);
@@ -23,6 +24,22 @@ module.exports = {
     },
     resolve: {
         extensions: [ '.tsx', '.ts', '.js' ]
+    },
+    optimization: {
+        // minimizer: [
+        //     new UglifyJSPlugin({
+        //         uglifyOptions: {
+        //             output: {
+        //                 comments: false
+        //             },
+        //             compress: {
+        //                 warnings: false,
+        //                 drop_debugger: true,
+        //                 drop_console: true
+        //             }
+        //         }
+        //     })
+        // ]
     },
     //模块,指定加载器,可配置各种加载器,这样就不担心less等文件的编译问题，这里用不到所以没写
     module: {

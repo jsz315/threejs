@@ -9,7 +9,6 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 const JSZip = require('three/examples/js/libs/jszip.min.js');
 import Tooler from './Tooler'
 
-import vlist from './ver';
 
 export default class App {
     
@@ -20,6 +19,8 @@ export default class App {
     stats: any;
     clock:THREE.Clock = new THREE.Clock();
     mixer: any;
+    isMobile: boolean;
+    rayCaster: THREE.Raycaster = new THREE.Raycaster();
 
     constructor() {
         this.scene = new THREE.Scene();
@@ -29,6 +30,8 @@ export default class App {
             alpha: true
         });
         window.addEventListener("resize", e => this.onResize(e), false);
+
+        
     }
     
     onResize(e:Event):void{
@@ -74,7 +77,40 @@ export default class App {
         // this.loadZip3();
         this.camera.lookAt(new THREE.Vector3());
         document.body.appendChild(this.renderer.domElement);
+
+        this.isMobile = this.checkMobile();
+
+        this.renderer.domElement.addEventListener(this.isMobile ? "touchstart" : "mousedown", (e: any) => this.choose(e), false);
     }
+
+    choose(e:any){
+        if (this.isMobile) {
+            e = e.changedTouches[0];
+        }
+
+        let mouse = new THREE.Vector2();
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        let obj: any;
+        this.rayCaster.setFromCamera(mouse, this.camera);
+        let list = this.scene.children;
+        let intersectObjects = this.rayCaster.intersectObjects(list, true);
+        if (intersectObjects[0]) {
+            obj = intersectObjects[0].object;
+            console.log(obj);
+        }
+    }
+
+    checkMobile():boolean{
+        let list = ["Android", "iPhone", "iPad"];
+        let res = list.find(item => {
+            if(navigator.userAgent.indexOf(item) != -1){
+                return true;
+            }
+        })
+        return !!res;
+    }
+
 
     loadZip3(){
         new THREE.FileLoader()
@@ -208,37 +244,6 @@ export default class App {
 
 
     }
-
-    addPots(){
-        var geometry = new THREE.Geometry();
-
-        let t = vlist.length;
-        let group = new THREE.Group();
-        let box = new THREE.BoxGeometry(40, 40, 40);
-        let mat = new THREE.MeshNormalMaterial();
-        for(let i = 0; i < t; i += 3){
-
-            // let pot = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({
-            //     color: App.SELECTED_COLOR,
-            //     map: new THREE.CanvasTexture(this.getCanvas(++App.TOTAL))
-            // }));
-
-            let pot = new THREE.Mesh(box, mat);
-            pot.position.set(vlist[i], vlist[i + 1], vlist[i + 2]);
-            group.add(pot);
-
-            geometry.vertices.push(
-                new THREE.Vector3(vlist[i], vlist[i + 1], vlist[i + 2])
-            );
-        }
-        var line = new THREE.Line( geometry, mat );
-        group.add( line );
-
-        this.scene.add(group);
-        this.fitModel(group);
-        console.log(this.scene);
-
-    }
     
     addObj(){
         let url = '/obj/fbx/man.fbx';
@@ -249,7 +254,7 @@ export default class App {
             this.loadDaeObj(url);
         }
 
-        this.scene.add(new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshNormalMaterial()));
+        // this.scene.add(new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshNormalMaterial()));
 
     }
 
@@ -259,7 +264,7 @@ export default class App {
         // while (parent.children.length == 1) {
         //     parent = parent.children[0];
         // }
-        let scale: number = Tooler.getFitScale(parent, 10);
+        let scale: number = Tooler.getFitScale(parent, 100);
         // parent.position.set(0, 0, 0);
         parent.scale.multiplyScalar(scale);
         // parent.rotateX(-Math.PI / 2);
@@ -270,10 +275,46 @@ export default class App {
         aim.name = "aim_scene";
         aim.add(parent);
         this.scene.add(aim);
-        let offset: THREE.Vector3 = Tooler.getOffsetVector3(aim);
-        console.log("offset ==== ");
-        console.log(offset);
-        aim.position.set(0 - offset.x, 0 - offset.y, 0 - offset.z);
+        console.log("parent");
+        console.log(parent);
+        // let offset: THREE.Vector3 = Tooler.getOffsetVector3(aim);
+        // console.log("offset ==== ");
+        // console.log(offset);
+        // aim.position.set(0 - offset.x, 0 - offset.y, 0 - offset.z);
+
+        this.initMaterial(aim);
+    }
+
+    initMaterial(obj: THREE.Object3D):void{
+        var mat1:THREE.MeshStandardMaterial = new THREE.MeshStandardMaterial({color: 0xffad77});
+        var mat2:THREE.MeshStandardMaterial = new THREE.MeshStandardMaterial({color: 0x3cce02});
+        var mat3:THREE.MeshStandardMaterial = new THREE.MeshStandardMaterial({color: 0xff0000});
+        var mat4:THREE.MeshStandardMaterial = new THREE.MeshStandardMaterial({color: 0x00ff00});
+        var mat5:THREE.MeshStandardMaterial = new THREE.MeshStandardMaterial({color: 0xffffff});
+        obj.traverse( function ( child:any) {
+            if ( child.isMesh ) {
+                // child.castShadow = true;
+                // child.receiveShadow = true;
+                console.log(child.name);
+                if(child.name.indexOf('肌肉') != -1){
+                    (child as THREE.Mesh).material = mat1;
+                }
+                else if(child.name.indexOf('Box') != -1){
+                    (child as THREE.Mesh).material = mat2;
+                }
+                else if(child.name.indexOf('眼睛') != -1){
+                    (child as THREE.Mesh).material = mat3;
+                }
+                else if(child.name.indexOf('QuadPatch') != -1){
+                    // (child as THREE.Mesh).material = mat4;
+                    child.parent.remove(child);
+                }
+                else{
+                    (child as THREE.Mesh).material = mat5;
+                }
+            }
+
+        } );
     }
 
     loadDaeObj(url:string){
@@ -290,20 +331,20 @@ export default class App {
         console.log(url);
         var loader = new FBXLoader();
         loader.load(url, ( object:any )=> {
-            this.mixer = new THREE.AnimationMixer( object );
-            var action = this.mixer.clipAction( object.animations[ 0 ] );
-            action.play();
+            // this.mixer = new THREE.AnimationMixer( object );
+            // var action = this.mixer.clipAction( object.animations[ 0 ] );
+            // action.play();
 
-            object.traverse( function ( child:any) {
+            // object.traverse( function ( child:any) {
 
-                if ( child.isMesh ) {
+            //     if ( child.isMesh ) {
 
-                    child.castShadow = true;
-                    child.receiveShadow = true;
+            //         child.castShadow = true;
+            //         child.receiveShadow = true;
 
-                }
+            //     }
 
-            } );
+            // } );
 
             this.fitModel( object );
 

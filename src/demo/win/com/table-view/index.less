@@ -1,0 +1,100 @@
+.table{
+    margin-top: 30px;
+    &.hide{
+        display: none;
+    }
+    .t-title{
+        font-size: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px 30px;
+        .t-ico{
+            width: 30px;
+            height: 30px;
+            background: url("../../asset/money.png") no-repeat center;
+            background-size: contain;
+            margin-right: 10px;
+        }
+        .t-tip1{
+            margin-right: 100px;
+            font-weight: bold;
+        }
+        .t-tip2{
+            width: 100px;
+            flex: 1;
+        }
+        .t-tip3{
+            margin-right: 20px;
+            color: #0299df;
+        }
+        .t-arrow{
+            width: 30px;
+            height: 30px;
+            background: url("../../asset/arrow.png") no-repeat center;
+            background-size: contain;
+            &.hide{
+                transform: rotate(180deg);
+            }
+        }
+    }
+    .t-list{
+        border: solid 1px #f0f0f0;
+        transition: all 300ms;
+        width: 708px;
+        margin: 0 auto 40px;
+        font-size: 24px;
+        &.hide{
+            height: 0;
+            overflow: hidden;
+        }
+        .t-item{
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            border-top: solid 1px #f0f0f0;
+            text-align: center;
+            .ti{
+                padding: 16px 0;
+            }
+            .t-i1{
+                width: 222px;
+                border-right: solid 1px #f0f0f0;
+                text-align: left;
+                padding-left: 20px;
+            }
+            .t-i2{
+                width: 120px;
+                border-right: solid 1px #f0f0f0;
+            }
+            .t-i3{
+                width: 132px;
+                border-right: solid 1px #f0f0f0;
+            }
+            .t-i4{
+                width: 80px;
+                border-right: solid 1px #f0f0f0;
+            }
+            .t-i5{
+                flex: 1;
+                text-align: right;
+                padding-right: 20px;
+                &.ti{
+                    font-weight: bold;
+                }
+            }
+        }
+        #price .data:nth-child(odd) {
+            background: #f9f9f9;
+        }
+        .header{
+            padding: 10px 0;
+        }
+    }
+}
+
+@media screen and (min-width: 768PX){
+    .debug-view{
+        font-size: 16PX;
+    }
+}

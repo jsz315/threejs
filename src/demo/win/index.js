@@ -3,6 +3,9 @@ import App from'./core/App'
 import Stats from 'three/examples/jsm/libs/stats.module';
 import axios from "axios";
 import Tooler from "./core/Tooler.ts"
+import price from "./lib/price"
+import Vue from 'vue'
+import Home from "./com/home/index.vue"
 
 let stats;
 let app;
@@ -286,18 +289,18 @@ function init(){
         addMap(e.detail);
     });
 
-    $(".t-arrow").onclick = function(){
-        if($(".t-list").getAttribute("class") == 't-list'){
-            $(".t-list").setAttribute("class", "t-list hide");
-            $(".t-arrow").setAttribute("class", "t-arrow hide");
-        }
-        else{
-            $(".t-list").setAttribute("class", "t-list");
-            $(".t-arrow").setAttribute("class", "t-arrow");
-        }
-    }
+    // $(".t-arrow").onclick = function(){
+    //     if($(".t-list").getAttribute("class") == 't-list'){
+    //         $(".t-list").setAttribute("class", "t-list hide");
+    //         $(".t-arrow").setAttribute("class", "t-arrow hide");
+    //     }
+    //     else{
+    //         $(".t-list").setAttribute("class", "t-list");
+    //         $(".t-arrow").setAttribute("class", "t-arrow");
+    //     }
+    // }
 
-    initPrice();
+    // initPrice();
 }
 
 
@@ -310,59 +313,6 @@ function $(sel){
     return document.querySelector(sel);
 }
 
-
-async function initPrice() {
-    let u = Tooler.getQueryString("u");
-    if(!u){
-        return;
-    }
-    let id = u.split("-").pop();
-    let link = "/mapi/index.php";
-    let res = await axios.get(link, {
-            params: {
-                app:"scheme",
-                fnn:"getPrice",
-                yun3d_id:id
-            }
-        });
-    console.log(res);
-    if (res.data && res.data.code == 200) {
-    //    res.data.datas.forEach(item=>{
-    //        item.price = '-';
-    //        item.count = '-';
-    //        item.area = '-';
-    //        item.all = '-';
-    //        item.size = '-';
-    //    })
-        var obj = res.data.datas[0];
-        getAimPrice(obj);
-    }
-}
-
-async function getAimPrice(obj){
-    var host = Tooler.getQueryString("debug")== 1 ? 'http://3d.mendaow.com' : 'https://3d.mendaoyun.com';
-    var url = host + '/data/upload' + obj.plan_path + "/" + obj.pricejson_file;
-    let res = await axios.get(url);
-    var data = res.data;
-    console.log(data);
-    // obj.area = data.acreage;
-    // obj.price = data.price;
-    // obj.count = data.items[0].discount;           
-    // obj.all = obj.count * obj.price * obj.setnum;
-    // obj.size = [data.length, data.height, data.width].join(" x ");
-    var list = data.items.map(item=>{
-        var div = ['<div class="t-item data">',
-                '<div class="t-i1 ti">' + item.bale + '-' + item.label+ '</div>',
-                '<div class="t-i2 ti">' + item.price+ '</div>',
-                '<div class="t-i3 ti"></div>',
-                '<div class="t-i4 ti">' + item.discount + '</div>',
-                '<div class="t-i5 ti">' + (item.price * item.discount) + '</div>',
-            '</div>'];
-        return div.join("");
-    })
-
-    $("#price").innerHTML = list.join('');
-
-    $(".t-tip2").innerHTML = data.acreage + 'm²';
-    $(".t-tip3").innerHTML = '￥' + data.price;
-}
+new Vue({
+    render: h => h(Home)
+}).$mount("#tables");

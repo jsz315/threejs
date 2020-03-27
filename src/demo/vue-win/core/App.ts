@@ -7,6 +7,7 @@ import TextureList from './TextureList';
 import { FreeCamera }  from './FreeCamera';
 import Stage from './Stage';
 import ViewHelper from './ViewHelper';
+import Cache from './Cache';
 const TWEEN = require('../lib/Tween.js');
 
 export default class App {
@@ -33,9 +34,10 @@ export default class App {
     isFitScene: boolean;
 
     helper:ViewHelper;
+    mtotal:number = 0;
 
     constructor(canvas: any, size: any) {
-        this.size = this.getStageSize(true);
+        this.size = Tooler.getStageSize(true);
         this.canvas = canvas;
         this.canvas.width = this.size.width;
         this.canvas.height = this.size.height;
@@ -73,6 +75,7 @@ export default class App {
             this.setRoughness(this.roughness);
             this.setMetalness(this.metalness);
             // this.orbit.enabled = true;
+            this.lightMap();
         }, false);
     }
 
@@ -86,14 +89,15 @@ export default class App {
         // }
         size.height = window.innerHeight;
         if (usePixel) {
-            size.width = size.width * window.devicePixelRatio;
-            size.height = size.height * window.devicePixelRatio;
+            var dpr = window.devicePixelRatio > 2 ? 2 : window.devicePixelRatio;
+            size.width = size.width * dpr;
+            size.height = size.height * dpr;
         }
         return size;
     }
 
     onResize(e: Event): void {
-        this.size = this.getStageSize(true);
+        this.size = Tooler.getStageSize(true);
         this.canvas.width = this.size.width;
         this.canvas.height = this.size.height;
         this.camera.aspect = this.size.width / this.size.height;
@@ -122,7 +126,7 @@ export default class App {
         if (this.isMobile) {
             e = e.changedTouches[0];
         }
-        var size = this.getStageSize(false);
+        var size = Tooler.getStageSize(false);
         let mouse = new THREE.Vector2();
         mouse.x = (e.clientX / size.width) * 2 - 1;
         mouse.y = -(e.clientY / size.height) * 2 + 1;
@@ -204,10 +208,23 @@ export default class App {
 
         let winMaterials: any = [];
 
+        console.log("materials 个数: " + materials.length);
+
+
+        // let cubeTextureLoader = new THREE.CubeTextureLoader();
+        // cubeTextureLoader.setPath( './asset/skybox/' );
+        // //六张图片分别是朝前的（posz）、朝后的（negz）、朝上的（posy）、朝下的（negy）、朝右的（posx）和朝左的（negx）。
+        // let cubeTexture:THREE.CubeTexture = cubeTextureLoader.load( [
+        //     'px.jpg', 'nx.jpg',
+        //     'py.jpg', 'ny.jpg',
+        //     'pz.jpg', 'nz.jpg'
+        // ] );
+        // cubeTexture.format = THREE.RGBFormat;
+        // cubeTexture.mapping = THREE.CubeReflectionMapping;
+
         materials.forEach((m: any) => {
             let src:any;
             let transparent = false;
-
             if (m.map && m.map.image) {
                 src = m.map.image.src;
                 if(src.indexOf(".png") != -1){
@@ -232,17 +249,20 @@ export default class App {
                 m.alphaTest = 0.24;
                 m.transparent = true;
             }
-
+            // m.envMap = cubeTexture;
             // m.flatShading = false;
 
             if(FineLoader.isLayout || isWall){
-                console.log("家具材质");
-                m.roughness = 0.96;
-                m.metalness = 0.04;
-                m.flatShading = false;
+                // console.log("家具材质");
+                if(!transparent){
+                    m.roughness = 0.96;
+                    m.metalness = 0.04;
+                    m.flatShading = false;
+                }
+                
             }
             else{
-                console.log("门窗材质");
+                // console.log("门窗材质");
                 if (src) {
                     // src = m.map.image.src;
                     // if (src.indexOf("/dif_") != -1) {
@@ -263,7 +283,10 @@ export default class App {
                     m.metalness = this.metalness;
                 }
             }
+
+
             src && this.resetMap(m, src);
+            
 
             //模型变黑解决要点
             // m.emissive = m.color;
@@ -283,21 +306,90 @@ export default class App {
         
     }
 
+    async lightMap(){
+        console.log("lightMap");
+        var t = 0;
+        var aim:any = {};
+        this.scene.traverse((item:any) => {
+            if(item.isMesh){
+                let list;
+                if(Array.isArray(item.material)){
+                    list = item.material;
+                }
+                else{
+                    list = [item.material];
+                }
+                // console.log("list total = " + list.length);
+                for(var i = 0; i < list.length; i++){
+                    var m = list[i];
+                    if(m.map && m.map.image){
+                        aim[m.map.image.src] = m;
+                        // m.needsUpdate = true;
+                    }
+                }
+            }
+        })
+
+
+        for(var i in aim){
+            // console.log("i = " + i);
+            ++t;
+            await this.reloadMap(aim[i], i);
+            // aim[i].needsUpdate = true;
+        }
+
+        console.log("lightMap all " + t);
+        console.log("mtotal " + this.mtotal);
+    }
+
+    async reloadMap(material: any, url: string){
+        return new Promise(resolve=>{
+            let map = material.map;
+            let texture: any = new THREE.TextureLoader().load(url, () => {
+                // material.map.needsUpdate = true;
+                material.needsUpdate = true;
+                setTimeout(() => {
+                    resolve();
+                }, 30);
+            });
+    
+            texture.wrapS = map.wrapS;
+            texture.wrapT = map.wrapT;
+            texture.repeat = new THREE.Vector2(map.repeat.x, map.repeat.y);
+            texture.flipY = map.flipY;
+            texture.flipX = map.flipX;
+            material.map = texture;
+        })
+        
+    }
+
     resetMap(material: any, url: string): void {
         let map = material.map;
 
-        let texture: any = new THREE.TextureLoader().load(url, () => {
-            material.map.needsUpdate = true;
-            material.needsUpdate = true;
-        });
+        // material.needsUpdate = true;
 
-        texture.wrapS = map.wrapS;
-        texture.wrapT = map.wrapT;
-        texture.repeat = new THREE.Vector2(map.repeat.x, map.repeat.y);
-        texture.flipY = map.flipY;
-        texture.flipX = map.flipX;
+        var t = Cache.getInstance().getTexture(url);
+        if(t){
+            material.map = t;
+        }
+        else{
+            Cache.getInstance().setTexture(url, map);
+        }
 
-        material.map = texture;
+        ++this.mtotal;
+
+        // let texture: any = new THREE.TextureLoader().load(url, () => {
+        //     material.map.needsUpdate = true;
+        //     material.needsUpdate = true;
+        // });
+
+        // texture.wrapS = map.wrapS;
+        // texture.wrapT = map.wrapT;
+        // texture.repeat = new THREE.Vector2(map.repeat.x, map.repeat.y);
+        // texture.flipY = map.flipY;
+        // texture.flipX = map.flipX;
+
+        // material.map = texture;
     }
 
     changeMap(url: string): void {
@@ -341,8 +433,8 @@ export default class App {
         let {position, rotation, scale} = param.attr;
         obj.position.set(position[0], position[1], position[2]);
         // obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
-        console.log("rotation", rotation);
-        console.log("scale", scale);
+        // console.log("rotation", rotation);
+        // console.log("scale", scale);
         
         // var angle = 0.02;
         // var angle = 0.9;

@@ -1,0 +1,50 @@
+.check-view{
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    .label{
+        width: 100px;
+        color: #000000;
+    }
+    .check-box{
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: solid 1px #999999;
+        background: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: 10px;
+        &.selected::after{
+            display: block;
+            content: "";
+            width: 16px;
+            height: 16px;
+            background: #ff0000;
+            border-radius: 50%;
+        }
+    }
+    .cur{
+        width: 160px;
+        color: #999999;
+        margin-left: 10px;
+    }
+}
+
+@media screen and (min-width: 768PX){
+    .range-view{
+        font-size: 16PX;
+        .label{
+            width: 100PX;
+        }
+        .color{
+            margin: 0 10PX;
+        }
+        .cur{
+            width: 160PX;
+            margin-left: 10PX;
+        }
+    }
+}

@@ -38,7 +38,7 @@ export default class App {
     repeat: any;
 
     constructor(canvas: any, size: any) {
-        this.size = this.getStageSize(true);
+        this.size = this.getStageSize(false);
         this.canvas = canvas;
         this.canvas.width = this.size.width;
         this.canvas.height = this.size.height;
@@ -93,7 +93,7 @@ export default class App {
     }
 
     onResize(e: Event): void {
-        this.size = this.getStageSize(true);
+        this.size = this.getStageSize(false);
         this.canvas.width = this.size.width;
         this.canvas.height = this.size.height;
         console.log("resize");

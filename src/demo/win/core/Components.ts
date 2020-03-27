@@ -17,6 +17,17 @@ export default class Components{
     }
 
     initMap(materials: any[]){
+        // let cubeTextureLoader = new THREE.CubeTextureLoader();
+        // cubeTextureLoader.setPath( './asset/skybox/' );
+        // //六张图片分别是朝前的（posz）、朝后的（negz）、朝上的（posy）、朝下的（negy）、朝右的（posx）和朝左的（negx）。
+        // let cubeTexture:THREE.CubeTexture = cubeTextureLoader.load( [
+        //     'px.jpg', 'nx.jpg',
+        //     'py.jpg', 'ny.jpg',
+        //     'pz.jpg', 'nz.jpg'
+        // ] );
+        // cubeTexture.format = THREE.RGBFormat;
+        // cubeTexture.mapping = THREE.CubeReflectionMapping;
+
         materials.forEach((m: any) => {
             if (m.map && m.map.image) {
                 let src = m.map.image.src;
@@ -38,6 +49,7 @@ export default class Components{
             }
             m.transparent = true;
             m.alphaTest = 0.2;
+            // m.envMap = cubeTexture;
         })
 
         setTimeout(() => {

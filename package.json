@@ -39,6 +39,7 @@
     "three-orbitcontrols-ts": "^0.1.2",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.3",
+    "uglifyjs-webpack-plugin": "^2.2.0",
     "url-loader": "^2.0.1",
     "webpack": "^4.35.2",
     "webpack-cli": "^3.3.6",

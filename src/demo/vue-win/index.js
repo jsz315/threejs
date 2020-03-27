@@ -10,9 +10,18 @@ import store from "./store/index";
 import listener from './lib/listener';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import { Toast } from 'mint-ui';
+import chat from './chat';
+import Tooler from './core/Tooler'
+
 
 let stats;
 let app;
+let isDebug = Tooler.getQueryString("debug") == 1;
+let isStop = Tooler.getQueryString("stop") == 1;
+
+if(isDebug){
+    chat.init();
+}
 
 Vue.use(MintUI)
 // Vue.prototype.$axios = axios;
@@ -94,7 +103,9 @@ window.onload = function(){
 
     let canvas = $("#canvas");
     app = new App(canvas);
-    app.setup();
+
+    !isStop && app.setup();
+    
     app.setStats(stats);
 
     let param = store.state.effectParam;
@@ -107,3 +118,17 @@ window.onload = function(){
 function $(sel){
     return document.querySelector(sel);
 }
+
+
+// (async function(){
+//     var num = await getNum();
+//     console.log("num ============ " + num);
+
+//     async function getNum(){
+//         return new Promise(resolve=>{
+//             setTimeout(() => {
+//                 resolve(99);
+//             }, 3000);
+//         })
+//     }
+// })();

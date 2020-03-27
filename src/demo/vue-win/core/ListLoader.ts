@@ -1,5 +1,7 @@
 import * as THREE from 'three'
 import Tooler from './Tooler';
+import listener from '../lib/listener';
+import Cache from './Cache'
 
 export default class ListLoader{
 
@@ -20,9 +22,11 @@ export default class ListLoader{
 
     async start(){
         if(this.curId < this.list.length){
-            console.log("加载模型", this.type);
+            // console.log("加载模型", this.type);
+            listener.emit("chat", this.type + " " + this.curId + "/" + this.list.length + "##" + this.list[this.curId].url);
             await this.load(this.list[this.curId], this.type == "hole" || this.type == "sun");
             console.log("load " + this.type + " " + this.curId + "/" + this.list.length);
+
             this.curId++;
             this.start();
         }
@@ -43,18 +47,35 @@ export default class ListLoader{
                 url = url.replace("http:", "https:");
             }
             console.log("url=>" + url);
+
+            let detail:any = {
+                attr: item,
+                hasAnimate: hasAnimate
+            }
+
+            let mesh:any = Cache.getInstance().getMesh(url);
+            if(mesh){
+                detail.obj = mesh;
+                window.dispatchEvent(new CustomEvent("subLoad", { bubbles: false, cancelable: false, detail: detail}));
+                resolve();
+                return;
+            }
+
+            // listener.emit("chat", "[start] " + url);
             let res:any = await Tooler.loadModel(url);
+            // listener.emit("chat", "[end] " + url);
+
             if(!res){
                 resolve(); 
                 return;
             }
-            let detail = {
-                obj: res.object3D,
-                attr: item,
-                hasAnimate: hasAnimate
-            }
-            console.log("loading ... " + this.curId);
+
+            detail.obj = res.object3D;
+            // console.log("loading ... " + this.curId);
             window.dispatchEvent(new CustomEvent("subLoad", { bubbles: false, cancelable: false, detail: detail}));
+
+            Cache.getInstance().setMesh(url, res.object3D);
+
             resolve();
         })
     }
