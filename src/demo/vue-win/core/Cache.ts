@@ -22,48 +22,47 @@ export default class Cache {
 
     getMesh(url:string):THREE.Mesh{
         if(this.model[url]){
-            console.warn('使用缓存(' + (this.model[url].times++) + ')' + url);
-            return this.model[url].mesh.clone();
+            // console.warn('使用缓存(' + (this.model[url].times++) + ')' + url);
+            return this.model[url].data.clone();
         }
         return null;
     }
 
     setMesh(url:string, mesh:THREE.Mesh):void{
         this.model[url] = {
-            mesh: mesh,
+            data: mesh,
             times: 1
         };
     }
 
     getAnimate(url:string):any{
         if(this.animate[url]){
-            console.warn('使用缓存(' + (this.animate[url].times++) + ')' + url);
-            return this.animate[url].animate;
+            // console.warn('使用缓存(' + (this.animate[url].times++) + ')' + url);
+            return this.animate[url].data;
         }
         return null;
     }
 
     setAnimate(url:string, animate:any):void{
         this.animate[url] = {
-            animate: animate,
+            data: animate,
             times: 1
         };
     }
 
     getTexture(url:string):any{
         if(this.texture[url]){
-            console.warn('使用缓存(' + (this.texture[url].times++) + ')' + url);
-            return this.texture[url].texture;
+            // console.warn('使用缓存(' + (this.texture[url].times++) + ')' + url);
+            return this.texture[url].data;
         }
         return null;
     }
 
     setTexture(url:string, texture:any):void{
         this.texture[url] = {
-            texture: texture,
+            data: texture,
             times: 1
         };
     }
-
 
 }

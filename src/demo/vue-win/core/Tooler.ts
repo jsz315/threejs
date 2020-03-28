@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { GLTFLoader } from '../lib/GLTFLoader'
 import { GLTFExporter } from '../lib/GLTFExporter';
+import Cache from './Cache';
 
 export default class Tooler{
 
@@ -84,24 +85,34 @@ export default class Tooler{
                 }
                 else{
                     list = [item.material];
+                    var map = item.material.map;
+                    if(map && map.image){
+                        var mat = Cache.getInstance().getTexture(map.image.src);
+                        if(mat){
+                            item.material = mat;
+                            // console.log("使用缓存材质");
+                        }
+                        else{
+                            Cache.getInstance().setTexture(map.image.src, item.material);
+                        }
+                    }
                 }
                 list.forEach((m:any) => {
                     if(m.map && m.map.image){
-                        // var src = m.map.image.currentSrc;
-                        // if(materials[src]){
-                        //     console.log("相同材质");
-                        //     materials[src] = m;
-                        // }
-                        // else{
-                        //     materials[src] = m;
-                        // }
+                        var src = m.map.image.currentSrc;
+                        materials[src] = m;
                         temp.push(m);
                     }
                 })
             }
         })
 
-        return [temp, size];
+        var all = [];
+        for(var i in materials){
+            all.push(materials[i]);
+        }
+        console.log(temp.length + "所有材质个数: " + all.length);
+        return [all, size];
     }
 
     public static loadData(url:string, complateHandler:Function, progressHandler?:Function):void{

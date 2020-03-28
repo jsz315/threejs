@@ -35,6 +35,7 @@ export default class App {
 
     helper:ViewHelper;
     mtotal:number = 0;
+    textureLoader: THREE.TextureLoader = new THREE.TextureLoader();
 
     constructor(canvas: any, size: any) {
         this.size = Tooler.getStageSize(true);
@@ -77,23 +78,6 @@ export default class App {
             // this.orbit.enabled = true;
             this.lightMap();
         }, false);
-    }
-
-    getStageSize(usePixel?: boolean) {
-        var size: any = { width: window.innerWidth };
-        // if (window.innerWidth > window.innerHeight) {
-        //     size.height = window.innerHeight;
-        // }
-        // else {
-        //     size.height = window.innerWidth;
-        // }
-        size.height = window.innerHeight;
-        if (usePixel) {
-            var dpr = window.devicePixelRatio > 2 ? 2 : window.devicePixelRatio;
-            size.width = size.width * dpr;
-            size.height = size.height * dpr;
-        }
-        return size;
     }
 
     onResize(e: Event): void {
@@ -145,9 +129,17 @@ export default class App {
             console.log(aim);
             console.log(aim.rotation, aim.scale);
             let mat = Array.isArray(obj.material) ? obj.material[0] : obj.material;
+
+            // obj.material = new THREE.MeshNormalMaterial();
+            // setTimeout(() => {
+            //     obj.material= mat;
+            // }, 900);
+
             if (mat.map) {
                 let img = mat.map.image;
                 console.log(img.currentSrc);
+
+                // this.reloadMap(mat, img.currentSrc);
             }
         }
     }
@@ -245,10 +237,13 @@ export default class App {
                 }
             }
 
+            // m.alphaTest = 0.2;
+            // m.transparent = true;
             if(transparent){
-                m.alphaTest = 0.24;
+                m.alphaTest = 0.2;
                 m.transparent = true;
             }
+
             // m.envMap = cubeTexture;
             // m.flatShading = false;
 
@@ -309,7 +304,9 @@ export default class App {
     async lightMap(){
         console.log("lightMap");
         var t = 0;
+        var i;
         var aim:any = {};
+        var temp:any = [];
         this.scene.traverse((item:any) => {
             if(item.isMesh){
                 let list;
@@ -319,38 +316,60 @@ export default class App {
                 else{
                     list = [item.material];
                 }
-                // console.log("list total = " + list.length);
-                for(var i = 0; i < list.length; i++){
+                for(i = 0; i < list.length; i++){
                     var m = list[i];
                     if(m.map && m.map.image){
                         aim[m.map.image.src] = m;
-                        // m.needsUpdate = true;
+                        if(temp.indexOf(m) == -1){
+                            temp.push(m);
+                        }
                     }
                 }
             }
         })
 
 
-        for(var i in aim){
-            // console.log("i = " + i);
+
+        // var objs = Cache.getInstance().texture;
+        // for(i in objs){
+        //     var m = objs[i].texture.map;
+        //     if(m && m.image){
+        //         await this.reloadMap(objs[i].texture, m.image.src);
+        //         ++t;
+        //     }
+            
+        // }
+
+        console.log("new list " + t);
+
+
+        for(i = 0; i < temp.length; i++){
             ++t;
-            await this.reloadMap(aim[i], i);
-            // aim[i].needsUpdate = true;
+            await this.reloadMap(temp[i], temp[i].map.image.src);
         }
 
-        console.log("lightMap all " + t);
+        console.log("lightMap all " + temp.length);
         console.log("mtotal " + this.mtotal);
     }
 
     async reloadMap(material: any, url: string){
         return new Promise(resolve=>{
+            // var image = map.image;
+            // var isJPEG = url.search( /\.jpe?g($|\?)/i ) > 0 || url.search( /^data\:image\/jpeg/ ) === 0;
+			// map.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
+            // map.img = null;
+            // map.needsUpdate = true;
+            // material.needsUpdate = true;
+
+
             let map = material.map;
-            let texture: any = new THREE.TextureLoader().load(url, () => {
+            let texture: any = this.textureLoader.load(url, () => {
                 // material.map.needsUpdate = true;
                 material.needsUpdate = true;
                 setTimeout(() => {
                     resolve();
-                }, 30);
+                }, 10);
+                
             });
     
             texture.wrapS = map.wrapS;
@@ -364,32 +383,16 @@ export default class App {
     }
 
     resetMap(material: any, url: string): void {
-        let map = material.map;
-
-        // material.needsUpdate = true;
-
-        var t = Cache.getInstance().getTexture(url);
-        if(t){
-            material.map = t;
-        }
-        else{
-            Cache.getInstance().setTexture(url, map);
-        }
+        // let map = material.map;
+        // var t = Cache.getInstance().getTexture(url);
+        // if(t){
+        //     // material.map = t;
+        // }
+        // else{
+        //     Cache.getInstance().setTexture(url, material);
+        // }
 
         ++this.mtotal;
-
-        // let texture: any = new THREE.TextureLoader().load(url, () => {
-        //     material.map.needsUpdate = true;
-        //     material.needsUpdate = true;
-        // });
-
-        // texture.wrapS = map.wrapS;
-        // texture.wrapT = map.wrapT;
-        // texture.repeat = new THREE.Vector2(map.repeat.x, map.repeat.y);
-        // texture.flipY = map.flipY;
-        // texture.flipX = map.flipX;
-
-        // material.map = texture;
     }
 
     changeMap(url: string): void {
@@ -406,6 +409,8 @@ export default class App {
         // url = url.replace("http:", "https:");
         this.fineLoader.start(url, (object3D: THREE.Object3D) => {
             this.fitModel(object3D);
+
+            this.initMaterials(object3D, true);
             url = url.replace(/\.(glb|zip)/, ".animation");
             var effect = new Effect();
             effect.init(url, this.scene);
