@@ -10,7 +10,7 @@ export class FreeCamera extends THREE.PerspectiveCamera{
     size: number = 0;
     orbit: OrbitControls;
     domElement: HTMLCanvasElement;
-    startPot: THREE.Vector3 = new THREE.Vector3(-400, 400, 800);
+    startPot: THREE.Vector3 = new THREE.Vector3(-400, 600, 1200);
     actions: any = {
         left: false,
         right: false,
@@ -104,7 +104,7 @@ export class FreeCamera extends THREE.PerspectiveCamera{
 
     reset(obj:THREE.Object3D){
         let bs = Tooler.getBoxSize(obj);
-        let s = Math.max(bs.x, bs.y, bs.z) * 1.2;
+        let s = Math.max(bs.x, bs.y, bs.z) * 2;
         if(s > this.size){
             this.size = s;
             let offset = Tooler.getOffsetVector3(obj);

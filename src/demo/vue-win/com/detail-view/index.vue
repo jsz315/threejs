@@ -14,6 +14,7 @@
 <script>
 import Tooler from "../../core/Tooler.ts"
 import DebugView from '../debug-view/index.vue'
+import listener from "../../lib/listener"
 
 export default {
     data() {
@@ -42,35 +43,6 @@ export default {
     methods: {
         close() {
             this.$store.commit("changeDetailVisible", false);
-        },
-        async getImg(id) {
-            let res;
-            let link = "";
-            if (location.search.indexOf("//3d.") != -1) {
-                link = "/mapi/index.php";
-                res = await this.$get(link, {
-                        id: id,
-                        app: "index",
-                        fnn: "sysdiss",
-                        type: this.$store.state.modelType
-                    });
-            } else {
-                link = "/api/index/sysdiss";
-                res = await this.$post(link, {id: id});
-            }
-
-            if (res.data && res.data.datas) {
-                let datas = res.data.datas;
-                if (datas["sys_img"] || datas["brand_img"]) {
-                    datas["sys_img"] && this.imgs.push(datas["sys_img"]);
-                    datas["brand_img"] && this.imgs.push(datas["brand_img"]);
-                } else {
-                    if (!this.retry) {
-                        this.retry = true;
-                        this.getImg(26);
-                    }
-                }
-            }
         }
     }
 };

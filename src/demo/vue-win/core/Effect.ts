@@ -74,22 +74,31 @@ export class Effect{
 
         var json = Cache.getInstance().getAnimate(url);
         if(json){
-            this.json = json;
-            this.setData();
-            return;
-        }
-
-        Tooler.loadData(url, (res: any) => {
-            if(res){
-                this.json = JSON.parse(res);
-                this.setData();
-                Cache.getInstance().setAnimate(url, this.json);
+            if(json == -1){
+                console.log('动画数据不存在，无需重复加载');
             }
             else{
-                // (document.querySelector(".animate") as any).style.display = "none";
-                console.log("无法解析动画数据" + url);
+                this.json = json;
+                this.setData();
             }
-        });
+            
+        }
+        else{
+            Tooler.loadData(url, (res: any) => {
+                if(res){
+                    this.json = JSON.parse(res);
+                    this.setData();
+                    Cache.getInstance().setAnimate(url, this.json);
+                }
+                else{
+                    // (document.querySelector(".animate") as any).style.display = "none";
+                    console.log("无法解析动画数据" + url);
+                    Cache.getInstance().setAnimate(url, -1);
+                }
+            });
+        }
+
+        
 
     }
 

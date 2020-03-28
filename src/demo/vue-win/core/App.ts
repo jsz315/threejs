@@ -5,6 +5,7 @@ import { Effect } from './Effect';
 import listener from '../lib/listener';
 import TextureList from './TextureList';
 import { FreeCamera }  from './FreeCamera';
+import {FineMaterial} from './FineMaterial';
 import Stage from './Stage';
 import ViewHelper from './ViewHelper';
 import Cache from './Cache';
@@ -34,7 +35,6 @@ export default class App {
     isFitScene: boolean;
 
     helper:ViewHelper;
-    mtotal:number = 0;
     textureLoader: THREE.TextureLoader = new THREE.TextureLoader();
 
     constructor(canvas: any, size: any) {
@@ -76,7 +76,7 @@ export default class App {
             this.setRoughness(this.roughness);
             this.setMetalness(this.metalness);
             // this.orbit.enabled = true;
-            this.lightMap();
+            FineMaterial.lightMap(this.scene);
         }, false);
     }
 
@@ -127,7 +127,7 @@ export default class App {
             console.log("当前模型：");
             var aim:THREE.Object3D = Tooler.getRootModel(obj);
             console.log(aim);
-            console.log(aim.rotation, aim.scale);
+            // console.log(aim.rotation, aim.scale);
             let mat = Array.isArray(obj.material) ? obj.material[0] : obj.material;
 
             // obj.material = new THREE.MeshNormalMaterial();
@@ -154,7 +154,7 @@ export default class App {
         // this.helper.play();
     }
 
-    fitModel(group: THREE.Object3D): void {
+    fitModel(group: THREE.Object3D, isWall:boolean = false): void {
         let parent: THREE.Object3D = group;
         parent.rotateX(-Math.PI / 2);
         this.scene.add(parent);
@@ -171,7 +171,7 @@ export default class App {
         this.scene.add(aim);
         // this.addGrass();
         this.resetName(group);
-        this.initMaterials(parent, true);
+        this.initMaterials(parent, isWall);
 
         // this.addSkySphere(30000);
 
@@ -193,106 +193,32 @@ export default class App {
     }
 
     initMaterials(parent: THREE.Object3D, isWall:boolean = false) {
-        let list = Tooler.getAllMaterial(parent);
-
-        let materials = list[0];
-        this.repeat = list[1];
-
-        let winMaterials: any = [];
-
-        console.log("materials 个数: " + materials.length);
-
-
-        // let cubeTextureLoader = new THREE.CubeTextureLoader();
-        // cubeTextureLoader.setPath( './asset/skybox/' );
-        // //六张图片分别是朝前的（posz）、朝后的（negz）、朝上的（posy）、朝下的（negy）、朝右的（posx）和朝左的（negx）。
-        // let cubeTexture:THREE.CubeTexture = cubeTextureLoader.load( [
-        //     'px.jpg', 'nx.jpg',
-        //     'py.jpg', 'ny.jpg',
-        //     'pz.jpg', 'nz.jpg'
-        // ] );
-        // cubeTexture.format = THREE.RGBFormat;
-        // cubeTexture.mapping = THREE.CubeReflectionMapping;
-
+        // let list = Tooler.getAllMaterial(parent);
+        let materials = FineMaterial.getMapMaterials(parent);
         materials.forEach((m: any) => {
-            let src:any;
-            let transparent = false;
-            if (m.map && m.map.image) {
-                src = m.map.image.src;
-                if(src.indexOf(".png") != -1){
-                    transparent = true;
-                }
-                else if(src.indexOf("/glass.") != -1){
-                    m.opacity = 0.36;
-                    transparent = true;
-                }
-                else if(src.indexOf("/IGL_") != -1){
-                    transparent = true;
-                }
-                else if(src.indexOf("/BL123") != -1){
-                    transparent = true;
-                }
-                else if(src.indexOf("/bl_") != -1){
-                    transparent = true;
-                }
-            }
-
-            // m.alphaTest = 0.2;
-            // m.transparent = true;
-            if(transparent){
-                m.alphaTest = 0.2;
-                m.transparent = true;
-            }
-
-            // m.envMap = cubeTexture;
-            // m.flatShading = false;
+            let src:any = m.map.image.src;
+            let transparent = m.transparent;
 
             if(FineLoader.isLayout || isWall){
-                // console.log("家具材质");
                 if(!transparent){
                     m.roughness = 0.96;
                     m.metalness = 0.04;
                     m.flatShading = false;
                 }
-                
             }
             else{
-                // console.log("门窗材质");
-                if (src) {
-                    // src = m.map.image.src;
-                    // if (src.indexOf("/dif_") != -1) {
-                    //     isRoom = true;
-                    //     roomMaterials.push(m);
-                    // }
-
-                    // winMaterials.push(m);
-
-                    if (src.indexOf("/IPR_") != -1) {
-                        winMaterials.push(m);
-                    }
-                    else if(src.indexOf("dif_wood") != -1){
-                        winMaterials.push(m);
-                    }
-
-                    m.roughness = this.roughness;
-                    m.metalness = this.metalness;
+                if (src.indexOf("/IPR_") != -1) {
+                    this.frameMaterials.push(m);
                 }
+                else if(src.indexOf("dif_wood") != -1){
+                    this.frameMaterials.push(m);
+                }
+
+                m.roughness = this.roughness;
+                m.metalness = this.metalness;
             }
-
-
-            src && this.resetMap(m, src);
-            
-
-            //模型变黑解决要点
-            // m.emissive = m.color;
-            // m.emissiveIntensity = 0.12;
-
-            // setTimeout(() => {
-            //     src && this.resetMap(m, src);
-            // }, 3000);
         })
 
-        this.frameMaterials = this.frameMaterials.concat(winMaterials);
         if(isWall){
             setTimeout(() => {
                 listener.emit("init");
@@ -300,104 +226,11 @@ export default class App {
         }
         
     }
-
-    async lightMap(){
-        console.log("lightMap");
-        var t = 0;
-        var i;
-        var aim:any = {};
-        var temp:any = [];
-        this.scene.traverse((item:any) => {
-            if(item.isMesh){
-                let list;
-                if(Array.isArray(item.material)){
-                    list = item.material;
-                }
-                else{
-                    list = [item.material];
-                }
-                for(i = 0; i < list.length; i++){
-                    var m = list[i];
-                    if(m.map && m.map.image){
-                        aim[m.map.image.src] = m;
-                        if(temp.indexOf(m) == -1){
-                            temp.push(m);
-                        }
-                    }
-                }
-            }
-        })
-
-
-
-        // var objs = Cache.getInstance().texture;
-        // for(i in objs){
-        //     var m = objs[i].texture.map;
-        //     if(m && m.image){
-        //         await this.reloadMap(objs[i].texture, m.image.src);
-        //         ++t;
-        //     }
-            
-        // }
-
-        console.log("new list " + t);
-
-
-        for(i = 0; i < temp.length; i++){
-            ++t;
-            await this.reloadMap(temp[i], temp[i].map.image.src);
-        }
-
-        console.log("lightMap all " + temp.length);
-        console.log("mtotal " + this.mtotal);
-    }
-
-    async reloadMap(material: any, url: string){
-        return new Promise(resolve=>{
-            // var image = map.image;
-            // var isJPEG = url.search( /\.jpe?g($|\?)/i ) > 0 || url.search( /^data\:image\/jpeg/ ) === 0;
-			// map.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
-            // map.img = null;
-            // map.needsUpdate = true;
-            // material.needsUpdate = true;
-
-
-            let map = material.map;
-            let texture: any = this.textureLoader.load(url, () => {
-                // material.map.needsUpdate = true;
-                material.needsUpdate = true;
-                setTimeout(() => {
-                    resolve();
-                }, 10);
-                
-            });
     
-            texture.wrapS = map.wrapS;
-            texture.wrapT = map.wrapT;
-            texture.repeat = new THREE.Vector2(map.repeat.x, map.repeat.y);
-            texture.flipY = map.flipY;
-            texture.flipX = map.flipX;
-            material.map = texture;
-        })
-        
-    }
-
-    resetMap(material: any, url: string): void {
-        // let map = material.map;
-        // var t = Cache.getInstance().getTexture(url);
-        // if(t){
-        //     // material.map = t;
-        // }
-        // else{
-        //     Cache.getInstance().setTexture(url, material);
-        // }
-
-        ++this.mtotal;
-    }
-
+    
     changeMap(url: string): void {
         this.frameMaterials.length && this.frameMaterials.forEach((material: any) => {
-            this.resetMap(material, url);
+            FineMaterial.reloadMap(material, url);
         })
     }
 
@@ -408,9 +241,9 @@ export default class App {
         }
         // url = url.replace("http:", "https:");
         this.fineLoader.start(url, (object3D: THREE.Object3D) => {
-            this.fitModel(object3D);
+            this.fitModel(object3D, true);
+            FineMaterial.lightMap(object3D);
 
-            this.initMaterials(object3D, true);
             url = url.replace(/\.(glb|zip)/, ".animation");
             var effect = new Effect();
             effect.init(url, this.scene);

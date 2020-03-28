@@ -63,6 +63,8 @@ listener.on("open", () => {
     app.playAnimate();
 })
 
+
+
 listener.on("background", (src) => {
     document.querySelector(".canvas-box").style.backgroundImage = `url(${src})`;
 })

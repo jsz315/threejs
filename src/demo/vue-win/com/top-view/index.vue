@@ -17,6 +17,7 @@ export default {
     components: {},
     computed: {
         logo(){
+            console.log("logo = " + this.$store.state.logoImage);
             return this.$store.state.logoImage || "./asset/img/logo.png";
         }
     },
