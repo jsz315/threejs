@@ -9,8 +9,8 @@
     <title>门道软件-定制门窗阳光房展示</title>
     <script>
         (function (doc, win) {
-            var dpr = window.devicePixelRatio || 1;
-            // var dpr = 1;
+            var dpr = window.devicePixelRatio;
+            drp = dpr > 2 ? 2: dpr;
             var docEl = doc.documentElement;
             var metaEl = document.querySelector('meta[name="viewport"]');
             if(!metaEl){
@@ -24,7 +24,7 @@
             var recalc = function () {    
                 var clientWidth = window.innerWidth * scale;
                 docEl.style.fontSize = 100 * (clientWidth * dpr / 750) + 'px';
-                metaEl.setAttribute('content', 'width=' + clientWidth * dpr + ',initial-scale=' + scale + ',maximum-scale=' + scale + ', minimum-scale=' + scale + ',user-scalable=no'); 
+                // metaEl.setAttribute('content', 'width=' + clientWidth * dpr + ',initial-scale=' + scale + ',maximum-scale=' + scale + ', minimum-scale=' + scale + ',user-scalable=no'); 
             };
             if (!doc.addEventListener) return;
             win.addEventListener(resizeEvt, recalc, false);

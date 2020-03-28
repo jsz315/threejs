@@ -38,7 +38,7 @@ export default class App {
     repeat: any;
 
     constructor(canvas: any, size: any) {
-        this.size = this.getStageSize(false);
+        this.size = this.getStageSize(true);
         this.canvas = canvas;
         this.canvas.width = this.size.width;
         this.canvas.height = this.size.height;
@@ -86,14 +86,15 @@ export default class App {
             size.height = window.innerWidth;
         }
         if (usePixel) {
-            size.width = size.width * window.devicePixelRatio;
-            size.height = size.height * window.devicePixelRatio;
+            var dpr = window.devicePixelRatio > 2 ? 2 : window.devicePixelRatio;
+            size.width = size.width * dpr;
+            size.height = size.height * dpr;
         }
         return size;
     }
 
     onResize(e: Event): void {
-        this.size = this.getStageSize(false);
+        this.size = this.getStageSize(true);
         this.canvas.width = this.size.width;
         this.canvas.height = this.size.height;
         console.log("resize");

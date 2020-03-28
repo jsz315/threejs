@@ -115,7 +115,9 @@ export default class App {
         mouse.x = (e.clientX / size.width) * 2 - 1;
         mouse.y = -(e.clientY / size.height) * 2 + 1;
 
-        // this.camera.orbit.update();
+        // this.camera.updateMatrix();
+        // this.camera.orbit.reset();
+        console.log(this.camera.orbit.center.clone());
 
         let obj: any;
         this.rayCaster.setFromCamera(mouse, this.camera);

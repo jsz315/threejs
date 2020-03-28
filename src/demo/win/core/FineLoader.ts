@@ -153,8 +153,8 @@ function readBlob(f:any, fname:string){
             let res = await zip.file("obj.glb").async("arraybuffer");
             let json = await getJson(zip);
 
-            console.log("zip json");
-            console.log(json);
+            // console.log("zip json");
+            // console.log(json);
             resolve(res);    
         }, function (e:any) {
             console.log("Error reading " + f.name + ": " + e.message);
