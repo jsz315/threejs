@@ -22,22 +22,27 @@
 }
 
 @media screen and (min-width: 768PX){
-    .range-view{
-        font-size: 16PX;
-        display: flex;
-        align-items: center;
-        text-align: left;
-        .label{
-            width: 100PX;
-            color: #000000;
-        }
-        .range{
-            flex: 1;
-            margin: 0 10PX;
-        }
-        .cur{
-            width: 80PX;
-            color: #999999;
-        }
+.range-view{
+    font-size: 24PX;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    .label{
+        width: 100PX;
+        color: #000000;
     }
+    .range{
+        flex: 1;
+        margin: 0 10PX;
+    }
+    .cur{
+        width: 80PX;
+        color: #999999;
+    }
+}
+
+/deep/.mt-range-thumb {
+    background-color: #26a2ff;
+}
+
 }

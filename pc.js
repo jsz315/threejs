@@ -7,15 +7,10 @@ const glob = require('glob');
 const entryFiles = glob.sync(dir + '/**/*.less');
 
 console.log(entryFiles);
-
-
-// entryFiles.forEach(item => {
-//     var odata = fs.readFileSync(item, 'utf8');
-//     var ndata = odata.replace(/com.mdwg./g, "com.mface.");
-//     fs.writeFileSync(item, ndata, "utf8");
-//     console.log("替换成功" + item.split("MDFace").pop());
-// })
-// console.log("处理文件总数：" + entryFiles.length);
+entryFiles.forEach(item => {
+	replace(item);
+})
+console.log("处理文件总数：" + entryFiles.length);
 
 // var list = walk('./src/demo/' + app + '/');
 // console.log(list);
@@ -23,6 +18,7 @@ console.log(entryFiles);
 // list.forEach(item => {
 // 	replace(item);
 // })
+
 
 function walk(dir) {
 	var results = []
@@ -42,6 +38,13 @@ function walk(dir) {
 	return results;
 }
 
-function replace(file){
+function replace(item){
+	var odata = fs.readFileSync(item, 'utf8');
+	var ndata = odata.replace(/@media screen[\w\W]*/g, "");
+	var pcdata = ndata.replace(/px/ig, 'PX');
+	var aimdata = `${ndata}@media screen and (min-width: 768PX){\n${pcdata}}`;
 
+	console.log(aimdata);
+
+    fs.writeFileSync(item, aimdata, "utf8");
 }

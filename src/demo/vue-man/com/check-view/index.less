@@ -38,38 +38,43 @@
 }
 
 @media screen and (min-width: 768PX){
-    .check-view{
-        font-size: 16PX;
+.check-view{
+    font-size: 24PX;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    .label{
+        width: 100PX;
+        color: #000000;
+    }
+    .check-box{
+        width: 30PX;
+        height: 30PX;
+        border-radius: 50%;
+        border: solid 1PX #999999;
+        background: #ffffff;
         display: flex;
+        justify-content: center;
         align-items: center;
-        text-align: left;
-        .label{
-            width: 100PX;
-            color: #000000;
-        }
-        .check-box{
-            width: 30PX;
-            height: 30PX;
+        margin-left: 10PX;
+        &.selected::after{
+            display: block;
+            content: "";
+            width: 16PX;
+            height: 16PX;
+            background: #ff0000;
             border-radius: 50%;
-            border: solid 1PX #999999;
-            background: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-left: 10PX;
-            &.selected::after{
-                display: block;
-                content: "";
-                width: 16PX;
-                height: 16PX;
-                background: #ff0000;
-                border-radius: 50%;
-            }
-        }
-        .cur{
-            width: 160PX;
-            color: #999999;
-            margin-left: 10PX;
         }
     }
+    .cur{
+        width: 160PX;
+        color: #999999;
+        margin-left: 10PX;
+    }
+    .tip{
+        margin-left: 16PX;
+        color: #999999;
+    }
+}
+
 }

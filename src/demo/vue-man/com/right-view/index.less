@@ -57,60 +57,62 @@
 }
 
 @media screen and (min-width: 768PX){
-    .right-view{
-        font-size: 16PX;
-        position: fixed;
-        right: 20PX;
-        top: 88PX;
-        z-index: 1;
+.right-view{
+    font-size: 28PX;
+    position: fixed;
+    right: 20PX;
+    top: 88PX;
+    z-index: 1;
+    width: 76PX;
+    .ico{
+        cursor: pointer;
         width: 76PX;
-        .ico{
-            cursor: pointer;
-            width: 76PX;
-            height: 76PX;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.44) url("../../asset/img/share.png") no-repeat center;
-            background-size: 40% auto;
-            margin-bottom: 24PX;
-            position: relative;
-        }
-        .effect{
-            background-image: url("../../asset/img/effect.png");
-        }
-        .full{
-            background-image: url("../../asset/img/full.png");
-        }
-        .picture{
-            background-image: url("../../asset/img/picture.png");
-        }
-        .camera{
-            background-image: url("../../asset/img/camera.png");
-        }
-        .walk{
-            background-image: url("../../asset/img/game.png");
-        }
-        .thumb{
-            background-image: url("../../asset/img/thumb.png");
-        }
-        .file{
-            display: none;
-        }
-    
-        .menu{
-            position: absolute;
-            left: -100PX;
-            width: 80PX;
+        height: 76PX;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.44) url("../../asset/img/share.png") no-repeat center;
+        background-size: 40% auto;
+        margin-bottom: 24PX;
+        position: relative;
+    }
+    .effect{
+        background-image: url("../../asset/img/effect.png");
+    }
+    .full{
+        background-image: url("../../asset/img/full.png");
+    }
+    .picture{
+        background-image: url("../../asset/img/picture.png");
+    }
+    .camera{
+        background-image: url("../../asset/img/camera.png");
+    }
+    .walk{
+        background-image: url("../../asset/img/game.png");
+    }
+    .thumb{
+        background-image: url("../../asset/img/thumb.png");
+    }
+    .file{
+        display: none;
+    }
+
+    .menu{
+        position: absolute;
+        left: -150PX;
+        width: 120PX;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.44);
+        color: #ffffff;
+        .tip{
             text-align: center;
-            background: rgba(0, 0, 0, 0.44);
-            color: #ffffff;
-            .tip{
-                text-align: center;
-                height: 50PX;
-                line-height: 50PX;
-                &:nth-child(3){
-                    border-bottom: solid 1PX #ffffff;
-                }
+            height: 60PX;
+            line-height: 60PX;
+            border-bottom: solid 1PX #a5a5a5;
+            &:nth-child(3){
+                border-bottom: solid 1PX #ffffff;
             }
         }
     }
+}
+
 }
