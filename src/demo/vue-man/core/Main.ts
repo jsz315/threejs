@@ -43,14 +43,6 @@ export default class Main {
             var obj:THREE.Object3D = this.scene.getObjectByName('load_scene');
             Tooler.toGLTFData(obj, 'man');
         })
-        listener.on('toggle', (n:number) => {
-            if(n == 1){
-                this.part.toggle('muscle');
-            }
-            else if(n == 2){
-                this.part.toggle('bones');
-            }
-        })
         listener.on('param', (type:string, attr:string, data:any) => {
             console.log(type, attr, data);
             if(type == 'ambient' || type == 'directional'){
@@ -61,6 +53,11 @@ export default class Main {
                 else{
                     obj[type + 'Light'][attr] = data;
                 }                
+            }
+            else if(type == 'system'){
+                if(attr == 'background'){
+                    this.renderer.setClearColor(new THREE.Color(data));
+                }
             }
             else{
                 this.part.change(type, attr, data);
@@ -89,7 +86,7 @@ export default class Main {
 
     setup():void {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        // this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setPixelRatio(window.devicePixelRatio > 2 ? 2 : window.devicePixelRatio);
         this.renderer.setClearColor(new THREE.Color(0x909090));
         this.renderer.shadowMap.enabled = true;
       
@@ -98,7 +95,6 @@ export default class Main {
         this.camera.position.set(20, 20, 20);
 
         this.addLights();
-        // this.addObj();
         this.loadGlb();
         this.animate();
         this.camera.lookAt(new THREE.Vector3());
@@ -123,25 +119,15 @@ export default class Main {
         }
     }
     
-    addObj(){
-        let url = '/obj/fbx/man.fbx';
-        var loader = new FBXLoader();
-        loader.load(url, ( object:any )=> {
-            listener.emit('loaded');
-            this.fitModel( object );
-            this.initMaterial(object);
-        } );
-    }
-
     loadGlb(){
         let loader = new GLTFLoader();
         loader.setCrossOrigin('anonymous');
         loader.load('./asset/obj/man.glb', (gltf:any) => {
             console.log("【GLTF数据】");
             console.log(gltf);
-            listener.emit('loaded');
-            this.fitModel( gltf.scene );
+            this.fitModel(gltf.scene);
             this.initMaterial(gltf.scene);
+            listener.emit('loaded');
         }, e=>{
             console.log(e);
         })
@@ -155,8 +141,6 @@ export default class Main {
         aim.name = "aim_scene";
         aim.add(group);
         this.scene.add(aim);
-        console.log("group");
-        console.log(group);
     }
 
     initMaterial(obj: THREE.Object3D):void{

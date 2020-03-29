@@ -12,7 +12,7 @@ listener.on = function(type, callback){
 listener.emit = function(){
     let args = [...arguments];
     let type = args.shift();
-    listener[type].forEach(item => {
+    listener[type] && listener[type].forEach(item => {
         item.apply(null, args);
     })
 }

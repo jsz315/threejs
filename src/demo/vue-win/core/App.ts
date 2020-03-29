@@ -115,9 +115,18 @@ export default class App {
         mouse.x = (e.clientX / size.width) * 2 - 1;
         mouse.y = -(e.clientY / size.height) * 2 + 1;
 
-        // this.camera.updateMatrix();
+        // console.log(this.camera.orbit.center.clone());
+        // console.log(this.camera);
+        console.log("orbit tagert", this.camera.orbit.target);
+        console.log("camera tagert", this.camera.aim);
+        // this.camera.orbit.target = this.camera.aim.clone();
         // this.camera.orbit.reset();
-        console.log(this.camera.orbit.center.clone());
+        // this.camera.orbit.update();
+
+        // this.camera.resetOrbitControls();
+        this.camera.updateProjectionMatrix();
+        this.camera.orbit.target = this.camera.aim.clone();
+        // this.camera.orbit.update();
 
         let obj: any;
         this.rayCaster.setFromCamera(mouse, this.camera);

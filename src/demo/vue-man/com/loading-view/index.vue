@@ -18,7 +18,7 @@ export default {
     computed: {},
     mounted(){
         listener.on("loaded", e => {
-            console.log("== loaded ==");
+            console.log("ok");
             this.visible = false;
         });
     },

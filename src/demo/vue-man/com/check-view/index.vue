@@ -2,6 +2,7 @@
     <div class="check-view">
         <div class="label">{{label}}</div>
         <div class="check-box" :class="{'selected': num}" @click="onInput"></div>
+        <div class="tip">{{tip}}</div>
     </div>
 </template>
 
@@ -19,7 +20,8 @@ export default {
         num: {
             type: Boolean,
             default: true
-        }
+        },
+        tip: String
     },
     components: {},
     computed: {

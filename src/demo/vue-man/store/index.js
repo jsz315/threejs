@@ -1,47 +1,31 @@
 import Vue from "vue";
 import Vuex from "vuex";
-
 Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-        designVisible: false,
         effectVisible: false,
-        detailVisible: false,
-        priceVisible: false,
-        colorVisible: false,
         guiderVisible: false,
-        effectParam: {
-            ambient: 0.4,
-            directional: 0.6,
-            roughness: 0.2,
-            metalness: 0.2,
-            color: '#ffffff',
-            far: 0.1
-        },
-        modelId: 0,
-        modelType: 0,
-        productImages: [],
-        logoImage: null,
         panel: {
             type: '',
             visible: false,
         },
+        tempParam: {},
         params: {
             muscle: {
                 name: "肌肉",
-                roughness: 0.2,
+                roughness: 0.72,
                 metalness: 0.2,
                 alpha: 1,
-                color: '#ffffff',
+                color: '#ff824f',
                 visible: true
             },
             bones: {
                 name: "骨骼",
                 roughness: 0.2,
-                metalness: 0.2,
+                metalness: 0.52,
                 alpha: 1,
-                color: '#ffffff',
+                color: '#00ffff',
                 visible: true
             },
             eye: {
@@ -49,42 +33,33 @@ export default new Vuex.Store({
                 roughness: 0.2,
                 metalness: 0.2,
                 alpha: 1,
-                color: '#ffffff',
-                visible: true
-            },
-            tooth: {
-                name: "牙齿",
-                roughness: 0.2,
-                metalness: 0.2,
-                alpha: 1,
-                color: '#ffffff',
-                visible: true
-            },
-            other: {
-                name: "其他",
-                roughness: 0.2,
-                metalness: 0.2,
-                alpha: 1,
-                color: '#ffffff',
+                color: '#ff0000',
                 visible: true
             },
             ambient: {
                 name: "环境光",
-                intensity: 0.1,
+                intensity: 0.32,
                 color: '#ffffff',
                 visible: true
             },
             directional: {
                 name: "平行光",
-                intensity: 0.1,
-                color: '#ffffff',
+                intensity: 0.4,
+                color: '#ffe944',
                 visible: true
+            },
+            system: {
+                name: "系统",
+                background: '#c9c9c9',
+                exposure: false
             }
         }
     },
     mutations: {
         changePanel(state, value){
             state.panel = value;
+            state.tempParam = state.params[value.type];
+            console.log("临时数据：", state.tempParam);
         },
         changeParams(state, value){
             state.params = value;
@@ -93,39 +68,24 @@ export default new Vuex.Store({
             var type = state.panel.type;
             state.params[type] = value;
         },
-
-        changeDesignVisible(state, value){
-            state.designVisible = value;
-        },
         changeEffectVisible(state, value){
             state.effectVisible = value;
-        },
-        changeDetailVisible(state, value){
-            state.detailVisible = value;
-        },
-        changePriceVisible(state, value){
-            state.priceVisible = value;
-        },
-        changeEffectParam(state, value){
-            state.effectParam = value;
-        },
-        changeColorVisible(state, value){
-            state.colorVisible = value;
-        },
-        changeModelId(state, value){
-            state.modelId = value;
-        },
-        changeModelType(state, value){
-            state.modelType = value;
         },
         changeGuiderVisible(state, value){
             state.guiderVisible = value;
         },
-        changeProductImages(state, value){
-            state.productImages = value;
-        },
-        changeLogoImage(state, value){
-            state.logoImage = value;
+        limitMax(state){
+            console.log('ok');
+            for(var i in state.params){
+                for(var j in state.params[i]){
+                    if(j == 'roughness' || j == 'metalness' || j == 'intensity'){
+                        if(state.params[i][j] > 1){
+                            console.log(i, j, state.params[i][j]);
+                            state.params[i][j] = 1;
+                        }
+                    }
+                }
+            }
         }
     },
     actions: {

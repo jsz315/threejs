@@ -1,5 +1,5 @@
 .check-view{
-    font-size: 16px;
+    font-size: 24px;
     display: flex;
     align-items: center;
     text-align: left;
@@ -31,19 +31,44 @@
         color: #999999;
         margin-left: 10px;
     }
+    .tip{
+        margin-left: 16px;
+        color: #999999;
+    }
 }
 
 @media screen and (min-width: 768PX){
-    .range-view{
+    .check-view{
         font-size: 16PX;
+        display: flex;
+        align-items: center;
+        text-align: left;
         .label{
             width: 100PX;
+            color: #000000;
         }
-        .color{
-            margin: 0 10PX;
+        .check-box{
+            width: 30PX;
+            height: 30PX;
+            border-radius: 50%;
+            border: solid 1PX #999999;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 10PX;
+            &.selected::after{
+                display: block;
+                content: "";
+                width: 16PX;
+                height: 16PX;
+                background: #ff0000;
+                border-radius: 50%;
+            }
         }
         .cur{
             width: 160PX;
+            color: #999999;
             margin-left: 10PX;
         }
     }

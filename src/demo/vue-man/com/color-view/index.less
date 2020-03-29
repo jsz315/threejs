@@ -1,5 +1,5 @@
 .color-view{
-    font-size: 16px;
+    font-size: 24px;
     display: flex;
     align-items: center;
     text-align: left;
@@ -20,16 +20,23 @@
 }
 
 @media screen and (min-width: 768PX){
-    .range-view{
+    .color-view{
         font-size: 16PX;
+        display: flex;
+        align-items: center;
+        text-align: left;
         .label{
             width: 100PX;
+            color: #000000;
         }
         .color{
+            width: 30PX;
             margin: 0 10PX;
+            height: 30PX;
         }
         .cur{
             width: 160PX;
+            color: #999999;
             margin-left: 10PX;
         }
     }

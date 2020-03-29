@@ -28,11 +28,11 @@ export class FreeCamera extends THREE.PerspectiveCamera{
         console.log("startPot", this.startPot);
 
         this.domElement = domElement; 
-
-        this.orbit = new OrbitControls(this, domElement);
-        this.orbit.enabled = true;
-        this.orbit.minPolarAngle = 1;
-        this.orbit.maxPolarAngle = 90 * Math.PI / 180;
+        this.resetOrbitControls();
+        // this.orbit = new OrbitControls(this, domElement);
+        // this.orbit.enabled = true;
+        // this.orbit.minPolarAngle = 1;
+        // this.orbit.maxPolarAngle = 90 * Math.PI / 180;
 
         this.lookAt(this.aim);
         
@@ -46,11 +46,25 @@ export class FreeCamera extends THREE.PerspectiveCamera{
 
         listener.on("touchstart", (n:String)=>{
             this.actions[n + ""] = true;
+            // this.updateMatrix();
+            // this.orbit.target = this.aim.clone();       
+            // this.orbit.update(); 
         });
         
         listener.on("touchend", (n:String)=>{
             this.actions[n + ""] = false;
+            this.updateProjectionMatrix();
+            // this.orbit.target = this.aim.clone();       
+            // this.orbit.update(); 
+            // this.lookAt(this.orbit.target);
         });
+    }
+
+    resetOrbitControls():void{
+        this.orbit = new OrbitControls(this, this.domElement);
+        this.orbit.enabled = true;
+        this.orbit.minPolarAngle = 1;
+        this.orbit.maxPolarAngle = 90 * Math.PI / 180;
     }
 
     startWalk(){

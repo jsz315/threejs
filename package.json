@@ -8,6 +8,7 @@
     "serve": "node server",
     "dll": "webpack --config webpack.dll.config",
     "test": "node test",
+    "pc": "node pc",
     "koa-serve": "node koa-serve/index"
   },
   "author": "",

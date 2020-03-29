@@ -10,14 +10,12 @@ import store from "./store/index";
 import listener from './lib/listener';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import { Toast } from 'mint-ui';
-// import chat from './chat';
 
 let stats;
 let app;
 
 
-Vue.use(MintUI)
-// Vue.prototype.$axios = axios;
+Vue.use(MintUI);
 Vue.prototype.$toast = (tip) => {
     Toast({
         message: tip,
@@ -50,37 +48,6 @@ new Vue({
     store,
     render: h => h(Home)
 }).$mount("#home");
-
-
-listener.on("open", () => {
-    app.playAnimate();
-})
-
-listener.on("background", (src) => {
-    document.querySelector(".canvas-box").style.backgroundImage = `url(${src})`;
-})
-
-// listener.on("param", (attr, num) => {
-//     if(attr == "ambient"){
-//         app.setAmbient(num);
-//     }
-//     else if(attr == "directional"){
-//         app.setDirectional(num);
-//     }
-//     else if(attr == "roughness"){
-//         app.setRoughness(num);
-//     }
-//     else if(attr == "metalness"){
-//         app.setMetalness(num);
-//     }
-//     else if(attr == "far"){
-//         app.setFar(num);
-//     }
-// })
-
-listener.on("map", (url) => {
-    app.changeMap(url);
-});
 
 window.onload = function(){
     stats = new Stats();
