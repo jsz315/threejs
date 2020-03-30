@@ -35,7 +35,11 @@ export default {
         
     },
     async mounted(){
-        
+        listener.on('hideEffect', ()=>{
+            if(this.effectMenuVisible){
+                this.effectMenuVisible = false;
+            }
+        });
     },
     methods: {
         openEffect(e){

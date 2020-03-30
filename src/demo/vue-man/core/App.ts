@@ -129,8 +129,9 @@ export default class App {
         mouse.x = (e.clientX / size.width) * 2 - 1;
         mouse.y = -(e.clientY / size.height) * 2 + 1;
 
-        // this.camera.orbit.update();
+        listener.emit('hideEffect');
 
+        // this.camera.orbit.update();
         let obj: any;
         this.rayCaster.setFromCamera(mouse, this.camera);
         let list = this.scene.children;

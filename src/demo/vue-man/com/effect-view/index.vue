@@ -3,16 +3,16 @@
         <SlotView :title="param.name" @close='close(true)'>
             <div slot="content">
                 
-                <RangeView v-if="param.roughness>=0" :num="param.roughness" attr="roughness" @change="onChange" class="param" label="粗糙度" :min="0" :max="max"></RangeView>
-                <RangeView v-if="param.metalness>=0" :num="param.metalness" attr="metalness" @change="onChange" class="param" label="金属性" :min="0" :max="max"></RangeView>
-                <RangeView v-if="param.alpha>=0" :num="param.alpha" attr="alpha" @change="onChange" class="param" label="透明度" :min="0" :max="1"></RangeView>
-                <RangeView v-if="param.intensity>=0" :num="param.intensity" attr="intensity" @change="onChange" class="param" label="光强度" :min="0" :max="max"></RangeView>
+                <RangeView v-if="isShow('roughness')" :num="param.roughness" attr="roughness" @change="onChange" class="param" label="粗糙度" :min="0" :max="max"></RangeView>
+                <RangeView v-if="isShow('metalness')" :num="param.metalness" attr="metalness" @change="onChange" class="param" label="金属性" :min="0" :max="max"></RangeView>
+                <RangeView v-if="isShow('alpha')" :num="param.alpha" attr="alpha" @change="onChange" class="param" label="透明度" :min="0" :max="1"></RangeView>
+                <RangeView v-if="isShow('intensity')" :num="param.intensity" attr="intensity" @change="onChange" class="param" label="光强度" :min="0" :max="max"></RangeView>
 
-                <ColorView v-if="param.color>=0" :num="param.color" attr="color" @change="onChange" class="param" label="颜色值"></ColorView>
-                <CheckView v-if="param.visible>=0" :num="param.visible" attr="visible" @change="onChange" class="param" label="显示值" tip="控制是否显示"></CheckView>
+                <ColorView v-if="isShow('color')" :num="param.color" attr="color" @change="onChange" class="param" label="颜色值"></ColorView>
+                <CheckView v-if="isShow('visible')" :num="param.visible" attr="visible" @change="onChange" class="param" label="显示值" tip="控制是否显示"></CheckView>
 
-                <ColorView v-if="param.background" :num="param.background" attr="background" @change="onChange" class="param" label="背景色"></ColorView>
-                <CheckView v-if="param.exposure>=0" :num="param.exposure" attr="exposure" @change="onChange" class="param" label="曝光度" tip="控制滑块最大值"></CheckView>
+                <ColorView v-if="isShow('background')" :num="param.background" attr="background" @change="onChange" class="param" label="背景色"></ColorView>
+                <CheckView v-if="isShow('rougexposurehness')" :num="param.exposure" attr="exposure" @change="onChange" class="param" label="曝光度" tip="控制滑块最大值"></CheckView>
 
                 <div class="btns">
                     <div class="btn" @click="close(false)">取消</div>
@@ -61,6 +61,9 @@ export default {
     },
     methods: {
         ...mapMutations(['changePanel', 'changeTypeParams', 'limitMax']),
+        isShow(key){
+            return this.param.hasOwnProperty(key);
+        },
         close(n){
             var panel = copy.newData(this.panel);
             panel.visible = false;

@@ -102,10 +102,10 @@ export default class Main {
     }
 
     choose(e:any){
+        listener.emit('hideEffect');
         if (this.isMobile) {
             e = e.changedTouches[0];
         }
-
         let mouse = new THREE.Vector2();
         mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
         mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
