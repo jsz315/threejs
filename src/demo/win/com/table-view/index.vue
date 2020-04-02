@@ -5,27 +5,27 @@
                 <div class="t-title">
                     <div class="t-ico"></div>
                     <div class="t-tip1">门窗报价</div>
-                    <div class="t-tip2">{{item.area}}m²</div>
-                    <div class="t-tip3">￥{{item.price}}</div>
+                    <div class="t-tip2">{{item.area | formatNum}}m²</div>
+                    <div class="t-tip3">￥{{item.price | formatNum}}</div>
                     <div class="t-arrow" :class="{hide: item.hide}" @click="item.hide = !item.hide"></div>
                 </div>
                 <div class="t-list" :class="{hide: item.hide}">
-                    <div class="t-item header">
-                        <div class="t-i1">窗名-项目名</div>
-                        <div class="t-i2">单价</div>
-                        <div class="t-i3">数量/面积</div>
-                        <div class="t-i4">折扣</div>
-                        <div class="t-i5">折后金额</div>
-                    </div>
-                    <div class="price">
-                        <div class="t-item data" v-for="(obj, i) in item.items" v-bind:key="index * 100 + i">
-                            <div class="t-i1 ti">{{obj.hostBale + '-' + obj.label}}</div>
-                            <div class="t-i2 ti">{{obj.price}}</div>
-                            <div class="t-i3 ti"></div>
-                            <div class="t-i4 ti">{{obj.discount}}</div>
-                            <div class="t-i5 ti">{{obj.price * obj.discount}}</div>
-                        </div>
-                    </div>
+                    <table class="table" border="1" cellspacing="0">
+                        <tr class="t-header">
+                            <td class="td">窗名-项目名</td>
+                            <td class="td">单价</td>
+                            <td class="td">数量/面积</td>
+                            <td class="td">折扣</td>
+                            <td class="td">折后金额</td>
+                        </tr>
+                        <tr v-for="(obj, i) in item.items" v-bind:key="index * 100 + i" v-show="!obj.deleted">
+                            <td class="td t-name">{{obj.hostBale + '-' + obj.label}}</td>
+                            <td class="td">{{obj.univalent | formatNum}}</td>
+                            <td class="td">{{obj.count | formatNum}}</td>
+                            <td class="td">{{obj.discount | formatNum}}</td>
+                            <td class="td t-price">{{obj.amount | formatNum}}</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
@@ -50,31 +50,25 @@ export default {
     mounted() {
         this.init();
     },
+    filters: {
+        formatNum: function (value) {
+            if (!value) return '-';
+            return Number(value).toFixed(2);
+        }
+    },
     methods: {
         async init(){
             let res = await price.getList();
+            if(res.list.length == 0){
+                return;
+            }
             res.list.forEach(item=>{
                 item.hide = false;
             });
+            console.log("==list==");
             console.log(res.list);
             this.list = res.list;
             this.visible = true;
-            // var list = res.list[0].items.map(item=>{
-            //     var div = ['<div class="t-item data">',
-            //             '<div class="t-i1 ti">' + item.hostBale + '-' + item.label+ '</div>',
-            //             '<div class="t-i2 ti">' + item.price + '</div>',
-            //             '<div class="t-i3 ti"></div>',
-            //             '<div class="t-i4 ti">' + item.discount + '</div>',
-            //             '<div class="t-i5 ti">' + (item.price * item.discount) + '</div>',
-            //         '</div>'];
-            //     return div.join("");
-            // })
-
-            // $("#price").innerHTML = list.join('');
-
-            // $(".t-tip2").innerHTML = res.list[0].acreage + 'm²';
-            // $(".t-tip3").innerHTML = '￥' + res.list[0].price;
-            // $(".table").setAttribute("class", "table");
         }
     }
 };

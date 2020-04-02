@@ -92,8 +92,6 @@ html, body{
 }
 
 
-
-
 .debug{
     display: none;
     padding: 20px;
@@ -116,4 +114,129 @@ html, body{
 }
 .video{
     width: 100%;
+}
+
+
+
+@media screen and (min-width: 768PX){
+html, body{
+    margin: 0;
+    padding: 0;
+    overflow: auto !important;
+    font-size: 12PX;
+}
+.canvas-box{
+    position: relative;
+}
+#canvas{
+    width: 100% !important;
+    height: auto !important;
+}
+.img{
+    width: 100%;
+}
+.input-box{
+    display: flex;
+    padding: 8PX;
+}
+.input{
+    flex: 1;
+    display: block;
+    box-sizing: border-box;
+}
+.label{
+    font-size: 30PX;
+    color: rgb(19, 152, 204);
+    padding: 10PX 24PX;
+}
+#control{
+    display: none;
+}
+#setting{
+    position: absolute;
+    right: 10PX;
+    bottom: 16PX;
+    width: 32PX;
+    height: 32PX;
+    background: rgba(0, 0, 0, 0.8) url("./asset/setting.png") no-repeat center;
+    background-size: 72%;
+    border-radius: 4PX;
+    z-index: 3;
+}
+#info{
+    position: absolute;
+    right: 4PX;
+    top: 4PX;
+    width: 40PX;
+    height: 40PX;
+    background: url("./asset/info.png") no-repeat center;
+    background-size: 100%;
+    z-index: 3;
+}
+
+.color-tip{
+    padding: 30PX 20PX 0;
+    color: #707070;
+    font-size: 28PX;
+    // display: none;
+}
+.colors{
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 12PX;
+    margin-left: 10PX;
+    // display: none;
+}
+.color{
+    width: 40PX;
+    height: 40PX;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    margin: 10PX;
+}
+
+.animate{
+    margin: 20PX;
+    background: #0299df;
+    color: #ffffff;
+    border-radius: 4PX;
+    text-align: center;
+    cursor: pointer;
+    height: 64PX;
+    line-height: 64PX;
+    font-size: 30PX;
+}
+.disable{
+    background: #707070;
+    pointer-events: none;
+}
+
+
+.debug{
+    display: none;
+    padding: 20PX;
+}
+.debug-label{
+    margin-top: 20PX;
+    margin-bottom: 10PX;
+}
+.button{
+    margin: 20PX auto;
+}
+.preview-img{
+    margin: 10PX 0;
+    width: 100%;
+}
+#preview-canvas{
+    width: 100% !important;
+    height: auto !important;
+    margin: 10PX 0;
+}
+.video{
+    width: 100%;
+}
+
+
+
 }

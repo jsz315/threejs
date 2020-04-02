@@ -62,7 +62,7 @@ export default class Tooler{
 
     public static isTest():boolean{
         // return this.getQueryString('test') == 1;
-        return location.search.indexOf('mendaow.com') != -1;
+        return location.search.indexOf('http://') != -1;
     }
 
     public static getAllMaterial(obj: THREE.Object3D):any{

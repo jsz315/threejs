@@ -5,6 +5,7 @@
             <div class="close" @click="close"></div>
         </div>
         <div class="find" v-if="list.length==0">此方案暂无报价</div>
+        
         <div class="content">
             <div class="box" v-for="(item, index) in list" v-bind:key="index">
                 <div class="logo">
@@ -12,7 +13,9 @@
                     {{item.brand_name}}
                 </div>
                 <div class="win">
-                    <img class="img" :src="getImage(item)"/>
+                    <div class="img-box">
+                        <img class="img" :src="getImage(item)"/>
+                    </div>
                     <div class="info">
                         <div class="name">{{item.sys_name}}-{{item.pro_name}}</div>
                         <div class="total">￥{{item.price}}</div>
@@ -76,11 +79,11 @@ export default {
     async mounted() {
         // this.init();
         let res = await price.getList();
-        if(res){
+        if(res && res.length != 0){
             this.list = res.list;
             this.totalNum = res.totalNum;
-            this.totalArea = res.totalArea;
-            this.totalPrice = res.totalPrice;
+            this.totalArea = res.totalArea.toFixed(2);
+            this.totalPrice = res.totalPrice.toFixed(2);
         }
     },
     methods: {
@@ -99,11 +102,11 @@ export default {
             let res = await this.$get(url);
             var data = res.data;
             console.log(data);
-            obj.area = data.acreage;
-            obj.price = data.price;
-            obj.count = data.items[0].discount;           
-            obj.all = obj.count * obj.price * obj.setnum;
-            obj.size = [data.length, data.height, data.width].join(" x ");
+            obj.area = data.acreage.toFixed(2);
+            obj.price = data.price.toFixed(2);
+            obj.count = data.items[0].discount.toFixed(2);           
+            obj.all = (obj.count * obj.price * obj.setnum).toFixed(2);
+            obj.size = [data.length || 1, data.height, data.width].join(" x ");
 
             var over = this.list.every(item=>{
                 return item.all != '-';
@@ -126,9 +129,9 @@ export default {
             }
         },
         getSize(obj){
-            var h = obj.height;
-            var l = obj.length;
-            var w = obj.width;
+            var h = obj.height || 0;
+            var l = obj.length || 0;
+            var w = obj.width || 0;
             return [h, l, w].join(" X ");
         },
         async init() {

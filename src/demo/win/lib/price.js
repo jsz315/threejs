@@ -12,19 +12,39 @@ async function getList(){
         let id = temp.pop();
         let sourcetype = temp.pop();
     
-        let link = "/mapi/index.php";
-        let res = await axios.get(link, {
+        let host = getHost();
+        let res;
+        if(isERP()){
+            res = await axios({
+                url: host + "/api/index/modelPrice",
+                method: 'post',
+                data: {
+                    type: sourcetype,
+                    id: id,
+                    v: Math.random()
+                },
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+        }
+        else{
+            res = await axios.get(host + "/mapi/index.php", {
                 params: {
-                    app:"modelshow",
-                    fnn:"modelDetailById",
+                    app: "modelshow",
+                    fnn: "modelDetailById",
                     sourcetype: sourcetype,
-                    yun3d_id:id
+                    yun3d_id: id,
+                    v: Math.random()
                 }
             });
+        }
+        
     
         console.log(res);
         if (res.data && res.data.code == 200) {
             var list = [];
+            
             for(var i in res.data.datas){
                 var item = res.data.datas[i];
                 item.price = '-';
@@ -32,8 +52,10 @@ async function getList(){
                 item.area = '-';
                 item.all = '-';
                 item.size = '-';
-                await getItem(item);
-                list.push(item);
+                if(item.show_offer == 2){
+                    await getItem(item);
+                    list.push(item);
+                }
             }
 
             var totalNum = 0;
@@ -52,17 +74,30 @@ async function getList(){
     })
 }
 
+function isERP(){
+    if(location.search.indexOf('3d.mendaow.com') != -1 || location.search.indexOf('3d.mendaoyun.com') != -1){
+        return false;
+    }
+    return true;
+}
+
+function getHost(){
+    return location.search.match(/http.*?.com/)[0];
+}
+
 async function getItem(obj){
     return new Promise(async resolve=>{
-        var host = Tooler.isTest() ? 'http://3d.mendaow.com' : 'https://3d.mendaoyun.com';
-        var url = host + '/data/upload' + obj.plan_path + "/" + obj.pricejson_file;
+        var host = getHost();
+        var path = isERP() ? "json/" : "upload";
+        var url = host + '/data/' + path + obj.plan_path + "/" + obj.pricejson_file + "?v=" + Math.random();
         console.log(url);
         let res = await axios.get(url);
         var data = res.data;
         console.log(data);
         obj.area = data.acreage;
-        obj.price = data.price;
-        obj.count = data.items[0].discount;           
+        obj.price = data.amount || 0;
+        obj.discount = isERP() ? data.items[0].discount : data.items[0].tmpDiscount;     
+        obj.count = data.items[0].count;           
         obj.all = obj.count * obj.price * obj.setnum;
         obj.size = [data.length, data.height, data.width].join(" x ");
         obj.items = data.items;

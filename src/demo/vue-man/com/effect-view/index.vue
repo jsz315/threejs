@@ -12,7 +12,7 @@
                 <CheckView v-if="isShow('visible')" :num="param.visible" attr="visible" @change="onChange" class="param" label="显示值" tip="控制是否显示"></CheckView>
 
                 <ColorView v-if="isShow('background')" :num="param.background" attr="background" @change="onChange" class="param" label="背景色"></ColorView>
-                <CheckView v-if="isShow('rougexposurehness')" :num="param.exposure" attr="exposure" @change="onChange" class="param" label="曝光度" tip="控制滑块最大值"></CheckView>
+                <CheckView v-if="isShow('exposure')" :num="param.exposure" attr="exposure" @change="onChange" class="param" label="曝光度" tip="控制滑块最大值"></CheckView>
 
                 <div class="btns">
                     <div class="btn" @click="close(false)">取消</div>

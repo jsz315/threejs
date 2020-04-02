@@ -10,6 +10,7 @@ import Stage from './Stage';
 import ViewHelper from './ViewHelper';
 import Cache from './Cache';
 const TWEEN = require('../lib/Tween.js');
+import { Reflector, ReflectorOptions } from 'three/examples/jsm/objects/Reflector';
 
 export default class App {
     public static ZERO: THREE.Vector3 = new THREE.Vector3();
@@ -36,6 +37,7 @@ export default class App {
 
     helper:ViewHelper;
     textureLoader: THREE.TextureLoader = new THREE.TextureLoader();
+    cubeCamera: THREE.CubeCamera;
 
     constructor(canvas: any, size: any) {
         this.size = Tooler.getStageSize(true);
@@ -53,9 +55,24 @@ export default class App {
         // this.renderer.setSize(window.innerWidth, window.innerHeight);
         // this.renderer.setPixelRatio(window.devicePixelRatio > 2 ? 2: 1);
         this.renderer.setClearColor(new THREE.Color(0x999999), 0);
-        this.renderer.shadowMap.enabled = false;
+        this.renderer.shadowMap.enabled = true;
         console.log("this.camera");
         console.log(this.camera);
+
+        this.cubeCamera = new THREE.CubeCamera(0.1, 10000, 256);//实例化一个cubeCamera
+        this.scene.add(this.cubeCamera);
+
+        // var cubeTextureLoader = new THREE.CubeTextureLoader();
+        // cubeTextureLoader.setPath( '/asset/skybox/' );
+        // var cubeTexture = cubeTextureLoader.load( [
+        //     'px.jpg', 'nx.jpg',
+        //     'py.jpg', 'ny.jpg',
+        //     'pz.jpg', 'nz.jpg'
+        // ] );
+        // cubeTexture.format = THREE.RGBFormat;
+        // cubeTexture.mapping = THREE.CubeReflectionMapping;
+        this.scene.background = Cache.getInstance().cubeTexture;
+
 
         this.fineLoader = new FineLoader();
         this.scene.add(this.fineLoader);
@@ -93,12 +110,17 @@ export default class App {
         requestAnimationFrame(() => {
             this.animate();
         });
+
+        // this.cubeCamera.update(this.renderer, this.scene);
+
         this.camera.update();
         this.helper.update();
+
         this.effects.forEach((effect:Effect)=>{effect.update();});
         this.stats && this.stats.update();
         this.renderer.render(this.scene, this.camera);
         this.stage.focusLight.update(this.camera);
+        
         TWEEN.update();
     }
 
@@ -117,8 +139,8 @@ export default class App {
 
         // console.log(this.camera.orbit.center.clone());
         // console.log(this.camera);
-        console.log("orbit tagert", this.camera.orbit.target);
-        console.log("camera tagert", this.camera.aim);
+        // console.log("orbit tagert", this.camera.orbit.target);
+        // console.log("camera tagert", this.camera.aim);
         // this.camera.orbit.target = this.camera.aim.clone();
         // this.camera.orbit.reset();
         // this.camera.orbit.update();
@@ -140,17 +162,10 @@ export default class App {
             console.log(aim);
             // console.log(aim.rotation, aim.scale);
             let mat = Array.isArray(obj.material) ? obj.material[0] : obj.material;
-
-            // obj.material = new THREE.MeshNormalMaterial();
-            // setTimeout(() => {
-            //     obj.material= mat;
-            // }, 900);
-
-            if (mat.map) {
+           if (mat.map) {
                 let img = mat.map.image;
-                console.log(img.currentSrc);
-
-                // this.reloadMap(mat, img.currentSrc);
+                console.log(img.src);
+                // obj.material = Cache.getInstance().changeMaterial(img.src);
             }
         }
     }
@@ -208,25 +223,21 @@ export default class App {
         let materials = FineMaterial.getMapMaterials(parent);
         materials.forEach((m: any) => {
             let src:any = m.map.image.src;
-            let transparent = m.transparent;
 
-            if(FineLoader.isLayout || isWall){
-                if(!transparent){
-                    m.roughness = 0.96;
-                    m.metalness = 0.04;
-                    m.flatShading = false;
-                }
-            }
-            else{
-                if (src.indexOf("/IPR_") != -1) {
-                    this.frameMaterials.push(m);
-                }
-                else if(src.indexOf("dif_wood") != -1){
-                    this.frameMaterials.push(m);
-                }
-
+            if (src.indexOf("/IPR_") != -1) {
+                this.frameMaterials.push(m);
                 m.roughness = this.roughness;
                 m.metalness = this.metalness;
+            }
+            else if(src.indexOf("dif_") != -1){
+                this.frameMaterials.push(m);
+                m.roughness = this.roughness;
+                m.metalness = this.metalness;
+            }
+            else if(src.indexOf("dif2_") != -1){
+                m.roughness = 0.96;
+                m.metalness = 0.04;
+                m.flatShading = false;
             }
         })
 
@@ -245,13 +256,22 @@ export default class App {
         })
     }
 
+    addTest():void{
+        var box:THREE.Mesh = new THREE.Mesh(new THREE.SphereBufferGeometry(500, 30, 30), Cache.getInstance().changeMaterial("./asset/sky.jpg"));
+        box.position.set(100, 500, 100);
+        this.scene.add(box);
+    }
+
     setup(): void {
         let url = Tooler.getQueryString("url");
         if(!Tooler.isTest()){
             url = url.replace("http:", "https:");
         }
-        // url = url.replace("http:", "https:");
-        this.fineLoader.start(url, (object3D: THREE.Object3D) => {
+
+        this.addTest();
+       
+
+        this.fineLoader.start(url, async (object3D: THREE.Object3D) => {
             this.fitModel(object3D, true);
             FineMaterial.lightMap(object3D);
 

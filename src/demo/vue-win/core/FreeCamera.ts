@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import Tooler from './Tooler';
 const TWEEN = require('../lib/Tween.js');
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
 import listener from '../lib/listener';
 
 export class FreeCamera extends THREE.PerspectiveCamera{
@@ -9,8 +10,15 @@ export class FreeCamera extends THREE.PerspectiveCamera{
     aim:THREE.Vector3 = new THREE.Vector3();
     size: number = 0;
     orbit: OrbitControls;
+    first: FirstPersonControls;
     domElement: HTMLCanvasElement;
     startPot: THREE.Vector3 = new THREE.Vector3(-400, 600, 1200);
+    clock:THREE.Clock = new THREE.Clock();
+    walking:boolean = false;
+    active:boolean= false;
+    lastPoint:any = null;
+    isMobile = Tooler.checkMobile();
+
     actions: any = {
         left: false,
         right: false,
@@ -19,6 +27,16 @@ export class FreeCamera extends THREE.PerspectiveCamera{
         up: false,
         down: false
     };
+
+    resetFirstPersonControls():void{
+        this.first = new FirstPersonControls(this);
+        this.first.enabled = false;
+        this.first.lookSpeed = 0.02; //鼠标移动查看的速度
+        this.first.movementSpeed = 10; //相机移动速度
+        this.first.constrainVertical = true; //约束垂直
+        this.first.verticalMin = 1.0;
+        this.first.verticalMax = 2.0;
+    }
     
 
     constructor(domElement:HTMLCanvasElement){
@@ -29,10 +47,7 @@ export class FreeCamera extends THREE.PerspectiveCamera{
 
         this.domElement = domElement; 
         this.resetOrbitControls();
-        // this.orbit = new OrbitControls(this, domElement);
-        // this.orbit.enabled = true;
-        // this.orbit.minPolarAngle = 1;
-        // this.orbit.maxPolarAngle = 90 * Math.PI / 180;
+        // this.resetFirstPersonControls();
 
         this.lookAt(this.aim);
         
@@ -45,19 +60,28 @@ export class FreeCamera extends THREE.PerspectiveCamera{
         });
 
         listener.on("touchstart", (n:String)=>{
+            this.walking = true;
             this.actions[n + ""] = true;
             // this.updateMatrix();
             // this.orbit.target = this.aim.clone();       
-            // this.orbit.update(); 
+            // this.orbit.update();
+            // this.resetOrbitControls();
         });
         
         listener.on("touchend", (n:String)=>{
+            this.walking = false;
             this.actions[n + ""] = false;
-            this.updateProjectionMatrix();
+            // this.updateProjectionMatrix();
             // this.orbit.target = this.aim.clone();       
             // this.orbit.update(); 
             // this.lookAt(this.orbit.target);
+
+            // this.resetOrbitControls();
         });
+
+        this.domElement.addEventListener(this.isMobile ? "touchstart" : "mousedown", this.moveStart.bind(this));
+        this.domElement.addEventListener(this.isMobile ? "touchmove" : "mousemove", this.moveRunning.bind(this));
+        this.domElement.addEventListener(this.isMobile ? "touchend" : "mouseup", this.moveEnd.bind(this));
     }
 
     resetOrbitControls():void{
@@ -68,36 +92,53 @@ export class FreeCamera extends THREE.PerspectiveCamera{
     }
 
     startWalk(){
-        // this.orbit.enabled = false;
+        this.orbit.enabled = false;
+    }
 
-        console.log(this);
-        console.log(this.aim);
-        console.log(this.orbit.target);
+    moveStart(e:any):void{
+        if(!this.orbit.enabled){
+            if (this.isMobile) {
+                e = e.changedTouches[0];
+            }
+            console.log('moveStart');
+            console.log(e);
+            this.lastPoint = {x: e.clientX, y: e.clientY};
+        }
+        
+    }
 
-        this.aim = this.orbit.target.clone();
-        new TWEEN.Tween(this.position).to({
-            y: 60,
-        }).start();
-        new TWEEN.Tween(this.aim).to({
-            x: 0,
-            y: 60,
-            z: 10
-        }).onUpdate(()=>{
-            this.lookAt(this.aim);
-        }).start();
+    moveRunning(e:any):void{
+        if(this.lastPoint){
+            if (this.isMobile) {
+                e = e.changedTouches[0];
+            }
+            var x = e.clientX - this.lastPoint.x;
+            var y = e.clientY - this.lastPoint.y;
+            this.lastPoint = {x: e.clientX, y: e.clientY};
+            this.rotateY(x * 0.002);
+            this.rotateX(y * 0.002);
+        }
+    }
+
+    moveEnd(e:any):void{
+        if(this.lastPoint){
+            console.log('moveEnd');
+            console.log(e);
+            this.lastPoint = null;
+        }
     }
 
     stopWalk(){
+        this.orbit.update();
+        // this.resetOrbitControls();
         this.orbit.enabled = true;
     }
 
     update(){
         if(this.actions["left"]){
-            // this.rotateY(0.02);
             this.translateX(-10);
         }
         if(this.actions["right"]){
-            // this.rotateY(-0.02);
             this.translateX(10);
         }
         if(this.actions["front"]){

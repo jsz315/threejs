@@ -7,7 +7,7 @@ export class FineMaterial{
     static textureLoader:THREE.TextureLoader = new THREE.TextureLoader();
 
     constructor(){
-
+        
     }
 
     public static resetSameMaterial(obj: any, src:string):void{
@@ -20,49 +20,63 @@ export class FineMaterial{
         }
     }
 
-    public static setTransparent(material:any, src:string):void{
+    public static setTransparent(material:any, src:string, mesh:any):void{
         var transparent:boolean = false;
+        var changed:boolean = false;
         if(src.indexOf(".png") != -1){
             transparent = true;
         }
         else if(src.indexOf("/glass.") != -1){
-            material.opacity = 0.36;
             transparent = true;
+            changed = true;
         }
         else if(src.indexOf("/IGL_") != -1){
             transparent = true;
+            changed = true;
         }
         else if(src.indexOf("/BL123") != -1){
             transparent = true;
+            // changed = true;
         }
         else if(src.indexOf("/bl_") != -1){
             transparent = true;
         }
 
+        if(src.indexOf("grfg.png") != -1){
+            transparent = true;
+            changed = true;
+        }
+
         if(transparent){
-            material.alphaTest = 0.2;
             material.transparent = true;
+            if(changed){
+                mesh.material = Cache.getInstance().changeMaterial(src);
+            }
         }
     }
 
     public static async reloadMap(material: any, url: string){
         return new Promise(resolve=>{
             let map = material.map;
-            let texture: any = this.textureLoader.load(url, () => {
-                // material.map.needsUpdate = true;
+            this.textureLoader.load(url, (t:THREE.Texture) => {
+                // material.map.needsUpdate = true;//暂时添加
+                // material.needsUpdate = true;
+
+                t.wrapS = map.wrapS;
+                t.wrapT = map.wrapT;
+                t.repeat = new THREE.Vector2(map.repeat.x, map.repeat.y);
+                t.flipY = map.flipY;
+                // t.flipX = map.flipX;
+                material.map = t;
                 material.needsUpdate = true;
+
                 setTimeout(() => {
                     resolve();
                 }, 1);
                 
             });
     
-            texture.wrapS = map.wrapS;
-            texture.wrapT = map.wrapT;
-            texture.repeat = new THREE.Vector2(map.repeat.x, map.repeat.y);
-            texture.flipY = map.flipY;
-            texture.flipX = map.flipX;
-            material.map = texture;
+            
         })
     }
 
@@ -73,7 +87,13 @@ export class FineMaterial{
         var aim:any = [];
         scene.traverse((item:any) => {
             if(item.isMesh){
-                var isWall = item.name.indexOf('wall') != -1;
+                // var isWall = this.checkWall(item);
+
+                if(Cache.getInstance().hasLight(item)){
+                    console.log('已经处理');
+                    return;
+                }
+
                 let list = Array.isArray(item.material) ? item.material : [item.material];
                 for(i = 0; i < list.length; i++){
                     var m = list[i];
@@ -81,11 +101,6 @@ export class FineMaterial{
                         ++total;
                         if(aim.indexOf(m) == -1){
                             aim.push(m);
-                            if(isWall){
-                                m.roughness = 0.96;
-                                m.metalness = 0.04;
-                                m.flatShading = false;
-                            }
                         }
                     }
                 }
@@ -98,31 +113,71 @@ export class FineMaterial{
         }
         console.log("【物体变亮完成】");
     }
+
+    public static checkWall(item:any):boolean{
+        if(item.name == 'floor'){
+            return true;
+        }
+        else if(item.name == 'top'){
+            return true;
+        }
+        else if(item.name == 'left'){
+            return true;
+        }
+        else if(item.name == 'ceiling'){
+            return true;
+        }
+        else if(item.name == 'roof'){
+            return true;
+        }
+        else if(item.name == 'back'){
+            return true;
+        }
+        else if(item.name == 'front'){
+            return true;
+        }
+        // else if(item.name.indexOf('dif2_') != -1){
+        //     return true;
+        // }
+        return item.name.indexOf('wall') != -1;
+    }
     
     public static getMapMaterials(obj: THREE.Object3D):any{
-        let materials:any = {};
-        let total = 0;
-
+        // let materials:any = {};
+        let all:any = [];
+        // let total = 0;
         obj.traverse((item:any) => {
+            var isWall = this.checkWall(item);
             if(item.isMesh){
                 let list = Array.isArray(item.material) ? item.material : [item.material];
                 list.forEach((m:any) => {
                     if(m.map && m.map.image){
-                        var src = m.map.image.currentSrc;
-                        this.resetSameMaterial(item, src);
-                        this.setTransparent(m, src);
-                        materials[src] = m;
-                        ++total;
+                        var src = m.map.image.src;
+                        if(isWall){
+                            this.resetSameMaterial(item, src);
+                            m.roughness = 0.96;
+                            m.metalness = 0.04;
+                            m.flatShading = false;
+                        }
+                        else{
+                            if(all.indexOf(m) == -1){
+                                all.push(m);
+                            }
+                        }
+                        this.setTransparent(m, src, item);
+                        // materials[src] = m;
+                        // ++total;
                     }
                 })
             }
         })
 
-        var all = [];
-        for(var i in materials){
-            all.push(materials[i]);
-        }
-        console.log("去重贴图：" + total + " => " + all.length);
+        // var aim = [];
+        // for(var i in materials){
+        //     aim.push(materials[i]);
+        // }
+        // aim = all;
+        // console.log("去重贴图：" + total + " => " + all.length);
         return all;
     }
 
