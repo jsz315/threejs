@@ -8,7 +8,7 @@ export default class Cache {
     texture: any;
     lightMesh: any;
     glass: any;
-    cubeTexture: THREE.CubeTexture;
+    cubeTexture: any;
 
     constructor(){
         this.model = {};
@@ -16,15 +16,26 @@ export default class Cache {
         this.texture = {};
         this.lightMesh = [];
         this.glass = {};
+ 
         let cubeTextureLoader:THREE.CubeTextureLoader = new THREE.CubeTextureLoader();
         cubeTextureLoader.setPath( '/asset/skybox/' );
         this.cubeTexture = cubeTextureLoader.load( [
-            'px.jpg', 'nx.jpg',
-            'py.jpg', 'ny.jpg',
-            'pz.jpg', 'nz.jpg'
+            // '1px.jpg', '1nx.jpg',
+            // '1py.jpg', '1ny.jpg',
+            // '1pz.jpg', '1nz.jpg'
+
+            '1px.jpg', '1nx.jpg',
+            '1py.jpg', '1ny.jpg',
+            '1pz.jpg', '1nz.jpg',
         ] );
         this.cubeTexture.format = THREE.RGBFormat;
         this.cubeTexture.mapping = THREE.CubeReflectionMapping;
+  
+
+        // this.cubeTexture = new THREE.TextureLoader().load("./asset/grass2.jpg"),
+        // this.cubeTexture.format = THREE.RGBFormat;
+        // this.cubeTexture.mapping = THREE.CubeReflectionMapping;
+
     }
 
     public static getInstance():Cache{
@@ -34,24 +45,24 @@ export default class Cache {
 		return this._instance;
     }
     
-    changeMaterial(src: string):THREE.MeshBasicMaterial{
+    changeMaterial(src: string):any{
         if(this.glass[src]){
-            console.log("玻璃材质重复使用")
+            // console.log("玻璃材质重复使用");
             return this.glass[src];
         }
-        var material:THREE.MeshBasicMaterial = new THREE.MeshPhongMaterial({
+        var material = new THREE.MeshPhongMaterial({
             // color: new THREE.Color('#FFFFFF'),
             envMap: this.cubeTexture,
             transparent: true,
             alphaTest: 0.2,
-            opacity: 1,
-            emissive: new THREE.Color("#FFFFFF"),
-            emissiveIntensity: 0.72
+            opacity: 0.5,
+            // emissive: new THREE.Color("#5bd4cf"),
+            // emissive: new THREE.Color("#990000"),
+            emissiveIntensity: 0.8
         });
 
-        // src = 'https://3d.mendaoyun.com/data/upload/model_store/125/CPP0015861/a3d/grfg.png';
-
-        material.map = new THREE.TextureLoader().load(src);
+        material.map = new THREE.TextureLoader().load('https://3d.mendaoyun.com/data/upload/model_store/125/CPP0015861/a3d/grfg.png');
+        // material.map = new THREE.TextureLoader().load(src);
         this.glass[src] = material;
         return material;
     }

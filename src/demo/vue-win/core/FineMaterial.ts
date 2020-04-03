@@ -23,10 +23,7 @@ export class FineMaterial{
     public static setTransparent(material:any, src:string, mesh:any):void{
         var transparent:boolean = false;
         var changed:boolean = false;
-        if(src.indexOf(".png") != -1){
-            transparent = true;
-        }
-        else if(src.indexOf("/glass.") != -1){
+        if(src.indexOf("/glass.") != -1){
             transparent = true;
             changed = true;
         }
@@ -42,10 +39,23 @@ export class FineMaterial{
             transparent = true;
         }
 
+        if(src.indexOf(".png") != -1){
+            transparent = true;
+        }
+
         if(src.indexOf("grfg.png") != -1){
             transparent = true;
             changed = true;
         }
+        else if(src.indexOf("jhyj.png") != -1){
+            transparent = true;
+            changed = true;
+        }
+        else if(src.indexOf("rhgr.png") != -1){
+            transparent = true;
+            changed = true;
+        }
+        
 
         if(transparent){
             material.transparent = true;
@@ -153,6 +163,10 @@ export class FineMaterial{
                 list.forEach((m:any) => {
                     if(m.map && m.map.image){
                         var src = m.map.image.src;
+                        // console.log(src);
+                        // if(src.indexOf("glass") != -1){
+                        //     debugger
+                        // }
                         if(isWall){
                             this.resetSameMaterial(item, src);
                             m.roughness = 0.96;

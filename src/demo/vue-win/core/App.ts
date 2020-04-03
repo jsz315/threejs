@@ -268,7 +268,7 @@ export default class App {
             url = url.replace("http:", "https:");
         }
 
-        this.addTest();
+        // this.addTest();
        
 
         this.fineLoader.start(url, async (object3D: THREE.Object3D) => {

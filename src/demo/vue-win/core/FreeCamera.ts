@@ -87,7 +87,7 @@ export class FreeCamera extends THREE.PerspectiveCamera{
     resetOrbitControls():void{
         this.orbit = new OrbitControls(this, this.domElement);
         this.orbit.enabled = true;
-        this.orbit.minPolarAngle = 1;
+        this.orbit.minPolarAngle = -90 * Math.PI / 180;
         this.orbit.maxPolarAngle = 90 * Math.PI / 180;
     }
 
