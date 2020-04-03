@@ -9,6 +9,7 @@ import Tooler from './Tooler'
 import listener from '../lib/listener';
 import { GLTFExporter } from '../../vue-win/lib/GLTFExporter'
 import Part from './Part'
+import Fire from './Fire'
 
 export default class Main {
     
@@ -25,7 +26,7 @@ export default class Main {
     part: Part;
     ambientLight: THREE.AmbientLight;
     directionalLight: THREE.DirectionalLight;
-
+    fire:Fire = new Fire();
 
     constructor(canvas: any) {
         this.canvas = canvas;
@@ -80,6 +81,7 @@ export default class Main {
         requestAnimationFrame(() => {
             this.animate();
         });
+        this.fire.update();
         this.stats && this.stats.update();
         this.renderer.render(this.scene, this.camera);
     }
@@ -99,6 +101,8 @@ export default class Main {
         this.animate();
         this.camera.lookAt(new THREE.Vector3());
         this.canvas.addEventListener(this.isMobile ? "touchstart" : "mousedown", (e: any) => this.choose(e), false);
+
+        this.scene.add(this.fire);
     }
 
     choose(e:any){
