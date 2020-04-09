@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import Tooler from './Tooler';
 
 export default class FocusLight extends THREE.DirectionalLight{
-    far:number = 1;
+    far:number = 100;
     constructor(color?: THREE.Color | string | number, intensity?: number){
         super(color, intensity);
         // this.castShadow = true;

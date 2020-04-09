@@ -15,7 +15,7 @@ export class FreeCamera extends THREE.PerspectiveCamera{
     startPot: THREE.Vector3 = new THREE.Vector3(-400, 600, 1200);
     clock:THREE.Clock = new THREE.Clock();
     walking:boolean = false;
-    active:boolean= false;
+    active:boolean = false;
     lastPoint:any = null;
     isMobile = Tooler.checkMobile();
 

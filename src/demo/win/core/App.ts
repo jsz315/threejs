@@ -5,6 +5,7 @@ import Tooler from './Tooler';
 import { FineLoader } from './FineLoader';
 import { Effect } from './Effect';
 import Components from './Components';
+import listener from "../lib/listener"
 
 export default class App {
     public static ZERO: THREE.Vector3 = new THREE.Vector3();
@@ -16,18 +17,12 @@ export default class App {
     focusLight: FocusLight;
     fineLoader: FineLoader;
 
-    ambientLightIntensity: number = 1.32;
-    focusLightIntensity: number = 0.42;
+    // ambientLightIntensity: number = 1.32;
+    // focusLightIntensity: number = 0.42;
     roughness: number = 0.35;
     metalness: number = 0.36;
 
     components: Components = new Components();
-
-    // ambientLightIntensity: number = 0.3;
-    // focusLightIntensity: number = 1.32;
-    // roughness: number = 0.54;
-    // metalness: number = 0.64;
-    far: number = 2.62;
 
     rayCaster: THREE.Raycaster;
     isMobile: boolean;
@@ -60,7 +55,7 @@ export default class App {
         this.camera.position.set(0, 0, 12);
         this.camera.lookAt(new THREE.Vector3());
 
-        this.focusLight = new FocusLight(0xffffff, this.focusLightIntensity);
+        this.focusLight = new FocusLight(0xffffff, 0.4);
         this.scene.add(this.focusLight);
 
         this.fineLoader = new FineLoader();
@@ -75,6 +70,29 @@ export default class App {
         canvas.addEventListener(this.isMobile ? "touchstart" : "mousedown", (e: any) => this.select(e), false);
 
         console.log(this.scene);
+
+        listener.on("changeColor", (url: string, isSub: boolean) => {
+            this.changeMap(url, isSub);
+        })
+
+        listener.on("play", () => {
+            this.playAnimate();
+        })
+
+        listener.on("param", (attr: string, num: number) => {
+            if (attr == "ambient") {
+                this.setAmbient(num);
+            }
+            else if (attr == "directional") {
+                this.setDirectional(num);
+            }
+            else if (attr == "metalness") {
+                this.setMetalness(num);
+            }
+            else if (attr == "roughness") {
+                this.setRoughness(num);
+            }
+        })
     }
 
     getStageSize(usePixel?: boolean) {
@@ -188,7 +206,7 @@ export default class App {
         let list = Tooler.getAllMaterial(parent);
         let materials = list[0];
         this.repeat = list[1];
-        
+
         this.components.initMap(materials);
 
         /*
@@ -240,54 +258,38 @@ export default class App {
 
     resetMap(material: any, url: string): void {
         this.components.resetMap(material, url);
-        // let texture: any = new THREE.TextureLoader().load(url, () => {
-        //     material.map.needsUpdate = true;
-        //     material.needsUpdate = true;
-        // });
-
-        // texture.wrapS = material.map.wrapS;
-        // texture.wrapT = material.map.wrapT;
-        // texture.repeat = new THREE.Vector2(material.map.repeat.x, material.map.repeat.y);
-        // texture.flipY = material.map.flipY;
-        // texture.flipX = material.map.flipY;
-        // material.map = texture;
     }
 
     changeMap(url: string, isSub: boolean): void {
         this.components.changeMap(url, isSub);
-
-        // this.frameMaterials.length && this.frameMaterials.forEach((material: any) => {
-        //     this.resetMap(material, url);
-        // })
     }
 
-    setup(): void {
+    setup(param:any): void {
         let url = Tooler.getQueryString("url");
-        if(!Tooler.isTest()){
+        if (!Tooler.isTest()) {
             url = url.replace("http:", "https:");
         }
         this.fineLoader.start(url, (object3D: THREE.Object3D) => {
             this.fitModel(object3D);
             url = url.replace(/\.(glb|zip)/, ".animation");
             this.effect.init(url, this.scene);
-            window.dispatchEvent(new CustomEvent("animate"));
+            // window.dispatchEvent(new CustomEvent("animate"));
         })
-
         // this.addSkybox();
 
         this.addLights();
         this.animate();
+        
+        this.setAmbient(param.ambient);
+        this.setDirectional(param.directional);
+        this.setMetalness(param.metalness);
+        this.setRoughness(param.roughness);
     }
 
     addLights(): void {
         var ambient: THREE.AmbientLight = new THREE.AmbientLight(0xffffff);
-        ambient.intensity = this.ambientLightIntensity;
         ambient.name = "ambient";
         this.scene.add(ambient);
-
-        // var hemishpereLight:THREE.HemisphereLight = new THREE.HemisphereLight(0xffffff, 0xffff00);
-        // hemishpereLight.intensity = 1.8;
-        // this.scene.add(hemishpereLight);
     }
 
     addSkybox() {
@@ -310,22 +312,15 @@ export default class App {
     setAmbient(n: number): void {
         var ambient: any = this.scene.getObjectByName("ambient");
         ambient.intensity = n;
-        this.ambientLightIntensity = n;
     }
 
     setDirectional(n: number): void {
         this.focusLight.intensity = n;
-        this.focusLightIntensity = n;
     }
-
-    // setDistance(n:number):void{
-    //     this.focusLight.far = n;
-    //     this.far = n;
-    // }
 
     setRoughness(n: number): void {
         var group = this.scene.getObjectByName("load_scene");
-        group.traverse((child: any) => {
+        group && group.traverse((child: any) => {
             if (child.isMesh) {
                 if (Array.isArray(child.material)) {
                     for (var i: number = 0; i < child.material.length; i++) {
@@ -343,7 +338,7 @@ export default class App {
 
     setMetalness(n: number): void {
         var group = this.scene.getObjectByName("load_scene");
-        group.traverse((child: any) => {
+        group && group.traverse((child: any) => {
             if (child.isMesh) {
                 if (Array.isArray(child.material)) {
                     for (var i: number = 0; i < child.material.length; i++) {

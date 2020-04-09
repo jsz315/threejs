@@ -18,15 +18,15 @@ export default class Cache {
         this.glass = {};
  
         let cubeTextureLoader:THREE.CubeTextureLoader = new THREE.CubeTextureLoader();
-        cubeTextureLoader.setPath( '/asset/skybox/' );
+        cubeTextureLoader.setPath( './asset/skybox/' );
         this.cubeTexture = cubeTextureLoader.load( [
             // '1px.jpg', '1nx.jpg',
             // '1py.jpg', '1ny.jpg',
             // '1pz.jpg', '1nz.jpg'
 
-            '1px.jpg', '1nx.jpg',
-            '1py.jpg', '1ny.jpg',
-            '1pz.jpg', '1nz.jpg',
+            'px.jpg', 'nx.jpg',
+            'py.jpg', 'ny.jpg',
+            'pz.jpg', 'nz.jpg',
         ] );
         this.cubeTexture.format = THREE.RGBFormat;
         this.cubeTexture.mapping = THREE.CubeReflectionMapping;
@@ -55,9 +55,9 @@ export default class Cache {
             envMap: this.cubeTexture,
             transparent: true,
             alphaTest: 0.2,
-            opacity: 0.5,
+            opacity: 0.54,
             // emissive: new THREE.Color("#5bd4cf"),
-            // emissive: new THREE.Color("#990000"),
+            emissive: new THREE.Color("#ffffff"),
             emissiveIntensity: 0.8
         });
 

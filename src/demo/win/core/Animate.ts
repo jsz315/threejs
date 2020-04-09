@@ -107,6 +107,7 @@ export default class Animate {
         this.running = false;
         console.log("animation end");
         window.dispatchEvent(new CustomEvent("animate"));
+        // listener.emit("effect");
     }
 
     update(){

@@ -2,6 +2,20 @@
     "code": 200,
     "datas": {
         "sys_img": "/p1.jpg",
-        "brand_img": "/p2.jpg"
+        "brand_img": "/p2.jpg",
+        "color": [
+            {
+                "color_img": "http://erp1.mendaow.com/data/upload/color/125/14634-9963601.jpg",
+                "color_type": "103"
+            },
+            {
+                "color_img": "http://erp1.mendaow.com/data/upload/color/125/14634-9963601.jpg",
+                "color_type": "103"
+            },
+            {
+                "color_img": "http://erp1.mendaow.com/data/upload/color/125/14634-9963601.jpg",
+                "color_type": "103"
+            }
+        ]
     }
 }

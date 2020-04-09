@@ -267,9 +267,10 @@ export default class Tooler{
             var xhr = new XMLHttpRequest();
             // xhr.open('GET', modelPath + modelName);
 
-            var v = (new Date()).toLocaleString().split(" ")[0];
-            // var v = Math.random();
-            xhr.open('GET', modelPath + modelName + "?v=" + v);
+            // var v = (new Date()).toLocaleString().split(" ")[0];
+            var v = Math.random();
+            // xhr.open('GET', modelPath + modelName + "?v=" + v);
+            xhr.open('GET', modelPath + modelName);
             xhr.responseType = 'blob';
             xhr.onprogress = (event) =>{
                 if (event.lengthComputable) {

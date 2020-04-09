@@ -6,12 +6,11 @@
     .t-title{
         font-size: 30px;
         display: flex;
-        justify-content: center;
         align-items: center;
-        padding: 10px 30px;
+        padding: 10px 24px;
         .t-ico{
-            width: 30px;
-            height: 30px;
+            width: 36px;
+            height: 36px;
             background: url("../../asset/money.png") no-repeat center;
             background-size: contain;
             margin-right: 10px;
@@ -27,30 +26,35 @@
         .t-tip3{
             margin-right: 20px;
             color: #0299df;
+            font-weight: bolder;
         }
         .t-arrow{
             width: 30px;
             height: 30px;
             background: url("../../asset/arrow.png") no-repeat center;
             background-size: contain;
+            transition: all 300ms;
             &.hide{
                 transform: rotate(180deg);
             }
         }
     }
     .t-list{
-        border: solid 1px #f0f0f0;
         transition: all 300ms;
         box-sizing: border-box;
         padding: 0 20px;
         margin: 0 auto 40px;
         font-size: 24px;
+        transition: all 300ms;
+        max-height: 1200px;
+        opacity: 1;
         &.hide{
-            height: 0;
+            opacity: 0;
             overflow: hidden;
         }
         .table{
             width: 100%;
+            border: solid 1px #dfdfdf;
             .t-header{
                 .td{
                     background: #ebebeb;
@@ -60,12 +64,14 @@
             }
             .td{
                 padding: 12px 8px;
-                border: 1px solid #f0f0f0; border-width: 0 1px 1px 0;
+                border: 1px solid #f0f0f0; 
+                border-width: 0 1px 1px 0;
                 text-align: center;
             }
             .t-name{
                 font-weight: bold;
                 text-align: left;
+                border-left: 1px solid #f0f0f0;
             }
             .t-price{
                 font-weight: bold;
@@ -82,6 +88,8 @@
 
 
 
+
+
 @media screen and (min-width: 768PX){
 .table{
     margin-top: 30PX;
@@ -91,12 +99,11 @@
     .t-title{
         font-size: 30PX;
         display: flex;
-        justify-content: center;
         align-items: center;
-        padding: 10PX 30PX;
+        padding: 10PX 24PX;
         .t-ico{
-            width: 30PX;
-            height: 30PX;
+            width: 36PX;
+            height: 36PX;
             background: url("../../asset/money.png") no-repeat center;
             background-size: contain;
             margin-right: 10PX;
@@ -112,30 +119,35 @@
         .t-tip3{
             margin-right: 20PX;
             color: #0299df;
+            font-weight: bolder;
         }
         .t-arrow{
             width: 30PX;
             height: 30PX;
             background: url("../../asset/arrow.png") no-repeat center;
             background-size: contain;
+            transition: all 300ms;
             &.hide{
                 transform: rotate(180deg);
             }
         }
     }
     .t-list{
-        border: solid 1PX #f0f0f0;
         transition: all 300ms;
         box-sizing: border-box;
         padding: 0 20PX;
         margin: 0 auto 40PX;
         font-size: 24PX;
+        transition: all 300ms;
+        max-height: 1200PX;
+        opacity: 1;
         &.hide{
-            height: 0;
+            opacity: 0;
             overflow: hidden;
         }
         .table{
             width: 100%;
+            border: solid 1PX #dfdfdf;
             .t-header{
                 .td{
                     background: #ebebeb;
@@ -145,12 +157,14 @@
             }
             .td{
                 padding: 12PX 8PX;
-                border: 1PX solid #f0f0f0; border-width: 0 1PX 1PX 0;
+                border: 1PX solid #f0f0f0; 
+                border-width: 0 1PX 1PX 0;
                 text-align: center;
             }
             .t-name{
                 font-weight: bold;
                 text-align: left;
+                border-left: 1PX solid #f0f0f0;
             }
             .t-price{
                 font-weight: bold;
@@ -162,6 +176,8 @@
         }
     }
 }
+
+
 
 
 

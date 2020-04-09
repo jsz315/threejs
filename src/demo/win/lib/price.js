@@ -101,6 +101,7 @@ async function getItem(obj){
         obj.all = obj.count * obj.price * obj.setnum;
         obj.size = [data.length, data.height, data.width].join(" x ");
         obj.items = data.items;
+        obj.seriesName = data.seriesName;
         resolve();
     });
 }
@@ -108,5 +109,7 @@ async function getItem(obj){
 
 export default {
     getList,
-    getItem
+    getItem,
+    getHost,
+    isERP
 }

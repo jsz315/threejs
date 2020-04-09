@@ -1,5 +1,6 @@
 import Tooler from "./Tooler";
 import Animate from "./Animate";
+import listener from "../lib/listener"
 
 export class Effect{
 
@@ -116,9 +117,10 @@ export class Effect{
                 this.animates = animateList1.concat(animateList2);
                 // this.animates = animateList1.length ? animateList1 : animateList2;
                 console.log(this.animates);
+                listener.emit("effect");
             }
             else{
-                (document.querySelector(".animate") as any).style.display = "none";
+                // (document.querySelector(".animate") as any).style.display = "none";
             }
         });
 

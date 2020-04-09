@@ -1,0 +1,122 @@
+.phone-view{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.72);
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 7;
+    width: 100%;
+    height: 100%;
+    .box{
+        width: 500px;
+        padding: 32px;
+        background: #ffffff;
+        border-radius: 4px;
+        font-size: 32px;
+        position: relative;
+        opacity: 1;
+        transform: scale(0);
+        animation: fadeIn 200ms;
+        animation-fill-mode: forwards;
+        z-index: 3;
+        .close{
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: url(../../asset/close.png) no-repeat center;
+            background-size: contain;
+            width: 30px;
+            height: 30px;
+        }
+        .tip{
+            color: #333333;
+            margin-bottom: 16px;
+        }
+        .text{
+            width: 100%;
+            display: block;
+            padding: 16px;
+            box-sizing: border-box;
+            border: solid 1px #e9e9e9;
+            margin-bottom: 28px;
+            color: #999999;
+        }
+        .btn{
+            background: #0299df;
+            color: #ffffff;
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            padding: 12px 0;
+        }
+    }
+    @keyframes fadeIn{
+        100%{opacity: 1;transform: scale(1);}
+    }
+}
+
+
+@media screen and (min-width: 768PX){
+.phone-view{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.72);
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 7;
+    width: 100%;
+    height: 100%;
+    .box{
+        width: 500PX;
+        padding: 32PX;
+        background: #ffffff;
+        border-radius: 4PX;
+        font-size: 32PX;
+        position: relative;
+        opacity: 1;
+        transform: scale(0);
+        animation: fadeIn 200ms;
+        animation-fill-mode: forwards;
+        z-index: 3;
+        .close{
+            position: absolute;
+            right: 20PX;
+            top: 20PX;
+            background: url(../../asset/close.png) no-repeat center;
+            background-size: contain;
+            width: 30PX;
+            height: 30PX;
+        }
+        .tip{
+            color: #333333;
+            margin-bottom: 16PX;
+        }
+        .text{
+            width: 100%;
+            display: block;
+            padding: 16PX;
+            box-sizing: border-box;
+            border: solid 1PX #e9e9e9;
+            margin-bottom: 28PX;
+            color: #999999;
+        }
+        .btn{
+            background: #0299df;
+            color: #ffffff;
+            border-radius: 4PX;
+            text-align: center;
+            cursor: pointer;
+            padding: 12PX 0;
+        }
+    }
+    @keyframes fadeIn{
+        100%{opacity: 1;transform: scale(1);}
+    }
+}
+
+
+}

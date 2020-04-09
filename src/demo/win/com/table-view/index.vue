@@ -4,13 +4,15 @@
             <div class="table">
                 <div class="t-title">
                     <div class="t-ico"></div>
-                    <div class="t-tip1">门窗报价</div>
+                    <div class="t-tip1">{{item.seriesName}}-门窗报价</div>
+                </div>
+                <div class="t-title">
                     <div class="t-tip2">{{item.area | formatNum}}m²</div>
                     <div class="t-tip3">￥{{item.price | formatNum}}</div>
-                    <div class="t-arrow" :class="{hide: item.hide}" @click="item.hide = !item.hide"></div>
+                    <div class="t-arrow" :class="{hide: item.hide}" @click="hideTable(item, index)"></div>
                 </div>
-                <div class="t-list" :class="{hide: item.hide}">
-                    <table class="table" border="1" cellspacing="0">
+                <div class="t-list" :class="{hide: item.hide}" ref="list">
+                    <table class="table" border="0" cellspacing="0">
                         <tr class="t-header">
                             <td class="td">窗名-项目名</td>
                             <td class="td">单价</td>
@@ -22,7 +24,7 @@
                             <td class="td t-name">{{obj.hostBale + '-' + obj.label}}</td>
                             <td class="td">{{obj.univalent | formatNum}}</td>
                             <td class="td">{{obj.count | formatNum}}</td>
-                            <td class="td">{{obj.discount | formatNum}}</td>
+                            <td class="td">{{obj.discount | formatDiscount}}</td>
                             <td class="td t-price">{{obj.amount | formatNum}}</td>
                         </tr>
                     </table>
@@ -40,7 +42,8 @@ export default {
     data() {
         return {
             visible: false,
-            list: []
+            list: [],
+            heights: [0]
         };
     },
     components: {},
@@ -52,6 +55,13 @@ export default {
     },
     filters: {
         formatNum: function (value) {
+            if (!value) return '-';
+            return Number(value).toFixed(2);
+        },
+        formatDiscount: function(value){
+            if(value == 1){
+                return '不打折';
+            }
             if (!value) return '-';
             return Number(value).toFixed(2);
         }
@@ -69,6 +79,20 @@ export default {
             console.log(res.list);
             this.list = res.list;
             this.visible = true;
+        },
+        hideTable(item, index){
+            item.hide = !item.hide;
+            var div = this.$refs.list[index];
+            if(this.heights[index] == 0){
+                console.log("初始化", index, div.offsetHeight);
+                this.heights[index] = div.offsetHeight;
+            }
+            if(item.hide){
+                div.style.maxHeight = '0';
+            }
+            else{
+                div.style.maxHeight = this.heights[index] + 'px';
+            }
         }
     }
 };

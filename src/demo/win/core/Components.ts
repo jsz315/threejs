@@ -1,4 +1,5 @@
 import THREE = require("three");
+import listener from "../lib/listener";
 
 export default class Components{
 
@@ -61,7 +62,9 @@ export default class Components{
             })
         }, 300);
 
-        window.dispatchEvent(new CustomEvent("colorMap", { bubbles: false, cancelable: false, detail: this.isSingleColor}));
+        // window.dispatchEvent(new CustomEvent("colorMap", { bubbles: false, cancelable: false, detail: this.isSingleColor}));
+        listener.emit("colorMap", this.isSingleColor);
+
     }
 
     resetMap(material: any, url: string): void {
