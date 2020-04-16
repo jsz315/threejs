@@ -34,6 +34,11 @@ export default class App {
     repeat: any;
     textureList: TextureList;
     isFitScene: boolean;
+    
+    frame:number = 0;
+    // isIphone:boolean = navigator.userAgent.indexOf('iPhone') > -1;
+    // isDebug:boolean = Tooler.getQueryString("debug") == 1;
+    spaceFrame: number = 1;
 
     helper:ViewHelper;
     textureLoader: THREE.TextureLoader = new THREE.TextureLoader();
@@ -48,32 +53,21 @@ export default class App {
         this.scene = new THREE.Scene();
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
-            alpha: true,
+            alpha: false,
             canvas: this.canvas
         });
         this.camera = new FreeCamera(this.renderer.domElement);
         // this.renderer.setSize(window.innerWidth, window.innerHeight);
         // this.renderer.setPixelRatio(window.devicePixelRatio > 2 ? 2: 1);
         this.renderer.setClearColor(new THREE.Color(0x999999), 0);
-        this.renderer.shadowMap.enabled = true;
+        // this.renderer.shadowMap.enabled = true;//关闭阴影
         console.log("this.camera");
         console.log(this.camera);
 
         this.cubeCamera = new THREE.CubeCamera(0.1, 10000, 256);//实例化一个cubeCamera
         this.scene.add(this.cubeCamera);
 
-        // var cubeTextureLoader = new THREE.CubeTextureLoader();
-        // cubeTextureLoader.setPath( '/asset/skybox/' );
-        // var cubeTexture = cubeTextureLoader.load( [
-        //     'px.jpg', 'nx.jpg',
-        //     'py.jpg', 'ny.jpg',
-        //     'pz.jpg', 'nz.jpg'
-        // ] );
-        // cubeTexture.format = THREE.RGBFormat;
-        // cubeTexture.mapping = THREE.CubeReflectionMapping;
         this.scene.background = Cache.getInstance().cubeTexture;
-
-
         this.fineLoader = new FineLoader();
         this.scene.add(this.fineLoader);
         this.stage = new Stage();
@@ -86,13 +80,17 @@ export default class App {
 
         this.textureList = new TextureList();
 
+        var f = Tooler.getQueryString("frame");
+        if(f){
+            this.spaceFrame = Number(f);
+        }
+
         window.addEventListener("resize", e => this.onResize(e), false);
         canvas.addEventListener(this.isMobile ? "touchstart" : "mousedown", (e: any) => this.select(e), false);
 
         window.addEventListener("all loaded", e => {
             this.setRoughness(this.roughness);
             this.setMetalness(this.metalness);
-            // this.orbit.enabled = true;
             FineMaterial.lightMap(this.scene);
         }, false);
     }
@@ -111,17 +109,19 @@ export default class App {
             this.animate();
         });
 
-        // this.cubeCamera.update(this.renderer, this.scene);
+        if(++this.frame >= this.spaceFrame){
+            this.frame = 0;
 
-        this.camera.update();
-        this.helper.update();
+            this.camera.update();
+            this.helper.update();
 
-        this.effects.forEach((effect:Effect)=>{effect.update();});
-        this.stats && this.stats.update();
-        this.renderer.render(this.scene, this.camera);
-        this.stage.focusLight.update(this.camera);
-        
-        TWEEN.update();
+            this.effects.forEach((effect:Effect)=>{effect.update();});
+            this.stats && this.stats.update();
+            this.renderer.render(this.scene, this.camera);
+            this.stage.focusLight.update(this.camera);
+            
+            TWEEN.update();
+        }
     }
 
     setStats(stats: any): void {
@@ -166,6 +166,7 @@ export default class App {
                 let img = mat.map.image;
                 console.log(img.src);
                 // obj.material = Cache.getInstance().changeMaterial(img.src);
+                // FineMaterial.reloadMap(obj.material, img.src);
             }
         }
     }
@@ -197,7 +198,7 @@ export default class App {
         this.scene.add(aim);
         // this.addGrass();
         this.resetName(group);
-        this.initMaterials(parent, isWall);
+        this.initMaterials(parent, [], isWall);
 
         // this.addSkySphere(30000);
 
@@ -218,28 +219,31 @@ export default class App {
         })
     }
 
-    initMaterials(parent: THREE.Object3D, isWall:boolean = false) {
+    async initMaterials(parent: THREE.Object3D, replaceMap: any[], isWall:boolean = false) {
         // let list = Tooler.getAllMaterial(parent);
-        let materials = FineMaterial.getMapMaterials(parent);
-        materials.forEach((m: any) => {
-            let src:any = m.map.image.src;
+        let materials:any = await FineMaterial.getMapMaterials(parent, replaceMap);
+        // materials.forEach((m: any) => {
+        //     let src:any = m.map.image.src;
 
-            if (src.indexOf("/IPR_") != -1) {
-                this.frameMaterials.push(m);
-                m.roughness = this.roughness;
-                m.metalness = this.metalness;
-            }
-            else if(src.indexOf("dif_") != -1){
-                this.frameMaterials.push(m);
-                m.roughness = this.roughness;
-                m.metalness = this.metalness;
-            }
-            else if(src.indexOf("dif2_") != -1){
-                m.roughness = 0.96;
-                m.metalness = 0.04;
-                m.flatShading = false;
-            }
-        })
+        //     if (src.indexOf("/IPR_") != -1) {
+        //         this.frameMaterials.push(m);
+        //         m.roughness = this.roughness;
+        //         m.metalness = this.metalness;
+        //     }
+        //     else if(src.indexOf("dif_") != -1){
+        //         if(src.indexOf("dif_wa") == -1){
+        //             this.frameMaterials.push(m);
+        //             m.roughness = this.roughness;
+        //             m.metalness = this.metalness;
+        //         }
+                
+        //     }
+        //     else if(src.indexOf("dif2_") != -1){
+        //         m.roughness = 0.96;
+        //         m.metalness = 0.04;
+        //         m.flatShading = false;
+        //     }
+        // })
 
         if(isWall){
             setTimeout(() => {
@@ -251,8 +255,8 @@ export default class App {
     
     
     changeMap(url: string): void {
-        this.frameMaterials.length && this.frameMaterials.forEach((material: any) => {
-            FineMaterial.reloadMap(material, url);
+        FineMaterial.frameMaterials.forEach((material: any) => {
+            FineMaterial.changeMap(material, url);
         })
     }
 
@@ -270,7 +274,7 @@ export default class App {
 
         // this.addTest();
        
-
+        //加载主模型
         this.fineLoader.start(url, async (object3D: THREE.Object3D) => {
             this.fitModel(object3D, true);
             FineMaterial.lightMap(object3D);
@@ -295,11 +299,11 @@ export default class App {
         this.animate();       
     }
 
-    addSubModel(param:any):void{
+    addSubModel(param: any):void{
         var group = this.scene.getObjectByName("load_scene");
         // var group = this.scene.getObjectByName("aim_scene");
         var obj = param.obj;
-        let {position, rotation, scale} = param.attr;
+        let {position, rotation, scale, skinURLs, colorURL} = param.attr;
         obj.position.set(position[0], position[1], position[2]);
         // obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
         // console.log("rotation", rotation);
@@ -314,6 +318,27 @@ export default class App {
         //     obj.rotation.set(rotation[0], rotation[1], rotation[2]);
         // }
 
+        var replaceMap:any[] = [];
+        skinURLs && skinURLs.forEach((item:string, index:number)=>{
+            var url = item.replace(/\s+/g, '');
+            if(url){
+                console.log(index, item);
+                replaceMap.push({
+                    type: 'name',
+                    key: index == 0 ? 'dif_' : 'dif' + (index + 1) + "_",
+                    url: item
+                })
+            }
+        })
+
+        if(colorURL){
+            replaceMap.push({
+                type: 'link',
+                key: 'IPR_',
+                url: colorURL
+            })
+        }
+
         obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
 
         // obj.rotation.set(rotation[0], rotation[2], rotation[1]);
@@ -322,7 +347,7 @@ export default class App {
         group.add(obj);
 
         this.resetName(obj);
-        this.initMaterials(obj);
+        this.initMaterials(obj, replaceMap);
 
         // obj.rotateX(-Math.PI / 2);
         if(param.hasAnimate){
@@ -348,6 +373,7 @@ export default class App {
             mat.roughness = n;
         })
         this.roughness = n;
+        FineMaterial.roughness = n;
     }
 
     setMetalness(n: number): void {
@@ -355,6 +381,7 @@ export default class App {
             mat.metalness = n;
         })
         this.metalness = n;
+        FineMaterial.metalness = n;
     }
 
     setFar(n: number):void{

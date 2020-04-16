@@ -3,7 +3,7 @@ module.exports = {
         require("autoprefixer")({}),
         require('postcss-px2rem-exclude')({
             "remUnit": 100,
-            "exclude": /node_modules/i
+            "exclude": /node_modules|flash-vue/i
         })
     ]
 }

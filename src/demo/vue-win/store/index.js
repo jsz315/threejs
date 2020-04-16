@@ -9,8 +9,10 @@ export default new Vuex.Store({
         effectVisible: false,
         detailVisible: false,
         priceVisible: false,
+        priceDetailVisible: false,
         colorVisible: false,
         guiderVisible: false,
+        orderVisible: false,
         effectParam: {
             ambient: 0.4,
             directional: 0.6,
@@ -21,9 +23,19 @@ export default new Vuex.Store({
         modelId: 0,
         modelType: 0,
         productImages: [],
-        logoImage: null
+        logoImage: null,
+        priceItem: {}
     },
     mutations: {
+        changePriceItem(state, value){
+            state.priceItem = value;
+        },
+        changeOrderVisible(state, value){
+            state.orderVisible = value;
+        },
+        changePriceDetailVisible(state, value){
+            state.priceDetailVisible = value;
+        },
         changeDesignVisible(state, value){
             state.designVisible = value;
         },

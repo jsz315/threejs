@@ -24,8 +24,7 @@ export default class Tooler{
 
     public static getFitScale(obj: THREE.Object3D, num: number):number{
         let size = this.getBoxSize(obj);
-        console.log("scene size ==== ");
-        console.log(size);
+        console.log("scene size", size);
         let max = Math.max(size.x, size.y, size.z);
         if(max == 0){
             return 0;
@@ -269,8 +268,8 @@ export default class Tooler{
 
             // var v = (new Date()).toLocaleString().split(" ")[0];
             var v = Math.random();
-            // xhr.open('GET', modelPath + modelName + "?v=" + v);
-            xhr.open('GET', modelPath + modelName);
+            xhr.open('GET', modelPath + modelName + "?v=" + v);
+            // xhr.open('GET', modelPath + modelName);
             xhr.responseType = 'blob';
             xhr.onprogress = (event) =>{
                 if (event.lengthComputable) {
@@ -355,8 +354,8 @@ export default class Tooler{
             loader.setCrossOrigin('anonymous');
             // console.log("list[0] " + list[0]);
             loader.parse(buffer, list[0], (gltf:any) => {
-                console.log("【GLTF数据】");
-                console.log(gltf);
+                // console.log("【GLTF数据】");
+                // console.log(gltf);
                 resolve({
                     object3D: gltf.scene,
                     json: json
@@ -436,9 +435,17 @@ export default class Tooler{
         size.height = window.innerHeight;
         if (usePixel) {
             var dpr = window.devicePixelRatio > 2 ? 2 : window.devicePixelRatio;
+            var t = Tooler.getQueryString('dpr');
+            if(t){
+                dpr = Number(t);
+            }
             size.width = size.width * dpr;
             size.height = size.height * dpr;
         }
         return size;
+    }
+
+    public static getHost():string{
+        return location.search.match(/http.*?.com/)[0];
     }
 }

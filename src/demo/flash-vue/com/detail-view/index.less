@@ -1,0 +1,92 @@
+.detail-view {
+    .size {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        background: #555555;
+        .list{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            &.move{
+                transition: all 200ms;
+            }
+            .pic{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-position: center;
+                background-size: contain;
+                background-repeat: no-repeat;
+                &:nth-child(1){
+                    left: -100%;
+                }
+                &:nth-child(2){
+                    left: 0;
+                }
+                &:nth-child(3){
+                    left: 100%;
+                }
+            }
+        }
+    }
+
+}
+
+@media screen and (min-width: 768PX){
+.detail-view {
+    .size {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        background: #555555;
+        .list{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            &.move{
+                transition: all 200ms;
+            }
+            .pic{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-position: center;
+                background-size: contain;
+                background-repeat: no-repeat;
+                &:nth-child(1){
+                    left: -100%;
+                }
+                &:nth-child(2){
+                    left: 0;
+                }
+                &:nth-child(3){
+                    left: 100%;
+                }
+            }
+        }
+    }
+
+}
+
+}

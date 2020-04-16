@@ -29,8 +29,8 @@ export default class Tooler{
         let list = url.split("/");
         let aim = list.pop();
         let path = list.join("/") + "/";
-        console.log(path);
-        console.log(aim);
+        console.log(path, 'path');
+        console.log(aim, 'aim');
         return [path, aim];
     }
 

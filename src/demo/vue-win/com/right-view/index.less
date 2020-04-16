@@ -44,6 +44,9 @@
         text-align: center;
         background: rgba(0, 0, 0, 0.44);
         color: #ffffff;
+        opacity: 0;
+        animation: turnIn 300ms;
+        animation-fill-mode: forwards;
         .tip{
             text-align: center;
             height: 50px;
@@ -53,9 +56,11 @@
             }
         }
     }
+    @keyframes turnIn{
+        0%{opacity: 0; transform: translateX(20px);}
+        100%{opacity: 1; transform: translateX(0);}
+    }
 }
-
-
 
 @media screen and (min-width: 768PX){
 .right-view{
@@ -113,7 +118,13 @@
             }
         }
     }
+
+    @keyframes turnIn{
+        0%{opacity: 0; transform: translateX(20PX);}
+        100%{opacity: 1; transform: translateX(0);}
+    }
 }
+
 
 
 

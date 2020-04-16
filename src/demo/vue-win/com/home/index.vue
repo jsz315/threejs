@@ -20,6 +20,8 @@
         <PriceView></PriceView>
         <ColorView></ColorView>
         <GuiderView></GuiderView>
+        <PriceDetailView></PriceDetailView>
+        <OrderView></OrderView>
     </div>
 </template>
 
@@ -38,6 +40,9 @@ import DesignView from '../design-view/index.vue'
 import EffectView from '../effect-view/index.vue'
 import DetailView from '../detail-view/index.vue'
 import PriceView from '../price-view/index.vue'
+import PriceDetailView from '../price-detail-view/index.vue'
+import OrderView from '../order-view/index.vue'
+
 import RoleView from '../role-view/index.vue'
 import ColorView from '../color-view/index.vue'
 import GuiderView from '../guider-view/index.vue'
@@ -83,7 +88,7 @@ export default {
             imgs: []
         };
     },
-    components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView, RoleView, ColorView, GuiderView, LoadingView, WalkView, PriceView},
+    components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView, RoleView, ColorView, GuiderView, LoadingView, WalkView, PriceView, PriceDetailView, OrderView},
     computed: {},
     beforeCreate(){
         var url = Tooler.getQueryString("u")||"";
@@ -178,17 +183,20 @@ export default {
         async getImg(id) {
             let res;
             let link = "";
+            var u = Tooler.getQueryString("u");
+            var host = Tooler.getHost();
             if (location.search.indexOf("//3d.") != -1) {
-                link = "/mapi/index.php";
+                link = host + "/mapi/index.php";
                 res = await this.$get(link, {
                         id: id,
                         app: "index",
                         fnn: "sysdiss",
-                        type_id: this.$store.state.modelType
+                        type_id: this.$store.state.modelType,
+                        u: u
                     });
             } else {
-                link = "/api/index/sysdiss";
-                res = await this.$post(link, {id: id});
+                link = host + "/api/index/sysdiss";
+                res = await this.$post(link, {id: id, u: u});
             }
 
             if (res.data && res.data.datas) {

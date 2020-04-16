@@ -272,6 +272,7 @@ export default class App {
         this.fineLoader.start(url, (object3D: THREE.Object3D) => {
             this.fitModel(object3D);
             url = url.replace(/\.(glb|zip)/, ".animation");
+            url = url + "?v=" + Math.random();
             this.effect.init(url, this.scene);
             // window.dispatchEvent(new CustomEvent("animate"));
         })

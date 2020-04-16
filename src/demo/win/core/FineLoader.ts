@@ -31,8 +31,10 @@ export class FineLoader extends THREE.Object3D{
         this.modelPath = list[0];
         this.modelName = list[1];
         // let baseURL = (window as any).CFG.baseURL;
+        var link = this.modelPath + this.modelName + "?v=" + Math.random();
+        console.log(link, 'link == ');
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', this.modelPath + this.modelName);
+        xhr.open('GET', link);
         xhr.responseType = 'blob';
         xhr.onprogress = (event) =>{
             if (event.lengthComputable) {

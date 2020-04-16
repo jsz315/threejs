@@ -19,7 +19,8 @@ export default {
     computed: {},
     methods: {
         openDesign(){
-            this.$store.commit("changeDesignVisible", true);
+            // this.$store.commit("changeDesignVisible", true);
+            this.$store.commit("changeOrderVisible", true);
         },
         openDetail(){
             this.$store.commit("changeDetailVisible", true);

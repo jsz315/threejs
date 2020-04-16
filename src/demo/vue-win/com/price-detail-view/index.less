@@ -1,0 +1,102 @@
+.price-detail-view{
+    font-size: 28px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    opacity: 0;
+    animation: fade 300ms;
+    animation-fill-mode: forwards;
+    .header{
+        display: flex;
+        background: #0084ff;
+        box-sizing: border-box;
+        padding: 12px;
+        align-items: center;
+        .title{
+            flex: 1;
+            color: #ffffff;
+            text-align: center;
+        }
+        .close{
+            width: 40px;
+            height: 30px;
+            background: url("../../asset/img/back.png") no-repeat center;
+            background-size: 30px 30px;
+        }
+    }
+    .content{
+        flex: 1;
+        overflow-x: hidden;
+        overflow-y: auto;
+        background: #fafafa;
+        padding-bottom: 80px;
+        font-size: 22.4px;
+    }
+}
+@keyframes fade{
+    0%{opacity: 0; transform: translateX(160px);}
+    100%{opacity: 1; transform: translateX(0);}
+}
+
+
+
+
+
+@media screen and (min-width: 768PX){
+.price-detail-view{
+    font-size: 28PX;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    opacity: 0;
+    animation: fade 300ms;
+    animation-fill-mode: forwards;
+    .header{
+        display: flex;
+        background: #e6e6e6;
+        box-sizing: border-box;
+        padding: 24PX;
+        .title{
+            flex: 1;
+            color: #1e1f23;
+            font-weight: bold;
+            text-align: center;
+        }
+        .close{
+            width: 30PX;
+            height: 30PX;
+            background: url("../../asset/img/back.png") no-repeat center;
+            background-size: 30PX 30PX;
+        }
+    }
+    .content{
+        flex: 1;
+        overflow-x: hidden;
+        overflow-y: auto;
+        background: #fafafa;
+        padding-bottom: 80PX;
+        font-size: 22.4PX;
+    }
+}
+@keyframes fade{
+    0%{opacity: 0; transform: translateX(160PX);}
+    100%{opacity: 1; transform: translateX(0);}
+}
+
+
+
+
+
+}

@@ -25,7 +25,7 @@ export default class ListLoader{
             // console.log("加载模型", this.type);
             listener.emit("chat", this.type + " " + this.curId + "/" + this.list.length + "##" + this.list[this.curId].url);
             await this.load(this.list[this.curId], this.type == "hole" || this.type == "sun");
-            console.log("load " + this.type + " " + this.curId + "/" + this.list.length);
+            // console.log("load " + this.type + " " + this.curId + "/" + this.list.length);
 
             this.curId++;
             this.start();
@@ -46,7 +46,7 @@ export default class ListLoader{
             if(!Tooler.isTest()){
                 url = url.replace("http:", "https:");
             }
-            console.log("url=>" + url);
+            console.log(this.type + " " + this.curId + "/" + this.list.length + " => " + url);
 
             let detail:any = {
                 attr: item,

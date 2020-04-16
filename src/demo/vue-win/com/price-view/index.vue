@@ -7,44 +7,39 @@
         <div class="find" v-if="list.length==0">此方案暂无报价</div>
         
         <div class="content">
-            <div class="box" v-for="(item, index) in list" v-bind:key="index">
-                <div class="logo">
-                    <img class="ico" :src="logo" />
-                    {{item.brand_name}}
-                </div>
+            <div class="box" v-for="(item, index) in list" v-bind:key="index" @click="jump(item)">
                 <div class="win">
                     <div class="img-box">
                         <img class="img" :src="getImage(item)"/>
                     </div>
                     <div class="info">
-                        <div class="name">{{item.sys_name}}-{{item.pro_name}}</div>
-                        <div class="total">￥{{item.price}}</div>
-                        <div class="total">x{{item.setnum}}</div>
+                        <div class="line bold head">
+                            <div class="left">{{item.pro_name}}</div>
+                            <div class="right price">￥{{item.detail.cost}}</div>
+                        </div>
+                        <div class="line bold">
+                            <div class="left">{{item.sys_name}}-{{item.pro_name}}</div>
+                        </div>
+                        <div class="line">
+                            <div class="left">颜&emsp;&emsp;色：<span class="color">{{item.color_name}}</span></div>
+                            <div class="right">楼层：<span class="color">4楼</span></div>
+                        </div>
+                        <div class="line">
+                            <div class="left">门洞尺寸：<span class="color">{{getSize(item.detail)}}</span></div>
+                            <div class="right">面积：<span class="color">{{item.detail.acreage}}m²</span></div>
+                        </div>
+                        <div class="line">
+                            <div class="left frame">备&emsp;&emsp;注：<span class="color">无</span></div>
+                        </div>
+
                     </div>
                 </div>
-                <div class="tb">
-                    <div class="label">颜 色:</div>
-                    <div class="value">{{item.color_name}}</div>
-                </div>
-                <div class="tb">
-                    <div class="label">尺 寸:</div>
-                    <div class="value">{{item.size}}</div>
-                </div>
-                <div class="tb">
-                    <div class="label">面 积:</div>
-                    <div class="value">{{item.area}}m²</div>
-                </div>
-                <div class="tb">
-                    <div class="label">折 扣:</div>
-                    <div class="value color">{{item.count}}</div>
-                </div>
-                <div class="all">共{{item.setnum}}件 计:<span class="color">￥{{item.all}}</span></div>
             </div>
 
             <div class="result">
                 <div class="item">总数量：{{totalNum}}</div>
                 <div class="item">总面积：{{totalArea}}</div>
-                <div class="item color">合计：￥{{totalPrice}}</div>
+                <div class="item">合计：<span class="total">￥{{totalPrice}}</span></div>
             </div>
         </div>
     </div>
@@ -80,10 +75,18 @@ export default {
         // this.init();
         let res = await price.getList();
         if(res && res.length != 0){
-            this.list = res.list;
-            this.totalNum = res.totalNum;
-            this.totalArea = res.totalArea.toFixed(2);
-            this.totalPrice = res.totalPrice.toFixed(2);
+            this.list = res;
+            var totalNum = 0;
+            var totalArea = 0;
+            var totalPrice = 0;
+            this.list.forEach(item=>{
+                totalNum += item.setnum;
+                totalArea += item.detail.acreage;
+                totalPrice += item.detail.cost;
+            })
+            this.totalNum = totalNum;
+            this.totalArea = totalArea.toFixed(2);
+            this.totalPrice = totalPrice.toFixed(2);
         }
     },
     methods: {
@@ -91,83 +94,17 @@ export default {
             this.$store.commit("changePriceVisible", false);
         },
         getImage(obj){
-            var host = Tooler.isTest() ? 'http://3d.mendaow.com' : 'https://3d.mendaoyun.com';
+            var host = price.getHost();
             var url = host + '/data/upload' + obj.plan_path + "/" + obj.plan_img;
-            // console.log(url);
-            // var json = host + '/data/upload' + obj.plan_path + "/" + obj.pricejson_file;
-            // this.getPrice(json, obj);
             return url;
         },
-        async getPrice(url, obj){
-            let res = await this.$get(url);
-            var data = res.data;
-            console.log(data);
-            obj.area = data.acreage.toFixed(2);
-            obj.price = data.price.toFixed(2);
-            obj.count = data.items[0].discount.toFixed(2);           
-            obj.all = (obj.count * obj.price * obj.setnum).toFixed(2);
-            obj.size = [data.length || 1, data.height, data.width].join(" x ");
-
-            var over = this.list.every(item=>{
-                return item.all != '-';
-            })
-            if(over){
-                var totalNum = 0;
-                var totalArea = 0;
-                var totalPrice = 0;
-                this.list.forEach(item=>{
-                    totalNum += item.setnum;
-                    totalArea += item.area;
-                    totalPrice += item.all;
-                })
-                this.totalNum = totalNum;
-                this.totalArea = totalArea;
-                this.totalPrice = totalPrice;
-            }
-            else{
-                console.log("价格未初始化完成");
-            }
-        },
         getSize(obj){
-            var h = obj.height || 0;
-            var l = obj.length || 0;
-            var w = obj.width || 0;
-            return [h, l, w].join(" X ");
+            return price.getSize(obj);
         },
-        async init() {
-            let u = Tooler.getQueryString("u");
-            if(!u){
-                return;
-            }
-            
-            var temp = u.split("-");
-            let id = temp.pop();
-            let sourcetype = temp.pop();
-
-            let link = "/mapi/index.php";
-            let res = await this.$get(link, {
-                    app:"modelshow",
-                    fnn:"modelDetailById",
-                    sourcetype: sourcetype,
-                    yun3d_id:id
-                });
-            console.log(res);
-            if (res.data && res.data.code == 200) {
-                
-                var list = [];
-
-               for(var i in res.data.datas){
-                   var item = res.data.datas[i];
-                   item.price = '-';
-                   item.count = '-';
-                   item.area = '-';
-                   item.all = '-';
-                   item.size = '-';
-                   list.push(item);
-               }
-
-               this.list = list;
-            }
+        jump(item){
+            console.log(item, 'jump');
+            this.$store.commit("changePriceDetailVisible", true);
+            this.$store.commit("changePriceItem", item);
         }
     }
 };

@@ -9,6 +9,7 @@ export default class Cache {
     lightMesh: any;
     glass: any;
     cubeTexture: any;
+    map: any;
 
     constructor(){
         this.model = {};
@@ -16,6 +17,7 @@ export default class Cache {
         this.texture = {};
         this.lightMesh = [];
         this.glass = {};
+        this.map = {};
  
         let cubeTextureLoader:THREE.CubeTextureLoader = new THREE.CubeTextureLoader();
         cubeTextureLoader.setPath( './asset/skybox/' );
@@ -56,9 +58,9 @@ export default class Cache {
             transparent: true,
             alphaTest: 0.2,
             opacity: 0.54,
-            // emissive: new THREE.Color("#5bd4cf"),
             emissive: new THREE.Color("#ffffff"),
-            emissiveIntensity: 0.8
+            // emissive: new THREE.Color("#30fde2"),
+            emissiveIntensity: 0.6
         });
 
         material.map = new THREE.TextureLoader().load('https://3d.mendaoyun.com/data/upload/model_store/125/CPP0015861/a3d/grfg.png');
@@ -108,6 +110,21 @@ export default class Cache {
     setTexture(url:string, texture:any):void{
         this.texture[url] = {
             data: texture,
+            times: 1
+        };
+    }
+
+    getMap(url:string):any{
+        if(this.map[url]){
+            // console.warn('使用缓存(' + (this.texture[url].times++) + ')' + url);
+            return this.map[url].data;
+        }
+        return null;
+    }
+
+    setMap(url:string, map:any):void{
+        this.map[url] = {
+            data: map,
             times: 1
         };
     }

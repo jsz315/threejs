@@ -9,12 +9,20 @@ import Vue from 'vue'
 import Home from "./com/home/index.vue"
 import store from "./store/index";
 import MintUI from 'mint-ui'
+import { Toast } from 'mint-ui';
 import 'mint-ui/lib/style.css'
 
 let stats;
 let app;
 
 Vue.use(MintUI)
+Vue.prototype.$toast = (tip) => {
+    Toast({
+        message: tip,
+        position: 'top',
+        duration: 2000
+    });
+}
 
 window.onload = function(){
     console.log(store, 'store');

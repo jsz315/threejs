@@ -122,15 +122,23 @@ function $(sel){
 }
 
 
-// (async function(){
-//     var num = await getNum();
-//     console.log("num ============ " + num);
-
-//     async function getNum(){
-//         return new Promise(resolve=>{
-//             setTimeout(() => {
-//                 resolve(99);
-//             }, 3000);
-//         })
+// async function test(){
+//     var list = [100, 200, 300];
+//     console.log("start");
+//     for(var i = 0; i < list.length; i++){
+//         var item = list[i];
+//         console.log(item);
+//         await sleep(item);
 //     }
-// })();
+//     console.log("end");
+// }
+// test();
+
+// function sleep(m){
+//     return new Promise(resolve=>{
+//         setTimeout(() => {
+//             console.log('await ' + m);
+//             resolve();
+//         }, m);
+//     })
+// }

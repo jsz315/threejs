@@ -289,7 +289,7 @@ var GLTFLoader = ( function () {
 
 			}
 
-			console.warn("json-----------------------");
+			// console.warn("json-----------------------");
 			// console.log(json)
 
 			// var isDebug = location.search.indexOf("mendaoyun.com") == -1;
