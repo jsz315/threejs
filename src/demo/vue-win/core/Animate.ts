@@ -60,7 +60,8 @@ export default class Animate {
     }
 
     public static isPullDown(openMode:number){
-        return openMode <= 216 && openMode >= 213;
+        // return openMode <= 216 && openMode >= 213;
+        return openMode <= 216 && openMode >= 209;
     }
 
     /**
