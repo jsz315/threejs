@@ -93,6 +93,9 @@ export class FreeCamera extends THREE.PerspectiveCamera{
 
     startWalk(){
         this.orbit.enabled = false;
+        console.log(this.orbit, 'this.orbit');
+        this.position.set(this.position.x, this.orbit.target.y, this.position.z);
+        this.lookAt(this.orbit.target);
     }
 
     moveStart(e:any):void{
@@ -116,7 +119,7 @@ export class FreeCamera extends THREE.PerspectiveCamera{
             var y = e.clientY - this.lastPoint.y;
             this.lastPoint = {x: e.clientX, y: e.clientY};
             this.rotateY(x * 0.002);
-            this.rotateX(y * 0.002);
+            // this.rotateX(y * 0.002);
         }
     }
 
@@ -183,7 +186,7 @@ export class FreeCamera extends THREE.PerspectiveCamera{
                 x: pot.x * s, 
                 y: pot.y * s, 
                 z: pot.z * s
-            }, 3000).onUpdate(()=>{
+            }, 300).onUpdate(()=>{
                 this.lookAt(this.aim);
             }).onComplete(()=>{
                 this.orbit.target = offset;

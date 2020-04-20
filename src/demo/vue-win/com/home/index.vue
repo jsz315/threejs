@@ -12,7 +12,7 @@
         <RoleView class="ui" :style="role"></RoleView>
         <LoadingView class="ui" :style="loading"></LoadingView>
         <WalkView class="ui" :style="walk"></WalkView>
-        <div class="menu" @click="showMenu" :style="menu"></div>
+        <div class="menu" @click="showMenu" :style="menu">退出</div>
 
         <DesignView></DesignView>
         <EffectView></EffectView>

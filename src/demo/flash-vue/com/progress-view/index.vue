@@ -19,13 +19,15 @@ let timerId;
 let max = 70 + Math.random() * 20;
 
 export default {
+    props: ['tips'],
     data() {
         return {
             visible: true,
             num: 0,
             left: 0,
             x: 0,
-            tip: ''
+            tip: '',
+            id: 0
         };
     },
     components: {},
@@ -66,7 +68,15 @@ export default {
             max = 100;
         },
         changeTip(){
-            this.tip = 'say' + Math.random();
+            // this.tip = 'say' + Math.random();
+            console.log('changeTip', this.tips);
+            if(this.tips.length > 0){
+                if(++this.id >= this.tips.length - 1){
+                    this.id = 0;
+                }
+                this.tip = this.tips[this.id];
+                console.log(this.tip, 'this.tip');
+            }
         }
     }
 };

@@ -66,7 +66,7 @@ export class FineMaterial{
         if(transparent){
             material.transparent = true;
             if(changed){
-                mesh.material = Cache.getInstance().changeMaterial(src);
+                // mesh.material = Cache.getInstance().changeMaterial(src);
             }
         }
 

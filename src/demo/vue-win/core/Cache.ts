@@ -63,8 +63,8 @@ export default class Cache {
             emissiveIntensity: 0.6
         });
 
-        material.map = new THREE.TextureLoader().load('https://3d.mendaoyun.com/data/upload/model_store/125/CPP0015861/a3d/grfg.png');
-        // material.map = new THREE.TextureLoader().load(src);
+        // material.map = new THREE.TextureLoader().load('https://3d.mendaoyun.com/data/upload/model_store/125/CPP0015861/a3d/grfg.png');
+        material.map = new THREE.TextureLoader().load(src);
         this.glass[src] = material;
         return material;
     }

@@ -1,8 +1,8 @@
 <template>
-    <div class="home">
-        <div class="view" v-if="visible">
+    <div class="home" v-if="visible">
+        <div class="view">
             <SwiperView :pics="pics" @change="onChange"></SwiperView>
-            <ProgressView v-if="visible" ref="progress" @end="onEnd"></ProgressView>
+            <ProgressView :tips="tips" ref="progress" @end="onEnd"></ProgressView>
         </div>
     </div>
 </template>
@@ -35,6 +35,7 @@ export default {
         return {
             isDebug: getQueryString('debug') == 1,
             pics: [],
+            tips: [],
             visible: false
         };
     },
@@ -46,11 +47,25 @@ export default {
     created(){
         
     },
-    mounted(){
-        this.init();
+    async mounted(){
+        await this.loadImages();
+        await this.loadTips();
     },
     methods: {
-        async init(){
+        async loadTips(){
+            console.log(this.isDebug, getQueryString('debug'));
+            var host = this.isDebug ? 'http://3d.mendaow.com' : location.origin;
+            var res = await axios.get(host + `/mapi/index.php?app=tips&fnn=showtips`);
+            console.log(res);
+            if(res.data && res.data.datas){
+                this.tips = res.data.datas.map(item=>item['tips_value']);
+                console.log(this.tips, 'this.tips');
+                setTimeout(() => {
+                    this.onChange();
+                }, 30);
+            }
+        },
+        async loadImages(){
             console.log(this.isDebug, getQueryString('debug'));
             var host = this.isDebug ? 'http://3d.mendaow.com' : location.origin;
             var key = this.isDebug ? 'fa9bd0efd1015097c38cd65be70d36db' : getQueryString('key');
@@ -65,7 +80,9 @@ export default {
                     }
                 });
             }
-            this.pics = pics;//测试数据
+            // this.pics = pics;//测试数据===================================================================
+
+            console.log(this.pics, 'this.pics');
             if(this.pics.length > 0){
                 this.visible = true;
             }
@@ -78,7 +95,9 @@ export default {
             this.visible = false;
         },
         onChange(){
-            this.$refs.progress.changeTip();
+            if(this.visible){
+                this.$refs.progress.changeTip();
+            }
         }
         
     }
