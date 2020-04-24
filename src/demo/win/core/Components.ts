@@ -40,11 +40,10 @@ export default class Components{
                     this.all.push(m);
                 }
                 if(src.indexOf("/IPR_A_") != -1){
-                    // this.isSingleColor = false;
                     this.main.push(m);
                 }
                 else if(src.indexOf("/IPR_B_") != -1){
-                    this.isSingleColor = false;
+                    // this.isSingleColor = false;
                     this.sub.push(m);
                 }
             }
@@ -63,7 +62,7 @@ export default class Components{
         }, 300);
 
         // window.dispatchEvent(new CustomEvent("colorMap", { bubbles: false, cancelable: false, detail: this.isSingleColor}));
-        listener.emit("colorMap", this.isSingleColor);
+        // listener.emit("colorMap", this.isSingleColor);
 
     }
 

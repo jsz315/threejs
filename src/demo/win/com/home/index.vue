@@ -41,6 +41,7 @@ export default {
         let url = Tooler.getQueryString("url");
         let id = url.split("/").pop().split(".")[0];
         this.fetchData(id);
+        this.sellerData(id);
 
         listener.on("effect", ()=>{
             this.$store.commit("changeEffectVisible", true);
@@ -50,6 +51,34 @@ export default {
         })
     },
     methods: {
+        async sellerData(id){
+            var u = Tooler.getQueryString("u");
+            var type_id = u.split("-")[3];
+            var host = price.getHost();
+            var link = host + "/mapi/index.php?app=seller_show&fnn=mobile_list";
+            var res = await axios.get(link, {
+                    params: {
+                        yun3d_id: id,
+                        sourcetype: type_id,
+                    }
+                });
+                
+            console.log(res, 'seller_show');
+            if(res.data && res.data.datas){
+                var t = res.data.datas;
+                var list = [];
+                for(var i in t){
+                    if(i == 1){
+                        t[i].forEach(item=>{
+                            list.push(item['pic_path']);
+                        })
+                    }
+                    
+                }
+                this.$store.commit("changeSellerImages", list);
+            }
+            
+        },
         async fetchData(id){
             // id = 16433;
             let res;

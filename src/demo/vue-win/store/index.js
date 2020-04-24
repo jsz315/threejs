@@ -23,10 +23,14 @@ export default new Vuex.Store({
         modelId: 0,
         modelType: 0,
         productImages: [],
+        sellerImages: [],
         logoImage: null,
         priceItem: {}
     },
     mutations: {
+        changeSellerImages(state, value){
+            state.sellerImages = value;
+        },
         changePriceItem(state, value){
             state.priceItem = value;
         },

@@ -25,7 +25,8 @@ import listener from '../../lib/listener'
 export default {
     data() {
         return {
-            effectMenuVisible: false
+            effectMenuVisible: false,
+            loaded: false
         };
     },
     components: {},
@@ -57,6 +58,11 @@ export default {
         if(res.data.code == 200){
             // console.log("点赞数：" + res.data.datas.like_num);
         }
+
+        window.addEventListener("all loaded", e => {
+            this.loaded = true;
+        })
+
     },
     methods: {
         openEffect(e){
@@ -113,7 +119,13 @@ export default {
             fileReader.readAsDataURL(file);
         },
         startWalk(){
-            listener.emit("startWalk");
+            if(this.loaded){
+                listener.emit("startWalk");
+            }
+            else{
+                this.$toast("加载中无法漫游");
+            }
+            
         },
         async sendThumb(){
             let param = {

@@ -16,5 +16,5 @@ new Vue({
 
 
 window.hideLoading = function(){
-    listener.emit('loaded');
+    // listener.emit('loaded');
 }

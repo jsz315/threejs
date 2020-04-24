@@ -1,5 +1,6 @@
 import axios from "axios";
 import Tooler from '../core/Tooler'
+import listener from "./listener"
 
 async function getList(){
     return new Promise(async resolve=>{
@@ -52,8 +53,9 @@ async function getList(){
                 item.area = '-';
                 item.all = '-';
                 item.size = '-';
+                
+                await getItem(item);
                 if(item.show_offer == 2){
-                    await getItem(item);
                     list.push(item);
                 }
             }
@@ -102,6 +104,10 @@ async function getItem(obj){
         obj.size = [data.length, data.height, data.width].join(" x ");
         obj.items = data.items;
         obj.seriesName = data.seriesName;
+
+        listener.emit('colorMap', !data.multiColor);
+        // listener.emit("colorMap", this.isSingleColor);
+
         resolve();
     });
 }

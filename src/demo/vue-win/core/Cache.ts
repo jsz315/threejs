@@ -57,10 +57,10 @@ export default class Cache {
             envMap: this.cubeTexture,
             transparent: true,
             alphaTest: 0.2,
-            opacity: 0.54,
-            emissive: new THREE.Color("#ffffff"),
+            opacity: 1,
+            // emissive: new THREE.Color("#ffffff"),
             // emissive: new THREE.Color("#30fde2"),
-            emissiveIntensity: 0.6
+            emissiveIntensity: 0.3
         });
 
         // material.map = new THREE.TextureLoader().load('https://3d.mendaoyun.com/data/upload/model_store/125/CPP0015861/a3d/grfg.png');

@@ -50,6 +50,7 @@ import LoadingView from '../loading-view/index.vue'
 import WalkView from '../walk-view/index.vue'
 import listener from '../../lib/listener'
 import Tooler from '../../core/Tooler.ts'
+import price from "../../lib/price"
 
 var isWalk;
 
@@ -114,6 +115,7 @@ export default {
 
         let id = this.$store.state.modelId;
         this.getImg(id);
+        this.sellerData(id);
     },
     methods: {
         hideMenu(isWalk){
@@ -179,6 +181,32 @@ export default {
                 };
                 listener.emit("stopWalk");
             }
+        },
+        async sellerData(id){
+            var u = Tooler.getQueryString("u");
+            var type_id = u.split("-")[3];
+            var host = price.getHost();
+            var link = host + "/mapi/index.php?app=seller_show&fnn=mobile_list";
+            var res = await this.$get(link, {
+                    yun3d_id: id,
+                    sourcetype: type_id
+                });
+                
+            console.log(res, 'seller_show');
+            if(res.data && res.data.datas){
+                var t = res.data.datas;
+                var list = [];
+                for(var i in t){
+                    if(i != 1){
+                        t[i].forEach(item=>{
+                            list.push(item['pic_path']);
+                        })
+                    }
+                    
+                }
+                this.$store.commit("changeSellerImages", list);
+            }
+            
         },
         async getImg(id) {
             let res;

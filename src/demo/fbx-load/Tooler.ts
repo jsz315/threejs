@@ -20,8 +20,7 @@ export default class Tooler{
 
     public static getFitScale(obj: THREE.Object3D, num: number):number{
         let size = this.getBoxSize(obj);
-        console.log("scene size ==== ");
-        console.log(size);
+        console.log("scene size", size);
         let max = Math.max(size.x, size.y, size.z);
         let scale = num / max;
         return scale;

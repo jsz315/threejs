@@ -136,16 +136,7 @@ export default class App {
         let mouse = new THREE.Vector2();
         mouse.x = (e.clientX / size.width) * 2 - 1;
         mouse.y = -(e.clientY / size.height) * 2 + 1;
-
-        // console.log(this.camera.orbit.center.clone());
-        // console.log(this.camera);
-        // console.log("orbit tagert", this.camera.orbit.target);
-        // console.log("camera tagert", this.camera.aim);
-        // this.camera.orbit.target = this.camera.aim.clone();
-        // this.camera.orbit.reset();
-        // this.camera.orbit.update();
-
-        // this.camera.resetOrbitControls();
+  
         this.camera.updateProjectionMatrix();
         this.camera.orbit.target = this.camera.aim.clone();
         // this.camera.orbit.update();
@@ -157,7 +148,7 @@ export default class App {
         if (intersectObjects[0]) {
             obj = intersectObjects[0].object;
             console.log(obj);
-            console.log("当前模型：");
+            console.log("[当前模型]：");
             var aim:THREE.Object3D = Tooler.getRootModel(obj);
             console.log(aim);
             // console.log(aim.rotation, aim.scale);
@@ -182,23 +173,26 @@ export default class App {
     }
 
     fitModel(group: THREE.Object3D, isWall:boolean = false): void {
-        let parent: THREE.Object3D = group;
-        parent.rotateX(-Math.PI / 2);
-        this.scene.add(parent);
-        parent.name = "load_scene";
+        console.log("加载主模型", this.scene);
+        console.log(group, 'group');
 
-        parent.position.set(-5000, 0, -5000);
+        // let parent: THREE.Object3D = group;
+        // parent.rotateX(-Math.PI / 2);
+        // parent.name = "load_scene_parent";
+
+        // parent.position.set(-5000, 0, -5000);//原始舞台中心
 
         let aim = new THREE.Object3D();
-        aim.name = "aim_scene";
-        aim.add(parent);
+        aim.name = "load_scene_parent";
+        aim.rotateX(-Math.PI / 2);
+        aim.add(group);
 
         // aim.position.set(-5000, 0, -5000);
 
         this.scene.add(aim);
         // this.addGrass();
         this.resetName(group);
-        this.initMaterials(parent, [], isWall);
+        this.initMaterials(group, [], isWall);
 
         // this.addSkySphere(30000);
 
@@ -206,7 +200,7 @@ export default class App {
     }
 
     resetScene(){
-        this.camera.reset(this.scene.getObjectByName("load_scene"));
+        this.camera.reset(this.scene.getObjectByName("load_scene_parent"));
     }
 
     resetName(parent: THREE.Object3D) {
@@ -300,11 +294,11 @@ export default class App {
     }
 
     addSubModel(param: any):void{
-        var group = this.scene.getObjectByName("load_scene");
+        var group = this.scene.getObjectByName("load_scene_parent");
         // var group = this.scene.getObjectByName("aim_scene");
         var obj = param.obj;
         let {position, rotation, scale, skinURLs, colorURL} = param.attr;
-        obj.position.set(position[0], position[1], position[2]);
+        
         // obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
         // console.log("rotation", rotation);
         // console.log("scale", scale);
@@ -338,13 +332,30 @@ export default class App {
                 url: colorURL
             })
         }
+        
+        obj.scale.set(scale[0], scale[1], scale[2]);
+        obj.position.set(position[0], position[1], position[2]);
+        // obj.rotation.set(rotation[0], rotation[1], -rotation[2]);//正确
 
-        obj.rotation.set(rotation[0], rotation[1], -rotation[2]);
+
+
+        // var view:THREE.Object3D = new THREE.Object3D;
+
+        obj.rotation.set(0, 0, 0);
+        obj.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), rotation[0]);
+        obj.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), rotation[1]);
+        obj.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), -rotation[2]);
+
+        // obj.position.set(position[0], position[2], -position[1]);
+        // obj.rotation.set(rotation[0], rotation[2], -rotation[1]);
+        // obj.scale.set(scale[0], scale[2], -scale[1]);
+
 
         // obj.rotation.set(rotation[0], rotation[2], rotation[1]);
 
-        obj.scale.set(scale[0], scale[1], scale[2]);
         group.add(obj);
+        // this.scene.add(obj);
+
 
         this.resetName(obj);
         this.initMaterials(obj, replaceMap);

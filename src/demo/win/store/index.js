@@ -14,6 +14,7 @@ export default new Vuex.Store({
         modelType: 0,
         productImages: [],
         colorList: [],
+        sellerImages: [],
         isSingle: true,
         param: {
             ambient: 1.32,
@@ -23,6 +24,9 @@ export default new Vuex.Store({
         }
     },
     mutations: {
+        changeSellerImages(state, value){
+            state.sellerImages = value;
+        },
         changeParam(state, value){
             state.param = value;
         },

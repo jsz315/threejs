@@ -68,7 +68,7 @@ export default {
         async loadImages(){
             console.log(this.isDebug, getQueryString('debug'));
             var host = this.isDebug ? 'http://3d.mendaow.com' : location.origin;
-            var key = this.isDebug ? 'fa9bd0efd1015097c38cd65be70d36db' : getQueryString('key');
+            var key = getQueryString('key');
             var res = await axios.post(host + `/mapi/index.php?app=getapi&fnn=setting_imglist`, {
                 key: key
             });

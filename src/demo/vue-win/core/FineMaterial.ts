@@ -40,7 +40,7 @@ export class FineMaterial{
         }
         else if(src.indexOf("/BL123") != -1){
             transparent = true;
-            // changed = true;
+            changed = true;
         }
         else if(src.indexOf("/bl_") != -1){
             transparent = true;
@@ -66,7 +66,7 @@ export class FineMaterial{
         if(transparent){
             material.transparent = true;
             if(changed){
-                // mesh.material = Cache.getInstance().changeMaterial(src);
+                mesh.material = Cache.getInstance().changeMaterial(src);
             }
         }
 
@@ -223,13 +223,18 @@ export class FineMaterial{
         // }
         return item.name.indexOf('wall') != -1;
     }
+
+    public static resetMaterial(){
+
+    }
     
     public static async getMapMaterials(obj: THREE.Object3D, replaceMap:any[]){
         // let materials:any = {};
         // let all:any = [];
         // let total = 0;
-        let willReplaces:any = [];
-
+        let willReplaces: any = [];
+        let classMaterial: any = {};
+        console.log('replaceMap', replaceMap);
         return new Promise(async resolve => {
             obj.traverse(async (item:any) => {
                 var isWall = this.checkWall(item);
@@ -243,12 +248,18 @@ export class FineMaterial{
                                     var obj = replaceMap[i];
                                     if(obj.type == 'name'){
                                         if(item.name.indexOf(obj.key) != -1){
+                                            if(!classMaterial[i]){
+                                                console.log("复制新材质");
+                                                classMaterial[i] = item.material.clone();
+                                                
+                                            }
+                                            m = item.material = classMaterial[i];
+
                                             willReplaces.push({
                                                 material: m,
                                                 url: obj.url
                                             })
                                         }
-                                        
                                     }
                                     else if(obj.type == 'link'){
                                         if(src.indexOf(obj.key) != -1){
@@ -273,7 +284,8 @@ export class FineMaterial{
                     })
                 }
             })
-    
+            
+
             for(var j = 0; j < willReplaces.length; j++){
                 await FineMaterial.changeMap(willReplaces[j].material, willReplaces[j].url);
             }

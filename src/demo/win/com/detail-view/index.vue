@@ -17,7 +17,7 @@ export default {
     components: {},
     computed: {
         list(){
-            return this.$store.state.productImages;
+            return this.$store.state.productImages.concat(this.$store.state.sellerImages);
         }
     },
     mounted() {
