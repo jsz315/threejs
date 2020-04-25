@@ -57,14 +57,15 @@ export default class App {
     setup(): void {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setClearColor(new THREE.Color(0x909090));
+        this.renderer.setClearColor(new THREE.Color(0x111111));
         this.renderer.shadowMap.enabled = true;
 
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
         this.orbit.enabled = true;
         this.camera.position.set(10, 30, 100);
+        // this.camera.position.set(0, 0, 0);
 
-        this.addLights();
+        // this.addLights();
         this.addObj();
         this.animate();
         // this.test();
@@ -92,7 +93,26 @@ export default class App {
     fitModel(group: THREE.Object3D): void {
         FitSize.resize(group, 100);
         this.scene.add(group);
-        // this.scene.add(new THREE.BoxHelper(group));
+        var helper:THREE.BoxHelper = new THREE.BoxHelper(group);
+        var size:THREE.Vector3 = Tooler.getBoxSize(helper);
+        // var box:THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(size.x , size.y, size.z), new THREE.MeshStandardMaterial({
+        //     color: new THREE.Color(0xff9900),
+        //     opacity: 0.3,
+        //     transparent: true
+        // }))
+
+        var ball:THREE.Mesh = new THREE.Mesh(new THREE.SphereGeometry(100), new THREE.MeshStandardMaterial({
+            side: THREE.DoubleSide,
+            color: new THREE.Color(0x000000),
+            opacity: 0.01,
+            transparent: true
+        }));
+        ball.name = 'ball';
+
+        // box.material = new THREE.MeshNormalMaterial();
+        // box.position.copy(helper.position);
+        this.scene.add(ball);
+        // this.scene.add(helper);
     }
 
     initMaterial(obj: THREE.Object3D): void {

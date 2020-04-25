@@ -218,6 +218,7 @@ export default class Tooler{
               
                 let buffer = await zip.file("obj.glb").async("arraybuffer");
                 let json = await Tooler.getJsonFromZip(zip);
+                // console.log(json, 'glb json data');
                 resolve({buffer, json});
 
                 // let list:Array<any> = [];

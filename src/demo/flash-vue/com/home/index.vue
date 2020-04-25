@@ -33,7 +33,7 @@ let pics = [
 export default {
     data() {
         return {
-            isDebug: getQueryString('debug') == 1,
+            isDebug: !!getQueryString('debug'),
             pics: [],
             tips: [],
             visible: false
