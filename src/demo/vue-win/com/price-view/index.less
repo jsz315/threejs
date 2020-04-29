@@ -45,7 +45,7 @@
         font-size: 22.4px;
         .box{
             width: 648px;
-            margin: 32px auto 48px;
+            margin: 32px auto 24px;
             background: #ffffff;
             padding: 20px;
             border-radius: 4px;
@@ -70,6 +70,9 @@
                         margin-top: 12px;
                         &.bold{
                             font-weight: bolder;
+                        }
+                        &.head{
+                            margin-top: 0;
                         }
                         .left{
                             flex: 1;
@@ -150,6 +153,7 @@
 
 
 
+
 @media screen and (min-width: 768PX){
 .price-view{
     font-size: 28PX;
@@ -167,17 +171,17 @@
     animation-fill-mode: forwards;
     .header{
         display: flex;
-        background: #e6e6e6;
+        background: #0084ff;
         box-sizing: border-box;
-        padding: 24PX;
+        padding: 12PX;
+        align-items: center;
         .title{
             flex: 1;
-            color: #1e1f23;
-            font-weight: bold;
+            color: #ffffff;
             text-align: left;
         }
         .close{
-            width: 30PX;
+            width: 40PX;
             height: 30PX;
             background: url("../../asset/img/close.png") no-repeat center;
             background-size: 20PX 20PX;
@@ -198,7 +202,7 @@
         font-size: 22.4PX;
         .box{
             width: 648PX;
-            margin: 32PX auto 48PX;
+            margin: 32PX auto 24PX;
             background: #ffffff;
             padding: 20PX;
             border-radius: 4PX;
@@ -224,6 +228,9 @@
                         &.bold{
                             font-weight: bolder;
                         }
+                        &.head{
+                            margin-top: 0;
+                        }
                         .left{
                             flex: 1;
                             overflow: hidden;
@@ -242,6 +249,22 @@
                         }
                         .color{
                             color: #999999;
+                        }
+                        .frame{
+                            display: flex;
+                            align-items: center;
+                            .color{
+                                color: #999999;
+                                border: solid 1PX #f0f0f0;
+                                padding: 8PX;
+                                border-radius: 4PX;
+                                box-sizing: border-box;
+                                flex: 1;
+                                width: 0;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                            }
                         }
                     }
                 }
@@ -283,6 +306,7 @@
         100%{opacity: 1; transform: translateX(0);}
     }
 }
+
 
 
 

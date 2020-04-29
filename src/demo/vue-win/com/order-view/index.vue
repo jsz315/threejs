@@ -27,6 +27,7 @@
 import Tooler from "../../core/Tooler.ts"
 import price from "../../lib/price"
 import ScrollView from '../scroll-view/index.vue'
+import listener from '../../lib/listener'
 
 export default {
     data() {
@@ -34,7 +35,8 @@ export default {
             name: "",
             phone: "",
             success: false,
-            list: []
+            list: [],
+            isInit: false
         };
     },
     components: {ScrollView},
@@ -44,7 +46,12 @@ export default {
         },
     },
     mounted() {
-        this.init();
+        listener.on("order", ()=>{
+            if(!this.isInit){
+                this.isInit = true;
+                this.init();
+            }
+        })
     },
     filters: {
         

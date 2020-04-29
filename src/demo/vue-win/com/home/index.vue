@@ -14,7 +14,7 @@
         <WalkView class="ui" :style="walk"></WalkView>
         <div class="menu" @click="showMenu" :style="menu">退出</div>
 
-        <DesignView></DesignView>
+        <!-- <DesignView></DesignView> -->
         <EffectView></EffectView>
         <DetailView></DetailView>
         <PriceView></PriceView>
@@ -36,7 +36,7 @@ import Vue from "vue";
 import BottomView from '../bottom-view/index.vue'
 import RightView from '../right-view/index.vue'
 import TopView from '../top-view/index.vue'
-import DesignView from '../design-view/index.vue'
+// import DesignView from '../design-view/index.vue'
 import EffectView from '../effect-view/index.vue'
 import DetailView from '../detail-view/index.vue'
 import PriceView from '../price-view/index.vue'
@@ -89,7 +89,7 @@ export default {
             imgs: []
         };
     },
-    components: {BottomView, RightView, TopView, DesignView, EffectView, DetailView, RoleView, ColorView, GuiderView, LoadingView, WalkView, PriceView, PriceDetailView, OrderView},
+    components: {BottomView, RightView, TopView, EffectView, DetailView, RoleView, ColorView, GuiderView, LoadingView, WalkView, PriceView, PriceDetailView, OrderView},
     computed: {},
     beforeCreate(){
         var url = Tooler.getQueryString("u")||"";
@@ -115,7 +115,7 @@ export default {
 
         let id = this.$store.state.modelId;
         this.getImg(id);
-        this.sellerData(id);
+        // this.sellerData(id);
     },
     methods: {
         hideMenu(isWalk){

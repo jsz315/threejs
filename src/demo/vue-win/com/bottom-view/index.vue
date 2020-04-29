@@ -21,12 +21,15 @@ export default {
         openDesign(){
             // this.$store.commit("changeDesignVisible", true);
             this.$store.commit("changeOrderVisible", true);
+            listener.emit("order");
         },
         openDetail(){
             this.$store.commit("changeDetailVisible", true);
+            listener.emit("detail");
         },
         openPrice(){
             this.$store.commit("changePriceVisible", true);
+            listener.emit("price");
         },
         openAnimate(){
             listener.emit("open");

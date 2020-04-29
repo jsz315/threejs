@@ -83,12 +83,13 @@ export default {
         });
 
         // let res = await this.$get("/asset/area-serve.json");
-        let data = new FormData();
-        data.append('deep', '3');
-        let res = await this.$post("/mapi/index.php?app=count_client&fnn=get_allarea", {deep: 3});
-        if(res && res.data){
-            provcityarea = new Provcityarea(res.data.datas);
-        }
+
+        // let data = new FormData();
+        // data.append('deep', '3');
+        // let res = await this.$post("/mapi/index.php?app=count_client&fnn=get_allarea", {deep: 3});
+        // if(res && res.data){
+        //     provcityarea = new Provcityarea(res.data.datas);
+        // }
     },
     methods: {
         onPhone(){

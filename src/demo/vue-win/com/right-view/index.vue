@@ -54,10 +54,10 @@ export default {
             type_id: this.$store.state.modelType
         };
         
-        let res = await this.$post("/mapi/index.php?app=count_client&fnn=getlikes", param);
-        if(res.data.code == 200){
-            // console.log("点赞数：" + res.data.datas.like_num);
-        }
+        // let res = await this.$post("/mapi/index.php?app=count_client&fnn=getlikes", param);
+        // if(res.data.code == 200){
+        //     console.log("点赞数：" + res.data.datas.like_num);
+        // }
 
         window.addEventListener("all loaded", e => {
             this.loaded = true;

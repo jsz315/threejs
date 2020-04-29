@@ -11,7 +11,7 @@
                 </div>
                 <div class="t-title">
                     <div class="t-tip2">{{item.detail.acreage | formatNum}}m²</div>
-                    <div class="t-tip3">￥{{item.detail.cost | formatNum}}</div>
+                    <div class="t-tip3">￥{{item.detail.amount | formatNum}}</div>
                 </div>
                 <div class="t-list">
                     <table class="table" border="0" cellspacing="0">
@@ -23,20 +23,21 @@
                             <td class="td">折后金额</td>
                         </tr>
                         <tr v-for="(obj, i) in item.detail.items" v-bind:key="index * 100 + i" v-show="!obj.deleted">
-                            <td class="td t-name">{{obj.hostBale + '-' + obj.label}}</td>
+                            <td class="td t-name">{{(obj.hostBale || '') + '-' + obj.label}}</td>
                             <td class="td">{{obj.univalent | formatNum}}</td>
                             <td class="td">{{obj.count | formatNum}}</td>
-                            <td class="td">{{obj.discount | formatDiscount}}</td>
+                            <td class="td">{{obj.tmpDiscount | formatDiscount}}</td>
                             <td class="td t-price">{{obj.amount | formatNum}}</td>
                         </tr>
                     </table>
                 </div>
 
-                <div class="t-title">
+                <div class="t-title hole">
                     <div class="t-ico"></div>
                     <div class="t-tip1 big">洞口照片</div>
                 </div>
-                <img v-if="src" class="pic" :src="src" />
+                <!-- <img v-if="src" class="pic" :src="src" /> -->
+                <div class="none">暂无数据</div>
             </div>
         </div>
     </div>
