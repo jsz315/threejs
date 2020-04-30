@@ -12,10 +12,10 @@ export default class Stage extends THREE.Object3D{
     constructor(){
         super();
 
-        this.addSkySphere(25000);
-        this.addGrass(50000);
+        this.addSkySphere(2500);
+        this.addGrass(5000);
         this.addLights();
-        this.addAxis(30000);
+        this.addAxis(3000);
     }
 
     addAxis(size:number):void{

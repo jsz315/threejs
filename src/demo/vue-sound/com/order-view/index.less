@@ -1,0 +1,230 @@
+.order-view{
+    font-size: 28px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.72);
+    .box{
+        background: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        padding: 12px 12px 100px;
+        width: 660px;
+        opacity: 0;
+        animation: fade 300ms;
+        animation-fill-mode: forwards;
+        position: relative;
+        .t-title{
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            padding: 10px 24px;
+            .t-ico{
+                width: 6px;
+                height: 30px;
+                background: #0299df;
+                background-size: contain;
+                margin-right: 10px;
+            }
+            .t-tip1{
+                margin-right: 100px;
+                flex: 1;
+            }
+            .close{
+                width: 30px;
+                height: 30px;
+                background: url("../../asset/img/close.png") no-repeat center;
+                background-size: 30px 30px;
+            }
+        }
+        .input-box{
+            .text{
+                display: block;
+                width: 612px;
+                box-sizing: border-box;
+                padding: 12px;
+                font-size: 24px;
+                margin: 20px auto;
+                color: #999999;
+            }
+        }
+        .btn{
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+            line-height: 80px;
+            text-align: center;
+            background: #0299df;
+            color: #ffffff;
+            font-size: 30px;
+            cursor: pointer;
+        }
+    }
+    .toast{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #ffffff;
+        border-radius: 7px;
+        box-shadow: #999999 0 0 5px;
+        position: fixed;
+        left: 0;
+        top: 10%;
+        right: 0;
+        margin: auto;
+        z-index: 10;
+        padding: 8px 30px;
+        width: 210px;
+        height: 60px;
+        font-size: 28px;
+        color: #999999;
+        opacity: 0;
+        animation: showTip 2s;
+        animation-fill-mode: backwards;
+        .ico{
+            width: 30px;
+            height: 30px;
+            background: url("../../asset/img/right.png") no-repeat center;
+            background-size: contain;
+            margin-right: 30px;
+        }
+    }
+    @keyframes fade{
+        0%{opacity: 0; transform: translateY(160px);}
+        100%{opacity: 1; transform: translateX(0);}
+    }
+    @keyframes showTip{
+        0%{opacity: 0; transform: translateY(30px);}
+        10%{opacity: 1; transform: translateY(0);}
+        90%{opacity: 1; transform: translateY(0);}
+        100%{opacity: 0; transform: translateY(-30px);}
+    }
+}
+
+
+
+
+@media screen and (min-width: 768PX){
+.order-view{
+    font-size: 28PX;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.72);
+    .box{
+        background: #ffffff;
+        border-radius: 8PX;
+        overflow: hidden;
+        padding: 12PX 12PX 100PX;
+        width: 660PX;
+        opacity: 0;
+        animation: fade 300ms;
+        animation-fill-mode: forwards;
+        position: relative;
+        .t-title{
+            font-size: 30PX;
+            display: flex;
+            align-items: center;
+            padding: 10PX 24PX;
+            .t-ico{
+                width: 6PX;
+                height: 30PX;
+                background: #0299df;
+                background-size: contain;
+                margin-right: 10PX;
+            }
+            .t-tip1{
+                margin-right: 100PX;
+                flex: 1;
+            }
+            .close{
+                width: 30PX;
+                height: 30PX;
+                background: url("../../asset/img/close.png") no-repeat center;
+                background-size: 30PX 30PX;
+            }
+        }
+        .input-box{
+            .text{
+                display: block;
+                width: 612PX;
+                box-sizing: border-box;
+                padding: 12PX;
+                font-size: 24PX;
+                margin: 20PX auto;
+                color: #999999;
+            }
+        }
+        .btn{
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 80PX;
+            line-height: 80PX;
+            text-align: center;
+            background: #0299df;
+            color: #ffffff;
+            font-size: 30PX;
+            cursor: pointer;
+        }
+    }
+    .toast{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #ffffff;
+        border-radius: 7PX;
+        box-shadow: #999999 0 0 5PX;
+        position: fixed;
+        left: 0;
+        top: 10%;
+        right: 0;
+        margin: auto;
+        z-index: 10;
+        padding: 8PX 30PX;
+        width: 210PX;
+        height: 60PX;
+        font-size: 28PX;
+        color: #999999;
+        opacity: 0;
+        animation: showTip 2s;
+        animation-fill-mode: backwards;
+        .ico{
+            width: 30PX;
+            height: 30PX;
+            background: url("../../asset/img/right.png") no-repeat center;
+            background-size: contain;
+            margin-right: 30PX;
+        }
+    }
+    @keyframes fade{
+        0%{opacity: 0; transform: translateY(160PX);}
+        100%{opacity: 1; transform: translateX(0);}
+    }
+    @keyframes showTip{
+        0%{opacity: 0; transform: translateY(30PX);}
+        10%{opacity: 1; transform: translateY(0);}
+        90%{opacity: 1; transform: translateY(0);}
+        100%{opacity: 0; transform: translateY(-30PX);}
+    }
+}
+
+
+
+
+}

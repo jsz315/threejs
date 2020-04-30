@@ -36,8 +36,8 @@
                     <div class="t-ico"></div>
                     <div class="t-tip1 big">洞口照片</div>
                 </div>
-                <img v-if="src" class="pic" :src="src" />
-                <div v-if="!src" class="none">暂无数据</div>
+                <!-- <img v-if="src" class="pic" :src="src" /> -->
+                <div class="none">暂无数据</div>
             </div>
         </div>
     </div>
@@ -83,10 +83,7 @@ export default {
         getImage(obj){
             var obj = this.$store.state.priceItem;
             var host = price.getHost();
-            if(!obj.hole_image){
-                return null;
-            }
-            var url = host + '/data/upload' + obj.plan_path + "/" + obj.hole_image;
+            var url = host + '/data/upload' + obj.plan_path + "/" + obj.plan_img;
             return url;
         },
     }
