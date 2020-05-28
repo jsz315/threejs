@@ -187,7 +187,7 @@ export default class App {
         aim.rotateX(-Math.PI / 2);
         aim.add(group);
 
-        // aim.position.set(-5000, 0, -5000);
+        aim.position.set(-5000, 0, -5000);//原始舞台中心
 
         this.scene.add(aim);
         // this.addGrass();

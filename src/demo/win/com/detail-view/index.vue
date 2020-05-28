@@ -17,7 +17,13 @@ export default {
     components: {},
     computed: {
         list(){
-            return this.$store.state.productImages.concat(this.$store.state.sellerImages);
+            var imgs = [];
+            var {windoorImages, seriesImages, businessImages, brandImages} = this.$store.state;
+            imgs = imgs.concat(windoorImages);
+            imgs = imgs.concat(seriesImages);
+            imgs = imgs.concat(businessImages);
+            imgs = imgs.concat(brandImages);
+            return imgs;
         }
     },
     mounted() {

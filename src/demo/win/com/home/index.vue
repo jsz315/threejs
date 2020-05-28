@@ -63,19 +63,17 @@ export default {
                     }
                 });
                 
-            console.log(res, 'seller_show');
             if(res.data && res.data.datas){
                 var t = res.data.datas;
-                var list = [];
                 for(var i in t){
-                    if(i == 1){
+                    var list = [];
+                    if(i == 1 || i == 5){
                         t[i].forEach(item=>{
                             list.push(item['pic_path']);
                         })
+                        this.$store.commit(i == 1 ? "changeWindoorImages" : "changeBusinessImages", list);
                     }
-                    
                 }
-                this.$store.commit("changeSellerImages", list);
             }
             
         },
@@ -111,11 +109,12 @@ export default {
                 let datas = res.data.datas;
                 datas["color"] && this.$store.commit("changeColorList", datas["color"]);
                 if(datas["sys_img"] || datas["brand_img"]){
-                    let list = [];
-                    datas["sys_img"] && list.push(datas["sys_img"]);
-                    datas["brand_img"] && list.push(datas["brand_img"]);
-                    // $(".img-box").innerHTML = list.join("");
-                    this.$store.commit("changeProductImages", list);
+                    if(datas["sys_img"]){
+                        this.$store.commit("changeSeriesImages", datas["sys_img"]);
+                    }
+                    if(datas["brand_img"]){
+                        this.$store.commit("changeBrandImages", datas["brand_img"]);
+                    }
                 }
                 else{
                     if(!retry){

@@ -21,10 +21,10 @@
                             <td class="td">折后金额</td>
                         </tr>
                         <tr v-for="(obj, i) in item.items" v-bind:key="index * 100 + i" v-show="!obj.deleted">
-                            <td class="td t-name">{{obj.hostBale + '-' + obj.label}}</td>
+                            <td class="td t-name">{{proName(obj)}}</td>
                             <td class="td">{{obj.univalent | formatNum}}</td>
                             <td class="td">{{obj.count | formatNum}}</td>
-                            <td class="td">{{obj.discount | formatDiscount}}</td>
+                            <td class="td">{{(obj.discount || obj.tmpDiscount) | formatDiscount}}</td>
                             <td class="td t-price">{{obj.amount | formatNum}}</td>
                         </tr>
                     </table>
@@ -67,6 +67,12 @@ export default {
         }
     },
     methods: {
+        proName(obj){
+            if(obj.hostBale){
+                return obj.hostBale + '-' + obj.label;
+            }
+            return obj.label;
+        },
         async init(){
             let res = await price.getList();
             if(res.list.length == 0){

@@ -78,7 +78,7 @@ export class Effect{
                 console.log('动画数据不存在，无需重复加载');
             }
             else{
-                this.json = json;
+                this.json = JSON.parse(JSON.stringify(json));
                 this.setData();
             }
             

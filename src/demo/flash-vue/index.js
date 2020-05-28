@@ -10,11 +10,26 @@ import VueAwesomeSwiper from 'vue-awesome-swiper'
 import 'swiper/css/swiper.css'
 Vue.use(VueAwesomeSwiper)
 
-new Vue({
-    render: h => h(Home)
-}).$mount("#vue");
+var timer = setInterval(()=>{
+    var dom = document.getElementById("MDCloudDesign3DWEB");
+    if(dom){
+        clearInterval(timer);
+        init();
+    }
+}, 300);
 
+if(location.search.indexOf("debug=1") != -1){
+    init();
+    clearInterval(timer);
+    // window.hideLoading = function(){}
+}
+
+function init(){
+    new Vue({
+        render: h => h(Home)
+    }).$mount("#vue");
+}
 
 window.hideLoading = function(){
-    // listener.emit('loaded');
+    listener.emit('loaded');
 }

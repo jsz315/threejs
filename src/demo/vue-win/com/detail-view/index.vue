@@ -7,7 +7,7 @@
         <div class="content">
             <DebugView></DebugView>
             <img class="img" v-for="item in imgs" v-bind:Key="item" :src="item">
-            <div class="tip" v-if="isTip">-- {{tip}} --</div>
+            <!-- <div class="tip" v-if="isTip">-- {{tip}} --</div> -->
         </div>
     </div>
 </template>

@@ -2096,7 +2096,16 @@ var GLTFLoader = ( function () {
 
 			return new Promise( function ( resolve, reject ) {
 
-				loader.load( resolveURL( sourceURI, options.path ), resolve, undefined, reject );
+                // loader.load( resolveURL( sourceURI, options.path ), resolve, undefined, reject );
+                var url = resolveURL( sourceURI, options.path );
+				loader.load( url, resolve, undefined, (e)=>{
+                    console.warn("贴图不存在，使用默认贴图", url);
+                    var link = './asset/none.png';
+                    loader.load(link, resolve, undefined, (e)=>{
+                        console.log("默认贴图不存在", link);
+                        reject();
+                    });
+                });
 
 			} );
 

@@ -28,7 +28,7 @@ export default {
             listener.emit("detail");
         },
         openPrice(){
-            this.$store.commit("changePriceVisible", true);
+            this.$store.commit("changePriceAllVisible", true);
             listener.emit("price");
         },
         openAnimate(){

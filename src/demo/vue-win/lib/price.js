@@ -13,8 +13,10 @@ async function getList(){
         let sourcetype = temp.pop();
         let res;
         let host = getHost();
+        var url;
         if(isERP()){
-            res = await axios.get(host + "/api/index/modelPrice", {
+            url = host + "/api/index/modelPrice";
+            res = await axios.get(url, {
                 params: {
                     type: sourcetype,
                     id: id,
@@ -23,7 +25,9 @@ async function getList(){
             });
         }
         else{
-            res = await axios.get(host + "/mapi/index.php", {
+            url = host + "/mapi/index.php";
+            // url = "/test.json";
+            res = await axios.get(url, {
                 params: {
                     app:"modelshow",
                     fnn:"modelDetailById",
@@ -34,14 +38,56 @@ async function getList(){
             });
         }
     
-        console.log(res);
         if (res.data && res.data.code == 200) {
             var list = [];
-            for(var i in res.data.datas){
-                var item = res.data.datas[i];
-                if(item.show_offer == 2){
-                    await getItem(item);
-                    list.push(item);
+            var datas = res.data.datas;
+            if(datas.plan){
+                datas = datas.plan;
+                if(datas.windoor){
+                    for(var i in datas.windoor){
+                        var item = datas.windoor[i];
+                        if(item.show_offer == 2 && item.state == 1){
+                            var t = await getWindoor(item);
+                            if(t){
+                                item.type = 'windoor';
+                                list.push(item);
+                            }
+                        }
+                    }
+                }
+                if(datas.balcony){
+                    for(var i in datas.balcony){
+                        var item = datas.balcony[i];
+                        var t = await getBalcony(item);
+                        if(t){
+                            item.type = 'balcony';
+                            list.push(item);
+                        }
+                    }
+                }
+                if(datas.sunroom){
+                    for(var i in datas.sunroom){
+                        var item = datas.sunroom[i];
+                        var t = await getBalcony(item);
+                        if(t){
+                            item.type = 'sunroom';
+                            list.push(item);
+                        }
+                    }
+                }
+            }
+            else{
+                //兼容旧数据接口
+                for(var i in datas){
+                    var item = datas[i];
+                    if(item.show_offer == 2){
+                        var t = await getWindoor(item, true);
+                        if(t){
+                            item.type = 'windoor';
+                            item.old = true;
+                            list.push(item);
+                        }
+                    }
                 }
             }
 
@@ -51,8 +97,26 @@ async function getList(){
     })
 }
 
+function getParts(obj){
+    return new Promise(async resolve=>{
+        var list = [];
+        for(var i in obj.plan){
+            var item = obj.plan[i];
+            if(item.show_offer == 2 && item.state == 1){
+                var t = await getWindoor(item);
+                if(t){
+                    item.type = 'windoor';
+                    list.push(item);
+                }
+            }
+        }
+
+        resolve(list);
+    })
+}
+
 function isERP(){
-    if(location.search.indexOf('3d.mendaow.com') != -1 || location.search.indexOf('3d.mendaoyun.com') != -1){
+    if(location.search.indexOf('3d.mendaow.com') != -1 || location.search.indexOf('3d.mendaoyun.com') != -1 || location.search.indexOf('3d.mendaot.com') != -1){
         return false;
     }
     return true;
@@ -76,25 +140,64 @@ function getSize(data){
     return list.join("x");
 }
 
-async function getItem(obj){
+async function getBalcony(obj){
+    return new Promise(async resolve=>{
+        // var host = getHost();
+        // var url = host + '/data/upload/' + obj.balcony_path + "/" + obj.balcony_file + "?v=" + Math.random();
+        var url = obj.price_json + "?v=" + Math.random();
+        console.log(url);
+        let res = await axios.get(url);
+        if(res.data){
+            var data = res.data;
+            obj.detail = data;
+            resolve(true);
+        }
+        else{
+            resolve(false);
+        }
+    });
+}
+
+async function getWindoor(obj, old = false){
     return new Promise(async resolve=>{
         // var host = Tooler.isTest() ? 'http://3d.mendaow.com' : 'https://3d.mendaoyun.com';
         var host = getHost();
 
-        var url = host + '/data/upload' + obj.plan_path + "/" + obj.pricejson_file + "?v=" + Math.random();
-        console.log(url);
-        let res = await axios.get(url);
-        var data = res.data;
-        obj.detail = data;
+        if(obj.pricejson_file){
+            // var url = host + '/data/upload' + obj.plan_path + "/" + obj.pricejson_file + "?v=" + Math.random();
+            var url = obj.pricejson_file + "?v=" + Math.random();
+            if(old){
+                url = host + '/data/upload' + obj.plan_path + "/" + obj.pricejson_file + "?v=" + Math.random();
+            }
+           
+            // let res = await axios.get(url);
+            // if(res.data){
+            //     var data = res.data;
+            //     obj.detail = data;
+            //     resolve(true);
+            // }
+            // else{
+            //     resolve(false);
+            // }
 
-        // console.log(data);
-        // obj.area = data.acreage;
-        // obj.price = data.cost;
-        // obj.count = data.items[0] ? data.items[0].discount : 1;           
-        // obj.all = obj.count * obj.price * obj.setnum;
-        // obj.size = getSize(data);
-        // obj.items = data.items;
-        resolve();
+            axios.get(url).then(res=>{
+                if(res.data){
+                    var data = res.data;
+                    obj.detail = data;
+                    resolve(true);
+                }
+                else{
+                    resolve(false);
+                }
+            }).catch(e=>{
+                console.log(url, "不存在");
+                resolve(false);
+            })
+            
+        }
+        else{
+            resolve(false);
+        }
     });
 }
 
@@ -112,7 +215,7 @@ function addZero(value, size){
 
 export default {
     getList,
-    getItem,
+    getParts,
     getSize,
     getHost,
     timerFormat

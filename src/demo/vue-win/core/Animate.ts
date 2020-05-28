@@ -42,7 +42,7 @@ export default class Animate {
         animation.closeDelay = animation.closeDelay || 0;
 
         //播放时间计算动效执行总帧数
-        animation.frames = animation.duration * 1000 / 40;
+        animation.frames = animation.duration * 1000 / 50;
 
         //动效执行帧位置
         animation.fid = 0;

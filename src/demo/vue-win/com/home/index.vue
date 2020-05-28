@@ -17,9 +17,10 @@
         <!-- <DesignView></DesignView> -->
         <EffectView></EffectView>
         <DetailView></DetailView>
-        <PriceView></PriceView>
+        <PriceAllView></PriceAllView>
         <ColorView></ColorView>
         <GuiderView></GuiderView>
+        <PriceWindowView></PriceWindowView>
         <PriceDetailView></PriceDetailView>
         <OrderView></OrderView>
     </div>
@@ -39,7 +40,8 @@ import TopView from '../top-view/index.vue'
 // import DesignView from '../design-view/index.vue'
 import EffectView from '../effect-view/index.vue'
 import DetailView from '../detail-view/index.vue'
-import PriceView from '../price-view/index.vue'
+import PriceAllView from '../price-all-view/index.vue'
+import PriceWindowView from '../price-window-view/index.vue'
 import PriceDetailView from '../price-detail-view/index.vue'
 import OrderView from '../order-view/index.vue'
 
@@ -89,7 +91,7 @@ export default {
             imgs: []
         };
     },
-    components: {BottomView, RightView, TopView, EffectView, DetailView, RoleView, ColorView, GuiderView, LoadingView, WalkView, PriceView, PriceDetailView, OrderView},
+    components: {BottomView, RightView, TopView, EffectView, DetailView, RoleView, ColorView, GuiderView, LoadingView, WalkView, PriceAllView, PriceDetailView, PriceWindowView, OrderView},
     computed: {},
     beforeCreate(){
         var url = Tooler.getQueryString("u")||"";

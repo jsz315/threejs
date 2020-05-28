@@ -9,6 +9,8 @@ export default new Vuex.Store({
         effectVisible: false,
         detailVisible: false,
         priceVisible: false,
+        priceAllVisible: false,
+        priceWindowVisible: false,
         priceDetailVisible: false,
         colorVisible: false,
         guiderVisible: false,
@@ -25,7 +27,8 @@ export default new Vuex.Store({
         productImages: [],
         sellerImages: [],
         logoImage: null,
-        priceItem: {}
+        priceItem: {},
+        partItem: {}
     },
     mutations: {
         changeSellerImages(state, value){
@@ -34,8 +37,17 @@ export default new Vuex.Store({
         changePriceItem(state, value){
             state.priceItem = value;
         },
+        changePartItem(state, value){
+            state.partItem = value;
+        },
         changeOrderVisible(state, value){
             state.orderVisible = value;
+        },
+        changePriceAllVisible(state, value){
+            state.priceAllVisible = value;
+        },
+        changePriceWindowVisible(state, value){
+            state.priceWindowVisible = value;
         },
         changePriceDetailVisible(state, value){
             state.priceDetailVisible = value;

@@ -1,4 +1,4 @@
-.price-view{
+.price-all-view{
     font-size: 28px;
     position: fixed;
     left: 0;
@@ -14,7 +14,7 @@
     animation-fill-mode: forwards;
     .header{
         display: flex;
-        background: #0084ff;
+        background: #91adc7;
         box-sizing: border-box;
         padding: 12px;
         align-items: center;
@@ -88,7 +88,14 @@
                             &.price{
                                 color: #16b5ff;
                                 width: auto;
-                            }                           
+                            }
+                            &.num{
+                                color: #afafaf;
+                                width: auto;
+                            }     
+                            &.long{
+                                width: 240px;
+                            }    
                         }
                         .color{
                             color: #999999;
@@ -138,7 +145,7 @@
             bottom: 0;
             width: 100%;
             z-index: 1;
-            font-size: 28px;
+            font-size: 24px;
             .item{
                 margin-right: 30px;
             }
@@ -154,8 +161,11 @@
 
 
 
+
+
+
 @media screen and (min-width: 768PX){
-.price-view{
+.price-all-view{
     font-size: 28PX;
     position: fixed;
     left: 0;
@@ -171,7 +181,7 @@
     animation-fill-mode: forwards;
     .header{
         display: flex;
-        background: #0084ff;
+        background: #91adc7;
         box-sizing: border-box;
         padding: 12PX;
         align-items: center;
@@ -245,7 +255,14 @@
                             &.price{
                                 color: #16b5ff;
                                 width: auto;
-                            }                           
+                            }
+                            &.num{
+                                color: #afafaf;
+                                width: auto;
+                            }     
+                            &.long{
+                                width: 240PX;
+                            }    
                         }
                         .color{
                             color: #999999;
@@ -295,7 +312,7 @@
             bottom: 0;
             width: 100%;
             z-index: 1;
-            font-size: 28PX;
+            font-size: 24PX;
             .item{
                 margin-right: 30PX;
             }
@@ -306,6 +323,9 @@
         100%{opacity: 1; transform: translateX(0);}
     }
 }
+
+
+
 
 
 

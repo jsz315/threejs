@@ -70,7 +70,6 @@ import {
 	VertexColors,
 	sRGBEncoding
 } from "three";
-import Tooler from "../../3d-viewer/core/Tooler";
 
 var GLTFLoader = ( function () {
 
@@ -78,7 +77,8 @@ var GLTFLoader = ( function () {
 
 		this.manager = ( manager !== undefined ) ? manager : DefaultLoadingManager;
 		this.dracoLoader = null;
-		this.ddsLoader = null;
+        this.ddsLoader = null;
+        console.log("manager", this.manager);
 
 	}
 
@@ -290,7 +290,8 @@ var GLTFLoader = ( function () {
 
 			}
 
-			console.warn("json-----------------------")
+            console.warn("json-----------------------")
+            // json.images[0].uri = 'test.png';
 			// console.warn(json);
 			// var isTest = Tooler.isTest();
 			// if(json.images){
@@ -2095,10 +2096,16 @@ var GLTFLoader = ( function () {
 					: textureLoader;
 
 			}
-
 			return new Promise( function ( resolve, reject ) {
-
-				loader.load( resolveURL( sourceURI, options.path ), resolve, undefined, reject );
+                var url = resolveURL( sourceURI, options.path );
+				loader.load( url, resolve, undefined, (e)=>{
+                    console.warn("贴图不存在，使用默认贴图", url);
+                    var link = './asset/none.png';
+                    loader.load(link, resolve, undefined, (e)=>{
+                        console.log("默认贴图不存在", link);
+                        reject();
+                    });
+                });
 
 			} );
 
@@ -2133,7 +2140,7 @@ var GLTFLoader = ( function () {
 
 			return texture;
 
-		} );
+		} )
 
 	};
 

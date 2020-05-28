@@ -1,8 +1,8 @@
 <template>
     <div class="home" v-if="visible">
         <div class="view">
-            <SwiperView :pics="pics" @change="onChange"></SwiperView>
-            <ProgressView :tips="tips" ref="progress" @end="onEnd"></ProgressView>
+            <SwiperView :pics="pics"></SwiperView>
+            <ProgressView v-if="tips.length" :tips="tips" ref="progress" @end="onEnd"></ProgressView>
         </div>
     </div>
 </template>
@@ -29,11 +29,15 @@ let pics = [
     'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=2207089593,3263649201&fm=15&gp=0.jpg',
     'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1586502962693&di=83606ae7627dee2503a9a1e6ed163941&imgtype=0&src=http%3A%2F%2Fe.hiphotos.baidu.com%2Fzhidao%2Fpic%2Fitem%2Fb90e7bec54e736d1e3eb0c7b9b504fc2d46269cd.jpg'
 ];
-
+let tips = [
+    '123',
+    '345'
+]
 export default {
     data() {
         return {
             isDebug: !!getQueryString('debug'),
+            isLocal: getQueryString('local') == 1,
             pics: [],
             tips: [],
             visible: false
@@ -60,10 +64,9 @@ export default {
             if(res.data && res.data.datas){
                 this.tips = res.data.datas.map(item=>item['tips_value']);
                 console.log(this.tips, 'this.tips');
-                setTimeout(() => {
-                    this.onChange();
-                }, 30);
             }
+
+            this.isLocal && (this.tips = tips);
         },
         async loadImages(){
             console.log(this.isDebug, getQueryString('debug'));
@@ -81,6 +84,8 @@ export default {
                 });
             }
             // this.pics = pics;//测试数据===================================================================
+
+            this.isLocal && (this.pics = pics);
 
             console.log(this.pics, 'this.pics');
             if(this.pics.length > 0){

@@ -175,6 +175,13 @@ export class FreeCamera extends THREE.PerspectiveCamera{
     reset(obj:THREE.Object3D){
         let bs = Tooler.getBoxSize(obj);
         let s = Math.max(bs.x, bs.y, bs.z) * 2;
+        console.log("【加载模型位置】====", s, this.size);
+        // if(isNaN(s)){
+        //     setTimeout(() => {
+        //         this.reset(obj);
+        //     }, 900);
+        //     return;
+        // }
         if(s > this.size){
             this.size = s;
             let offset = Tooler.getOffsetVector3(obj);

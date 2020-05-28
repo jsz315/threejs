@@ -1,7 +1,7 @@
 <template>
-    <div class="price-view" v-if="visible">
+    <div class="price-window-view" v-if="visible">
         <div class="header">
-            <div class="title">门窗整体报价</div>
+            <div class="title">{{partItem.type == 'sunroom' ? '阳光房报价' : '构件报价'}}</div>
             <div class="close" @click="close"></div>
         </div>
         <div class="find" v-if="isTip">-- {{tip}} --</div>
@@ -19,15 +19,18 @@
                         </div>
                         <div class="line bold">
                             <div class="left">{{item.sys_name}}-{{item.pro_name}}</div>
+                            <div class="right num">X {{item.setnum}}</div>
                         </div>
+                     
                         <div class="line">
                             <div class="left">颜&emsp;&emsp;色：<span class="color">{{item.color_name}}</span></div>
-                            <div class="right">楼层：<span class="color">暂无数据</span></div>
+                            <div class="right">楼层：<span class="color">{{item.floorName||'暂无数据'}}</span></div>
                         </div>
                         <div class="line">
                             <div class="left">门洞尺寸：<span class="color">{{getSize(item)}}</span></div>
                             <div class="right">面积：<span class="color">{{item.detail.acreage}}m²</span></div>
                         </div>
+                        
                         <div class="line">
                             <div class="left frame">备&emsp;&emsp;注：<span class="color">无</span></div>
                         </div>
@@ -65,8 +68,11 @@ export default {
     },
     components: {},
     computed: {
+        partItem(){
+            return this.$store.state.partItem;
+        },
         visible() {
-            return this.$store.state.priceVisible;
+            return this.$store.state.priceWindowVisible;
         },
         imgs(){
             return this.$store.state.productImages;
@@ -75,31 +81,33 @@ export default {
             return this.$store.state.logoImage || "./asset/img/logo.png";
         }
     },
+    watch:{
+        visible(val, oldVal){
+            console.log("visible: ", oldVal, "->", val);
+            if(val){
+                this.init();
+            }
+            else{
+                this.isTip = true;
+                this.tip = "数据加载中";
+            }
+        },
+    },
     async mounted() {
-        listener.on("price", ()=>{
-            this.init();
-        })
-
-        setTimeout(() => {
-            this.init();
-        }, 1200);
+        
     },
     methods: {
         async init(){
-            if(this.isInit){
-                return;
-            }
-            this.isInit = true;
-            let res = await price.getList();
-            if(res && res.length != 0){
+            let res = await price.getParts(this.partItem);
+            if(res && res.length){
                 this.list = res;
                 var totalNum = 0;
                 var totalArea = 0;
                 var totalPrice = 0;
                 this.list.forEach(item=>{
                     totalNum += Number(item.setnum);
-                    totalArea += Number(item.detail.acreage);
-                    totalPrice += Number(item.detail.amount);
+                    totalArea += Number(item.detail.acreage) * item.setnum;
+                    totalPrice += Number(item.detail.amount) * item.setnum;
                 })
                 this.totalNum = totalNum;
                 this.totalArea = totalArea.toFixed(2);
@@ -111,11 +119,10 @@ export default {
             }
         },
         close() {
-            this.$store.commit("changePriceVisible", false);
+            this.$store.commit("changePriceWindowVisible", false);
         },
         getImage(obj){
-            var host = price.getHost();
-            var url = host + '/data/upload' + obj.plan_path + "/" + obj.plan_img;
+            var url = obj.plan_img;
             return url;
         },
         getSize(obj){

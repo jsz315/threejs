@@ -12,8 +12,8 @@ export default class Stage extends THREE.Object3D{
     constructor(){
         super();
 
-        this.addSkySphere(25000);
-        this.addGrass(50000);
+        this.addSkySphere(25000 * 2);
+        this.addGrass(50000 * 2);
         this.addLights();
         this.addAxis(30000);
     }

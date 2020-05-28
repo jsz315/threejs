@@ -44,7 +44,7 @@ function replace(item){
 	var pcdata = ndata.replace(/px/ig, 'PX');
 	var aimdata = `${ndata}\n@media screen and (min-width: 768PX){\n${pcdata}\n}`;
 
-	console.log(aimdata);
+	console.log(item);
 
     fs.writeFileSync(item, aimdata, "utf8");
 }

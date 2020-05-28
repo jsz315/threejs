@@ -12,21 +12,34 @@ export default new Vuex.Store({
         settingVisible: false,
         modelId: 0,
         modelType: 0,
-        productImages: [],
         colorList: [],
-        sellerImages: [],
         isSingle: true,
         param: {
             ambient: 1.32,
             directional: 0.42,
             roughness: 0.36,
             metalness: 0.36
-        }
+        },
+        windoorImages: [],
+        seriesImages: [],
+        businessImages: [],
+        brandImages: []
     },
     mutations: {
-        changeSellerImages(state, value){
-            state.sellerImages = value;
+
+        changeWindoorImages(state, value){
+            state.windoorImages = value;
         },
+        changeSeriesImages(state, value){
+            state.seriesImages = value;
+        },
+        changeBusinessImages(state, value){
+            state.businessImages = value;
+        },
+        changeBrandImages(state, value){
+            state.brandImages = value;
+        },
+
         changeParam(state, value){
             state.param = value;
         },
@@ -59,9 +72,6 @@ export default new Vuex.Store({
         },
         changeGuiderVisible(state, value){
             state.guiderVisible = value;
-        },
-        changeProductImages(state, value){
-            state.productImages = value;
         },
     },
     actions: {
