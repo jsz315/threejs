@@ -271,7 +271,8 @@ export class FineMaterial{
                                         }
                                     }
                                     else if(obj.type == 'link'){
-                                        if(src.indexOf(obj.key) != -1){
+                                        // if(src.indexOf(obj.key) != -1){
+                                        if(src.match(obj.key)){
                                             willReplaces.push({
                                                 material: m,
                                                 url: obj.url

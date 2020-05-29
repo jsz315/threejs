@@ -21,4 +21,8 @@ export class StageView extends THREE.Object3D{
         this.add(this.mapView);
     }
 
+    getViews(){
+        return this.mapView.meshes;
+    }
+
 }

@@ -2,11 +2,15 @@ import * as THREE from 'three';
 import Tooler from './Tooler';
 import { NumberTooler } from '../lib/NumberTooler';
 
+import * as Physijs from 'physijs';
+
 export class MapView extends THREE.Object3D{
 
     row:number;
     col:number;
     data:any;
+
+    meshes: any = [];
 
     constructor(){
         super();
@@ -27,12 +31,16 @@ export class MapView extends THREE.Object3D{
     }
 
     addFloor(row:number, col:number, color:number){
-        var mat = new THREE.MeshStandardMaterial({
-            color: color
-        });
-        var box = new THREE.Mesh(new THREE.BoxGeometry(row, 1, col), mat);
+        var mat = Physijs.createMaterial(
+            new THREE.MeshStandardMaterial({
+                color: color
+            })
+        );
+        var box = new Physijs.BoxMesh(new THREE.BoxGeometry(row, 1, col), mat, 0);
         box.position.set(row / 2, 0, col / 2);
         this.add(box);
+
+        this.meshes.push(box);
     }
 
     decodeMap(str:string){
@@ -53,21 +61,27 @@ export class MapView extends THREE.Object3D{
     }
 
     addPlayer(row:number, col:number, color:number){
-        var mat = new THREE.MeshStandardMaterial({
-            color: color
-        });
-        var box = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), mat);
-        box.position.set(row, 1, col);
+        var mat = Physijs.createMaterial(
+            new THREE.MeshStandardMaterial({
+                color: color
+            })
+        );
+        var box = new Physijs.BoxMesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), mat, Math.random() * 1200);
+        box.position.set(row, 20, col);
         this.add(box);
+        this.meshes.push(box);
     }
 
     addTile(row:number, col:number, type:number){
-        var mat = new THREE.MeshStandardMaterial({
-            color: type == 0 ? 0xffffff : 0xff0000
-        });
-        var box = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), mat);
+        var mat = Physijs.createMaterial(
+            new THREE.MeshStandardMaterial({
+                color: type == 0 ? 0xffffff : 0xff0000
+            })
+        );
+        var box = new Physijs.BoxMesh(new THREE.BoxGeometry(1, 1, 1), mat);
         box.position.set(row + 0.5, type, col + 0.5);
         this.add(box);
+        this.meshes.push(box);
     }
 
 }
