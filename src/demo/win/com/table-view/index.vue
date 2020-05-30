@@ -24,7 +24,7 @@
                             <td class="td t-name">{{proName(obj)}}</td>
                             <td class="td">{{obj.univalent | formatNum}}</td>
                             <td class="td">{{obj.count | formatNum}}</td>
-                            <td class="td">{{(obj.discount || obj.tmpDiscount) | formatDiscount}}</td>
+                            <td class="td">{{(obj.tmpDiscount) | formatDiscount}}</td>
                             <td class="td t-price">{{obj.amount | formatNum}}</td>
                         </tr>
                     </table>

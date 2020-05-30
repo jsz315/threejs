@@ -48,7 +48,7 @@
                             </div>
 
                             <div class="line">
-                                <div class="left">门窗数量：<span class="color">{{item.windoor_number}}</span></div>
+                                <div class="left">门窗数量：<span class="color">{{item.windoor_number || 0}}</span></div>
                                 <div class="right long">门窗报价：<span class="color">￥{{formatPrice(item.windoor_price, 2)}}</span></div>
                             </div>
                             <div class="line">
@@ -114,10 +114,18 @@ export default {
     },
     methods: {
         getPartPrice(item){
-            return (item.windoor_price + item.base_price) * item.discount;
+            var n = (item.windoor_price + item.base_price) * item.discount;
+            if(isNaN(n)){
+                return 0;
+            }
+            return n;
         },
         formatPrice(n, count){
-            return Number(n).toFixed(count);
+            var num = Number(n);
+            if(isNaN(num)){
+                num = 0;
+            }
+            return num.toFixed(count);
         },
         async init(){
             if(this.isInit){
@@ -133,14 +141,14 @@ export default {
                 var totalPrice = 0;
                 this.list.forEach(item=>{
                     if(item.type == "windoor"){
-                        totalNum += Number(item.setnum);
-                        totalArea += Number(item.detail.acreage) * item.setnum;
-                        totalPrice += Number(item.detail.amount) * item.setnum;
+                        totalNum += Tooler.toNumber(item.setnum);
+                        totalArea += Tooler.toNumber(item.detail.acreage) * item.setnum;
+                        totalPrice += Tooler.toNumber(item.detail.amount) * item.setnum;
                     }
                     else{
-                        totalNum += Number(item.windoor_number);
-                        totalArea += Number(item.acreage);
-                        totalPrice += Number(item.windoor_price);
+                        totalNum += Tooler.toNumber(item.windoor_number);
+                        totalArea += Tooler.toNumber(item.acreage);
+                        totalPrice += Tooler.toNumber(item.windoor_price);
                     }
                     
                 })

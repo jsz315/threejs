@@ -58,20 +58,24 @@ async function getList(){
                 if(datas.balcony){
                     for(var i in datas.balcony){
                         var item = datas.balcony[i];
-                        var t = await getBalcony(item);
-                        if(t){
-                            item.type = 'balcony';
-                            list.push(item);
+                        if(item.state == 1){
+                            var t = await getBalcony(item);
+                            if(t){
+                                item.type = 'balcony';
+                                list.push(item);
+                            }
                         }
                     }
                 }
                 if(datas.sunroom){
                     for(var i in datas.sunroom){
                         var item = datas.sunroom[i];
-                        var t = await getBalcony(item);
-                        if(t){
-                            item.type = 'sunroom';
-                            list.push(item);
+                        if(item.state == 1){
+                            var t = await getBalcony(item);
+                            if(t){
+                                item.type = 'sunroom';
+                                list.push(item);
+                            }
                         }
                     }
                 }

@@ -34,7 +34,15 @@ export default {
         },
         imgs(){
             // return this.$store.state.productImages;
-            return this.$store.state.productImages.concat(this.$store.state.sellerImages);
+            // return this.$store.state.productImages.concat(this.$store.state.sellerImages);
+
+            var imgs = [];
+            var {windoorImages, seriesImages, businessImages, brandImages} = this.$store.state;
+            imgs = imgs.concat(windoorImages);
+            imgs = imgs.concat(seriesImages);
+            imgs = imgs.concat(businessImages);
+            imgs = imgs.concat(brandImages);
+            return imgs;
         }
     },
     mounted() {
@@ -71,17 +79,36 @@ export default {
                 
             console.log(res, 'seller_show');
             if(res.data && res.data.datas){
+                // var t = res.data.datas;
+                // var list = [];
+                // for(var i in t){
+                //     if(i != 1){
+                //         t[i].forEach(item=>{
+                //             list.push(item['pic_path']);
+                //         })
+                //     }
+                    
+                // }
+                // this.$store.commit("changeSellerImages", list);
+
+
                 var t = res.data.datas;
-                var list = [];
-                for(var i in t){
-                    if(i != 1){
+                for(var i in t){      
+                    var list = [];             
+                    if(i == 5){
                         t[i].forEach(item=>{
                             list.push(item['pic_path']);
                         })
+                        this.$store.commit("changeBusinessImages", list);
                     }
-                    
+                    else{
+                        t[i].forEach(item=>{
+                            list.push(item['pic_path']);
+                        })
+                        this.$store.commit("changeWindoorImages", this.$store.state.windoorImages.concat(list));
+                    }
                 }
-                this.$store.commit("changeSellerImages", list);
+
                 if(list.length == 0){
                     this.tip = "暂无数据";
                 }

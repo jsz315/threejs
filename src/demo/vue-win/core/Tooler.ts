@@ -449,4 +449,12 @@ export default class Tooler{
     public static getHost():string{
         return location.search.match(/http.*?.com/)[0];
     }
+
+    public static toNumber(n:any):number{
+        var num = Number(n);
+        if(isNaN(num)){
+            return 0;
+        }
+        return num;
+    }
 }

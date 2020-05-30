@@ -65,13 +65,19 @@ export default {
                 
             if(res.data && res.data.datas){
                 var t = res.data.datas;
-                for(var i in t){
-                    var list = [];
-                    if(i == 1 || i == 5){
+                for(var i in t){      
+                    var list = [];             
+                    if(i == 5){
                         t[i].forEach(item=>{
                             list.push(item['pic_path']);
                         })
-                        this.$store.commit(i == 1 ? "changeWindoorImages" : "changeBusinessImages", list);
+                        this.$store.commit("changeBusinessImages", list);
+                    }
+                    else{
+                        t[i].forEach(item=>{
+                            list.push(item['pic_path']);
+                        })
+                        this.$store.commit("changeWindoorImages", this.$store.state.windoorImages.concat(list));
                     }
                 }
             }

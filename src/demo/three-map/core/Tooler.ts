@@ -65,6 +65,19 @@ export default class Tooler{
         return location.search.indexOf('http://') != -1;
     }
 
+    
+    public static getStageSize(usePixel?: boolean) {
+        var size: any = { width: window.innerWidth };
+        size.height = window.innerHeight;
+        
+        if (usePixel) {
+            var dpr = window.devicePixelRatio > 2 ? 2 : window.devicePixelRatio;
+            size.width = size.width * dpr;
+            size.height = size.height * dpr;
+        }
+        return size;
+    }
+
     public static getAllMaterial(obj: THREE.Object3D):any{
         let size:number = 1;
         let materials:any = [];
