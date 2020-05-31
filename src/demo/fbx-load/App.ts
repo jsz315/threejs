@@ -65,7 +65,7 @@ export default class App {
         this.camera.position.set(10, 30, 100);
         // this.camera.position.set(0, 0, 0);
 
-        // this.addLights();
+        this.addLights();
         this.addObj();
         this.animate();
         // this.test();
@@ -79,6 +79,7 @@ export default class App {
 
     async addObj() {
         let url = '/obj/fbx/woman/succubus.fbx';
+        // let url = '/obj/fbx/IronMan_Animated/Import_UpdateAnimation01.fbx';
         let obj:any = await FineLoader.loadFbx(url);
         this.fitModel(obj);
         // let url = '/obj/fbx/woman/succubus.fbx';

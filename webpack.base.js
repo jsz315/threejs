@@ -90,6 +90,13 @@ module.exports = {
             {
                 test: /\.vue$/,
                 loader: 'vue-loader'
+            },
+            {
+                test: /\.worker\.js$/,
+                use: { 
+                    loader: 'worker-loader',
+                    options: { inline: true, fallback: true }
+                }
             }
         ]
     },

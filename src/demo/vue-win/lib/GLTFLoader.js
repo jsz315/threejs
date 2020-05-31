@@ -2084,7 +2084,8 @@ var GLTFLoader = ( function () {
 
 			// Load Texture resource.
 
-			var loader = Loader.Handlers.get( sourceURI );
+            // var loader = Loader.Handlers.get( sourceURI );
+            var loader = options.manager.getHandler( sourceURI );
 
 			if ( ! loader ) {
 
@@ -2495,7 +2496,8 @@ var GLTFLoader = ( function () {
 			return parser.getDependency( 'accessor', accessorIndex )
 				.then( function ( accessor ) {
 
-					geometry.addAttribute( attributeName, accessor );
+                    // geometry.addAttribute( attributeName, accessor );
+                    geometry.setAttribute( attributeName, accessor );
 
 				} );
 
@@ -3131,7 +3133,7 @@ var GLTFLoader = ( function () {
 
 				var matrix = new Matrix4();
 				matrix.fromArray( nodeDef.matrix );
-				node.applyMatrix( matrix );
+				node.applyMatrix4( matrix );
 
 			} else {
 

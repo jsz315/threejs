@@ -197,16 +197,33 @@ export default {
             console.log(res, 'seller_show');
             if(res.data && res.data.datas){
                 var t = res.data.datas;
-                var list = [];
-                for(var i in t){
-                    if(i != 1){
+
+                for(var i in t){      
+                    var list = [];             
+                    if(i == 5){
                         t[i].forEach(item=>{
                             list.push(item['pic_path']);
                         })
+                        // this.$store.commit("changeBusinessImages", list);
                     }
-                    
+                    else{
+                        t[i].forEach(item=>{
+                            list.push(item['pic_path']);
+                        })
+                        // this.$store.commit("changeWindoorImages", this.$store.state.windoorImages.concat(list));
+                    }
                 }
-                this.$store.commit("changeSellerImages", list);
+
+                // var list = [];
+                // for(var i in t){
+                //     if(i != 1){
+                //         t[i].forEach(item=>{
+                //             list.push(item['pic_path']);
+                //         })
+                //     }
+                    
+                // }
+                // this.$store.commit("changeSellerImages", list);
             }
             
         },
@@ -230,19 +247,40 @@ export default {
             }
 
             if (res.data && res.data.datas) {
-                let datas = res.data.datas;
-                if (datas["sys_img"] || datas["brand_img"]) {
-                    datas["sys_img"] && this.imgs.push(datas["sys_img"]);
-                    datas["brand_img"] && this.imgs.push(datas["brand_img"]);
 
-                    this.$store.commit("changeProductImages", [].concat(this.imgs));
+                let datas = res.data.datas;
+                // datas["color"] && this.$store.commit("changeColorList", datas["color"]);
+                if(datas["sys_img"] || datas["brand_img"]){
+                    if(datas["sys_img"]){
+                        this.$store.commit("changeSeriesImages", datas["sys_img"]);
+                    }
+                    if(datas["brand_img"]){
+                        this.$store.commit("changeBrandImages", datas["brand_img"]);
+                    }
                     this.$store.commit("changeLogoImage", datas["vr_img"]);
-                } else {
-                    if (!this.retry) {
+                }
+                else{
+                    if(!this.retry){
                         this.retry = true;
                         this.getImg(26);
                     }
+                    
                 }
+
+
+                // let datas = res.data.datas;
+                // if (datas["sys_img"] || datas["brand_img"]) {
+                //     datas["sys_img"] && this.imgs.push(datas["sys_img"]);
+                //     datas["brand_img"] && this.imgs.push(datas["brand_img"]);
+
+                //     this.$store.commit("changeProductImages", [].concat(this.imgs));
+                //     this.$store.commit("changeLogoImage", datas["vr_img"]);
+                // } else {
+                //     if (!this.retry) {
+                //         this.retry = true;
+                //         this.getImg(26);
+                //     }
+                // }
             }
         }
     }

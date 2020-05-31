@@ -65,6 +65,20 @@ export default class Tooler{
         return location.search.indexOf('http://') != -1;
     }
 
+    
+    public static getStageSize(usePixel?: boolean) {
+        var size: any = { width: window.innerWidth };
+        size.height = window.innerHeight;
+        
+        if (usePixel) {
+            var dpr = window.devicePixelRatio > 2 ? 1 : window.devicePixelRatio;
+            size.width = size.width * dpr;
+            size.height = size.height * dpr;
+        }
+        //test
+        return size;
+    }
+
     public static getAllMaterial(obj: THREE.Object3D):any{
         let size:number = 1;
         let materials:any = [];
@@ -129,7 +143,7 @@ export default class Tooler{
         var mat1 = new THREE.Matrix4().makeTranslation(pot.x, pot.y, pot.z);
         var mat2 = new THREE.Matrix4().makeRotationAxis(axis, r * Math.PI/ 180);
         var mat3 = new THREE.Matrix4().makeTranslation(-pot.x, -pot.y, -pot.z);
-        obj.applyMatrix(mat1.multiply(mat2).multiply(mat3));
+        obj.applyMatrix4(mat1.multiply(mat2).multiply(mat3));
         // obj.scale.set(scale.x, scale.y, scale.z);
     }
 

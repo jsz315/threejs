@@ -35,7 +35,7 @@
     "postcss-loader": "^3.0.0",
     "postcss-px2rem-exclude": "^0.0.6",
     "style-loader": "^0.23.1",
-    "three": "^0.107.0",
+    "three": "^0.115.0",
     "three-js-csg": "^72.0.0",
     "three-orbit-controls": "^82.1.0",
     "three-orbitcontrols-ts": "^0.1.2",
@@ -48,7 +48,8 @@
     "webpack-cli": "^3.3.6",
     "webpack-dev-middleware": "^3.7.0",
     "webpack-hot-middleware": "^2.25.0",
-    "webpack-merge": "^4.2.1"
+    "webpack-merge": "^4.2.1",
+    "worker-loader": "^2.0.0"
   },
   "dependencies": {
     "@tweenjs/tween.js": "^18.3.1",
@@ -75,8 +76,8 @@
     "mint-ui": "^2.2.13",
     "npm": "^6.12.1",
     "oimo": "^1.0.9",
+    "physijs": "^1.0.4",
     "request": "^2.88.0",
-    "threex.oimo": "^1.0.0",
     "tween": "^0.9.0",
     "video.js": "^7.6.5",
     "videojs-contrib-hls": "^5.15.0",

@@ -24,16 +24,31 @@ export default new Vuex.Store({
         },
         modelId: 0,
         modelType: 0,
-        productImages: [],
-        sellerImages: [],
+        // productImages: [],
+        // sellerImages: [],
         logoImage: null,
         priceItem: {},
-        partItem: {}
+        partItem: {},
+
+        windoorImages: [],
+        seriesImages: [],
+        businessImages: [],
+        brandImages: []
     },
     mutations: {
-        changeSellerImages(state, value){
-            state.sellerImages = value;
+        changeWindoorImages(state, value){
+            state.windoorImages = value;
         },
+        changeSeriesImages(state, value){
+            state.seriesImages = value;
+        },
+        changeBusinessImages(state, value){
+            state.businessImages = value;
+        },
+        changeBrandImages(state, value){
+            state.brandImages = value;
+        },
+
         changePriceItem(state, value){
             state.priceItem = value;
         },
@@ -79,10 +94,7 @@ export default new Vuex.Store({
         changeGuiderVisible(state, value){
             state.guiderVisible = value;
         },
-        changeProductImages(state, value){
-            state.productImages = value;
-        },
-        changeLogoImage(state, value){
+         changeLogoImage(state, value){
             state.logoImage = value;
         }
     },

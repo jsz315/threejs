@@ -311,6 +311,7 @@ export default class App {
         // else{
         //     obj.rotation.set(rotation[0], rotation[1], rotation[2]);
         // }
+        console.log("param.attr", param.attr);
 
         var replaceMap:any[] = [];
         skinURLs && skinURLs.forEach((item:string, index:number)=>{
@@ -328,7 +329,8 @@ export default class App {
         if(colorURL){
             replaceMap.push({
                 type: 'link',
-                key: 'IPR_',
+                // key: 'IPR_',
+                key: /(dif\d?_)|IPR_/,
                 url: colorURL
             })
         }

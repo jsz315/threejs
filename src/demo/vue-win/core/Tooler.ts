@@ -147,7 +147,7 @@ export default class Tooler{
         var mat1 = new THREE.Matrix4().makeTranslation(pot.x, pot.y, pot.z);
         var mat2 = new THREE.Matrix4().makeRotationAxis(axis, r * Math.PI/ 180);
         var mat3 = new THREE.Matrix4().makeTranslation(-pot.x, -pot.y, -pot.z);
-        obj.applyMatrix(mat1.multiply(mat2).multiply(mat3));
+        obj.applyMatrix4(mat1.multiply(mat2).multiply(mat3));
         // obj.scale.set(scale.x, scale.y, scale.z);
     }
 
@@ -448,5 +448,13 @@ export default class Tooler{
 
     public static getHost():string{
         return location.search.match(/http.*?.com/)[0];
+    }
+
+    public static toNumber(n:any):number{
+        var num = Number(n);
+        if(isNaN(num)){
+            return 0;
+        }
+        return num;
     }
 }
