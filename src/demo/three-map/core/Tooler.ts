@@ -71,11 +71,10 @@ export default class Tooler{
         size.height = window.innerHeight;
         
         if (usePixel) {
-            var dpr = window.devicePixelRatio > 2 ? 1 : window.devicePixelRatio;
+            var dpr = window.devicePixelRatio > 2 ? 2 : window.devicePixelRatio;
             size.width = size.width * dpr;
             size.height = size.height * dpr;
         }
-        //test
         return size;
     }
 
