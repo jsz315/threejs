@@ -1,52 +1,37 @@
 .control-view{
-    display: flex;
-    .btn{
-        flex: 1;
-        margin: 20px;
-        background: #0299df;
-        color: #ffffff;
-        border-radius: 4px;
-        text-align: center;
-        cursor: pointer;
-        font-size: 32px;
-        padding: 12px 0;
-        .lang-tip{
-            font-size: 24px;
-            text-align: center;
-            margin-top: 2px;
+    .move-btn{
+        position: fixed;
+        width: 24vw;
+        height: 24vw;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.2);
+        border: solid 1px #909090;
+        left: 0;
+        right: 0;
+        bottom: 16vw;
+        margin: auto;
+        position: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .cir{
+            width: 5vw;
+            height: 5vw;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.2);
+            border: solid 1px #909090;
+            transition: transform 90ms;
         }
     }
-    .disable{
-        background: #707070;
-        pointer-events: none;
+    .jump-btn{
+        position: fixed;
+        width: 16vw;
+        height: 16vw;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.2);
+        border: solid 1px #909090;
+        right: 10vw;
+        bottom: 11.2vw;
+        display: flex;
     }
-}
-
-
-@media screen and (min-width: 768PX){
-.control-view{
-    display: flex;
-    .btn{
-        flex: 1;
-        margin: 20PX;
-        background: #0299df;
-        color: #ffffff;
-        border-radius: 4PX;
-        text-align: center;
-        cursor: pointer;
-        font-size: 32PX;
-        padding: 12PX 0;
-        .lang-tip{
-            font-size: 24PX;
-            text-align: center;
-            margin-top: 2PX;
-        }
-    }
-    .disable{
-        background: #707070;
-        pointer-events: none;
-    }
-}
-
-
 }

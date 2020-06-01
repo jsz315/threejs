@@ -76,6 +76,13 @@ export default class App {
         window.addEventListener("keydown", this.onDown.bind(this));
         window.addEventListener("keyup", this.onUp.bind(this));
         canvas.addEventListener(this.isMobile ? "touchstart" : "mousedown", (e: any) => this.select(e), false);
+
+        listener.on("move", (x:number, y:number)=>{
+            console.log(x, y);
+            var offset = new THREE.Vector3(0, 0, 0);
+            var box: Physijs.BoxMesh = this.scene.getObjectByName("start") as Physijs.BoxMesh;
+            box.applyImpulse(new THREE.Vector3(x * 50, 0, y * 50), offset);
+        })
        
     }
 

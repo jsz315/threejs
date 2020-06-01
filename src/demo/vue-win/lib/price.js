@@ -41,7 +41,7 @@ async function getList(){
         if (res.data && res.data.code == 200) {
             var list = [];
             var datas = res.data.datas;
-            if(datas.plan){
+            if(datas.plan && datas.state == 1){
                 datas = datas.plan;
                 if(datas.windoor){
                     for(var i in datas.windoor){
@@ -82,6 +82,7 @@ async function getList(){
             }
             else{
                 //兼容旧数据接口
+                /*
                 for(var i in datas){
                     var item = datas[i];
                     if(item.show_offer == 2){
@@ -93,6 +94,7 @@ async function getList(){
                         }
                     }
                 }
+                */
             }
 
             resolve(list)
