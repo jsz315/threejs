@@ -3,6 +3,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 import listener from '../lib/listener';
 import Tooler from './Tooler';
+import { Stage } from './Stage';
+import { Core } from './Core';
 
 export default class App {
     scene: THREE.Scene;
@@ -19,12 +21,13 @@ export default class App {
     grid:THREE.GridHelper;
     axes: THREE.AxesHelper;
     isMobile:boolean;
+    stage: Stage;
 
     constructor(canvas:HTMLCanvasElement) {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer({
-            antialias: true,
+            antialias: false,
             alpha: true,
             canvas: canvas
         });
@@ -105,7 +108,6 @@ export default class App {
                 this.scene.add(this.selectBox);
                 listener.emit("setPosition", this.curItem.position);
             }
-           
         }
         listener.emit("setIndex", this.getCurIndex(), this.group ? this.group.children.length : 0);
     }
@@ -178,69 +180,53 @@ export default class App {
     }
 
     addPoints(points:string){
-        if(this.group){
-            while(this.group.children.length > 0){
-                this.group.remove(this.group.children[0]);
-            }
-        }
-        else{
-            this.group = new THREE.Group();
-        }
+        this.stage.addPoints(points);
+        // this.resizeStage();
 
-        if(this.line){
-            this.scene.remove(this.line);
-        }
+        // this.scene.add(this.group);
+        // var list:Array<THREE.Vector3> = Tooler.getVector3(points);
+        // if(list.length > 0){
+        //     var ps:Array<THREE.Mesh> = Tooler.getPoints(list);
+        //     for(var i:number = 0; i < ps.length; i++){
+        //         this.group.add(ps[i]);
+        //     }
+        //     this.line = Tooler.getLines(list);
+        //     this.scene.add(this.line);
 
-        if(this.frame){
-            this.scene.remove(this.frame);
-        }
-        
-        this.scene.add(this.group);
-        var list:Array<THREE.Vector3> = Tooler.getVector3(points);
-        if(list.length > 0){
-            var ps:Array<THREE.Mesh> = Tooler.getPoints(list);
-            for(var i:number = 0; i < ps.length; i++){
-                this.group.add(ps[i]);
-            }
-            this.line = Tooler.getLines(list);
-            this.scene.add(this.line);
+        //     this.frame = new THREE.BoxHelper(this.group, new THREE.Color(0xff9900));
+        //     this.scene.add(this.frame);
 
-            this.frame = new THREE.BoxHelper(this.group, new THREE.Color(0xff9900));
-            this.scene.add(this.frame);
-
-            this.resizeStage();
-        }
-        else{
-            alert("顶点数应该为3的倍数");
-        }
+        //     this.resizeStage();
+        // }
+        // else{
+        //     alert("顶点数应该为3的倍数");
+        // }
     }
 
     resizeStage(){
-        console.log("frame size");
-        var size:THREE.Vector3 = Tooler.getBoxSize(this.group);
-        console.log(size);
-        var max:number = Math.max(size.x, size.y, size.z);
-        var far = Math.max(max * 4, 500);
+        var max:number = Tooler.getMaxSize(this.scene);
+        var far = max * 10;
         this.camera.far = far;
-        var scale:number = this.camera.far / 1000;
-        console.log("scale = " + scale);
         console.log("far = " + far);
         this.scene.remove(this.grid);
-        this.grid = new THREE.GridHelper(far, 500);
+
+        this.grid = new THREE.GridHelper(far, 100);
         (this.grid.material as any).transparent = true;
         (this.grid.material as any).opacity = 0.1;
+        // this.grid.scale.addScalar(far / 100);
         this.scene.add(this.grid);
         
-        var startPot:THREE.Vector3 = new THREE.Vector3(10, 10, 20);
+        var startPot:THREE.Vector3 = new THREE.Vector3(10, 10, 10);
         var normalizePot:THREE.Vector3 = startPot.normalize();
-        var endPot:THREE.Vector3 = normalizePot.setScalar(far * 0.2);
-        console.log(endPot);
+        var endPot:THREE.Vector3 = normalizePot.setScalar(max);
+        console.log('camera position', endPot);
         this.camera.position.copy(endPot);
+        this.camera.lookAt(new THREE.Vector3())
         this.orbit.update();
 
         this.camera.updateProjectionMatrix();
-
-        var range:number = max / 100;
+        
+        var range:number = Tooler.getBoxSize(this.group) / 100;
         listener.emit("setRange", range);
         this.changeSize(0, range);
     }
@@ -262,29 +248,22 @@ export default class App {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setClearColor(new THREE.Color(0xFFFFFF));
-        this.renderer.shadowMap.enabled = true;
+        // this.renderer.shadowMap.enabled = true;
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
         this.orbit.enabled = true;
-        this.camera.position.set(7.742, 9.887, 13.769);
+        this.camera.position.set(100, 100, 100);
 
-        this.addHelper();
+        Core.instance.scene = this.scene;
+        Core.instance.camera = this.camera;
+        Core.instance.renderer = this.renderer;
+        Core.instance.orbit = this.orbit;
+
+        this.stage = new Stage();
+        this.scene.add(this.stage);
+
+        // this.addHelper();
         this.animate();
 
         this.camera.lookAt(new THREE.Vector3());
-    }
-
-   
-    addHelper():void{
-        var grid:THREE.GridHelper = new THREE.GridHelper(500, 500);
-        // grid.scale.addScalar(10);
-        (grid.material as any).transparent = true;
-        (grid.material as any).opacity = 0.1;
-        this.scene.add(grid);
-
-        var axes: THREE.AxesHelper = new THREE.AxesHelper(100);
-        this.scene.add(axes);
-
-        this.grid = grid;
-        this.axes = axes;
     }
 }

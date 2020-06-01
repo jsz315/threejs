@@ -38,10 +38,25 @@ export default class Tooler{
         return new THREE.Line(geometry, new THREE.MeshNormalMaterial());
     }
 
-    public static getBoxSize(obj: THREE.Object3D):THREE.Vector3{
+    public static getBoxSize(obj: THREE.Object3D):number{
         let box = new THREE.Box3().setFromObject(obj);
+        console.log(box, 'box');
         let size = box.getSize(new THREE.Vector3());
-        return size;
+        let num = Math.max(size.x, size.y, size.z);
+        return num;
+    }
+
+    public static getMaxSize(obj: THREE.Object3D):number{
+        let box = new THREE.Box3().setFromObject(obj);
+        var x1 = Math.abs(box.min.x);
+        var y1 = Math.abs(box.min.y);
+        var z1 = Math.abs(box.min.z);
+        var x2 = Math.abs(box.max.x);
+        var y2 = Math.abs(box.max.y);
+        var z2 = Math.abs(box.max.z);
+        var max = Math.max(x1, y1, z1, x2, y2, z2);
+        return max;
+
     }
 
     public static checkMobile():boolean{
