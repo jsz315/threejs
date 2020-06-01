@@ -1,48 +1,71 @@
 <template>
     <div class="control-view">
-        <div class="btn" :class="{'disable': !anim}" @click="play">
-            开关动效
-            <div class="lang-tip">Action</div>
+        <div class="move-btn" ref="move">
+            <div class="cir" :style="style"></div>
         </div>
-        <div class="btn" @click="showPhone">
-            确认审核
-            <div class="lang-tip">Confirm audit</div>
-        </div>
+        <!-- <div class="jump-btn" @click="jump"></div> -->
     </div>
 </template>
 
 <script>
 import Tooler from "../../core/Tooler.ts"
-import price from "../../lib/price"
 import listener from "../../lib/listener"
+
+let onTouchMove;
+let onTouchEnd;
 
 export default {
     data() {
         return {
-            
+            x: 0,
+            y: 0
         };
     },
     components: {},
     computed: {
-        anim(){
-            return this.$store.state.effectVisible;
+        style(){
+            return {
+                transform: `translate(${this.x}px, ${this.y}px)`
+            }
         }
     },
     mounted() {
-        // this.init();
+        this.init();
     },
     filters: {
-        formatNum: function (value) {
-            if (!value) return '-';
-            return Number(value).toFixed(2);
-        }
+        
     },
     methods: {
-        play(){
-            listener.emit('play');
+        init(){
+            let pot;
+            let start;
+            this.$refs.move.addEventListener("touchstart", (e)=>{
+                start = e.changedTouches[0];
+                pot = e.changedTouches[0];
+                onTouchMove = listener.make(window, 'touchmove', (e)=>{
+                    var p = e.changedTouches[0];
+                    this.x += p.clientX - pot.clientX;
+                    this.y += p.clientY - pot.clientY;
+                    pot = p;
+                })
+
+                onTouchEnd = listener.make(window, 'touchend', (e)=>{
+                   
+                    onTouchMove.destory();
+                    onTouchEnd.destory();
+                    this.x = 0;
+                    this.y = 0;
+
+                    var ox = e.changedTouches[0].clientX - start.clientX;
+                    var oy = e.changedTouches[0].clientY - start.clientY;
+                    listener.emit("move", ox, oy);
+                    console.log(e, 'end', ox, oy);
+                    
+                })
+            })
         },
-        showPhone(){
-            this.$store.commit('changePhoneVisible', true);
+        jump(){
+            
         }
     }
 };

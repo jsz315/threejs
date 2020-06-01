@@ -34,10 +34,14 @@ export class MapView extends THREE.Object3D{
     }
 
     addFloor(row:number, col:number, color:number){
+        var map = new THREE.TextureLoader().load("./asset/texture/p3.jpg");
+        map.wrapS = map.wrapT = THREE.RepeatWrapping;
+        map.repeat.set(this.col, this.row);
+
         var mat = Physijs.createMaterial(
             new THREE.MeshStandardMaterial({
                 color: color,
-                map: new THREE.TextureLoader().load("./texture/p3.jpg")
+                map: map
             })
         );
         var box = new Physijs.BoxMesh(new THREE.BoxGeometry(row, 1, col), mat, 0);
@@ -71,10 +75,10 @@ export class MapView extends THREE.Object3D{
         var mat = Physijs.createMaterial(
             new THREE.MeshStandardMaterial({
                 color: color,
-                map: new THREE.TextureLoader().load("./texture/p1.jpg"),
-            }), 1, 0.5
+                map: new THREE.TextureLoader().load("./asset/texture/p1.jpg"),
+            }), 0.5, 0.5
         );
-        var box = new Physijs.BoxMesh(new THREE.SphereGeometry(0.5, 12, 12), mat, 100);
+        var box = new Physijs.BoxMesh(new THREE.SphereGeometry(0.5, 12, 12), mat, 200);
         box.position.set(row, 8, col);
         box.name = name;
         // box.receiveShadow = true;
@@ -87,7 +91,7 @@ export class MapView extends THREE.Object3D{
         var mat = Physijs.createMaterial(
             new THREE.MeshStandardMaterial({
                 color: 0xffffff,
-                map: new THREE.TextureLoader().load("./texture/p2.jpg")
+                map: new THREE.TextureLoader().load("./asset/texture/p2.jpg")
             })
         );
         var box = new Physijs.BoxMesh(new THREE.BoxGeometry(1, 1, 1), mat, 100);

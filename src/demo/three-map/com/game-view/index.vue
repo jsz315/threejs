@@ -1,10 +1,12 @@
 <template>
     <div class="game-view">
         <canvas ref="canvas" class="canvas"></canvas>
+        <ControlView />
     </div>
 </template>
 
 <script>
+import ControlView from "../control-view/index.vue"
 import App from '../../core/App'
 export default {
     data() {
@@ -12,7 +14,7 @@ export default {
             
         };
     },
-    components: {},
+    components: {ControlView},
     computed:{
         
     },

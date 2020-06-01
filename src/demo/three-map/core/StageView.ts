@@ -35,13 +35,13 @@ export class StageView extends THREE.Object3D{
         
         directionalLight.target = obj;
 
-        var helper = new DirectionalLightHelper(directionalLight);
-        setTimeout(() => {
-            helper.update();
-        }, 2000);
+        // var helper = new DirectionalLightHelper(directionalLight);
+        // setTimeout(() => {
+        //     helper.update();
+        // }, 2000);
         
-        this.add(helper);
-        console.log(directionalLight, 'directionalLight');
+        // this.add(helper);
+        // console.log(directionalLight, 'directionalLight');
     }
 
     init(){
