@@ -2,9 +2,10 @@
     <div class="home">
         <div class="content">
             <input class="txt" type="text" v-model="points">
-            <div class="btn" @click="onAdd(0)">添加3D点</div>
-            <div class="btn" @click="onAdd(1)">添加2D点</div>
+            <div class="btn" @click="onAdd(3)">添加3D点</div>
+            <div class="btn" @click="onAdd(2)">添加2D点</div>
             <div class="btn" @click="onRand">随机</div>
+            <div class="btn" @click="onClear">清空</div>
         </div>
         <div class="ico" @click="showSetting"></div>
         <Setting ref="setting"></Setting>
@@ -46,26 +47,27 @@ export default {
         },
         onAdd(type){
             var ps = this.points;
-            if(type == 1){
-                ps = ps.replace(/\s/g, "");
-                var list = ps.split(",");
-                var total = list.length;
-                var aim = [];
-                if(total % 2 == 0){
-                    for(var i = 0; i < total; i++){
-                        aim.push(list[i]);
-                        if(i % 2 == 1){
-                            aim.push(0);
-                        }
-                    }
-                    ps = aim.join(",");
-                }
-                else{
-                    alert("顶点应为2的倍数");
-                    return;
-                }
-            }
-            listener.emit("points", ps);
+            ps = ps.replace(/\s/g, "");
+            // if(type == 1){
+            //     ps = ps.replace(/\s/g, "");
+            //     var list = ps.split(",");
+            //     var total = list.length;
+            //     var aim = [];
+            //     if(total % 2 == 0){
+            //         for(var i = 0; i < total; i++){
+            //             aim.push(list[i]);
+            //             if(i % 2 == 1){
+            //                 aim.push(0);
+            //             }
+            //         }
+            //         ps = aim.join(",");
+            //     }
+            //     else{
+            //         alert("顶点应为2的倍数");
+            //         return;
+            //     }
+            // }
+            listener.emit("points", ps, type);
             this.save();
         },
         onRand(){
@@ -78,8 +80,11 @@ export default {
                 list.push(x, y, z);
             }
             this.points = list.join(",")
-            listener.emit("points", this.points);
+            listener.emit("points", this.points, 3);
             this.save();
+        },
+        onClear(){
+            listener.emit("clear");
         },
         save(){
             localStorage.setItem("points", this.points);

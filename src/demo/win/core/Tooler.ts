@@ -11,6 +11,21 @@ export default class Tooler{
         return offset;
     }
 
+    
+    public static getRootModel(obj:THREE.Object3D):THREE.Object3D{
+        var aim = obj;
+        var level = 0;
+        while (aim = aim.parent) {
+            if(aim.type == "Scene"){
+                break;
+            }
+            if(++level > 10){
+                break;
+            }
+        }
+        return aim;
+    }
+
     public static getBoxSize(obj: THREE.Object3D):THREE.Vector3{
         let box = new THREE.Box3().setFromObject(obj);
         let size = box.getSize(new THREE.Vector3());

@@ -89,7 +89,7 @@ export class Effect{
                             views.push(content);
                             console.log("动画元素:" + item.content);
                             this.positions[item.content] = content.position.clone();
-
+                            content.name = content.name + "_" + Math.random();
                             let animate = new Animate(content);
                             item.animation.forEach((m:any)=>{
                                 animate.addAnimation(m, item.openMode);

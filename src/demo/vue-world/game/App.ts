@@ -33,12 +33,13 @@ export default class App {
         });
 
         window.addEventListener("resize", e => this.onResize(e), false);
-        listener.on("points", (points:string)=>this.addPoints(points));
-        listener.on("pointColor", (type:number, color:string)=>this.changePointColor(type, color));
+        listener.on("points", (points:string, type:number)=>this.addPoints(points, type));
+        listener.on("pointColor", (color:string)=>this.changePointColor(color));
         listener.on("lineColor", (color:string)=>this.changeLineColor(color));
-        listener.on("size", (type:number, size:number)=>this.changeSize(type, size));
+        listener.on("size", (size:number)=>this.changeSize(size));
         listener.on("changeVisible", (obj:any)=>{this.changeVisible(obj)});
         listener.on("changePosition", (obj:any)=>{this.changePosition(obj)});
+        listener.on("clear", (obj:any)=>{this.clear()});
 
         this.isMobile = Tooler.checkMobile();
 
@@ -46,24 +47,28 @@ export default class App {
         canvas.addEventListener(this.isMobile ? "touchstart" : "mousedown", (e: any) => this.choose(e), false);
     }
 
+    clear(){
+        this.stage.clear();
+    }
+
     changeVisible(obj:any){
-        if(this.frame){
-            this.frame.visible = obj.isFrame;
-        }
-        this.axes.visible = obj.isAxes;
-        this.grid.visible = obj.isGrid;
+        // if(this.frame){
+        //     this.frame.visible = obj.isFrame;
+        // }
+        this.stage.axes.visible = obj.isAxes;
+        this.stage.grid.visible = obj.isGrid;
     }
 
     changePosition(obj:any){
         if(this.curItem){
             this.curItem.position.set(obj.x, obj.y, obj.z);
             
-            if(this.selectBox){
-                this.scene.remove(this.selectBox);
-                this.selectBox = null;
-            }
-            this.selectBox = new THREE.BoxHelper(this.curItem, new THREE.Color(0xFF0000));
-            this.scene.add(this.selectBox);
+            // if(this.selectBox){
+            //     this.scene.remove(this.selectBox);
+            //     this.selectBox = null;
+            // }
+            // this.selectBox = new THREE.BoxHelper(this.curItem, new THREE.Color(0xFF0000));
+            // this.scene.add(this.selectBox);
 
             var id:number = this.getCurIndex();
             if(id != -1){
@@ -72,13 +77,13 @@ export default class App {
                 (this.line.geometry as THREE.Geometry).verticesNeedUpdate = true;
             }
 
-            if(this.frame){
-                this.scene.remove(this.frame);
-                this.frame = null;
-            }
+            // if(this.frame){
+            //     this.scene.remove(this.frame);
+            //     this.frame = null;
+            // }
 
-            this.frame = new THREE.BoxHelper(this.group, new THREE.Color(0xff9900));
-            this.scene.add(this.frame);
+            // this.frame = new THREE.BoxHelper(this.group, new THREE.Color(0xff9900));
+            // this.scene.add(this.frame);
             
         }
     }
@@ -91,10 +96,10 @@ export default class App {
         let mouse = new THREE.Vector2();
         mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
         mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-        if(this.selectBox){
-            this.scene.remove(this.selectBox);
-            this.selectBox = null;
-        }
+        // if(this.selectBox){
+        //     this.scene.remove(this.selectBox);
+        //     this.selectBox = null;
+        // }
         this.curItem = null;
         let obj: any;
         this.rayCaster.setFromCamera(mouse, this.camera);
@@ -102,14 +107,17 @@ export default class App {
         let intersectObjects = this.rayCaster.intersectObjects(list, true);
         if (intersectObjects[0]) {
             obj = intersectObjects[0].object;
-            if(obj != this.grid && obj != this.axes){
+            if(obj.name == 'point'){
                 this.curItem = obj;
-                this.selectBox = new THREE.BoxHelper(obj, new THREE.Color(0xFF0000));
-                this.scene.add(this.selectBox);
+                // this.selectBox = new THREE.BoxHelper(obj, new THREE.Color(0xFF0000));
+                // this.scene.add(this.selectBox);
                 listener.emit("setPosition", this.curItem.position);
+
+                var children = obj.parent.children;
+                var id = children.findIndex((item:any)=> item == obj);
+                listener.emit("setIndex", id, children.length);
             }
         }
-        listener.emit("setIndex", this.getCurIndex(), this.group ? this.group.children.length : 0);
     }
 
     getCurIndex():number{
@@ -137,28 +145,13 @@ export default class App {
         return null;
     }
 
-    getAimObjects(type:number):THREE.Object3D[]{
-        var list:THREE.Object3D[] = [];
-        if(type == 0){
-            list = this.group.children;
-        }
-        else if(type == 1){
-            var obj:THREE.Object3D = this.getChooseMesh();
-            if(obj){
-                list.push(obj);
-            }
-        }
-        else{
-            if(this.group.children.length > 0){
-                list.push(this.group.children[0]);
-            }
-        }
+    getAimObjects():THREE.Object3D[]{
+        var list:THREE.Object3D[] = this.stage.getPoints();
         return list;
-
     }
 
-    changePointColor(type:number, color:string){
-        var list:THREE.Object3D[] = this.getAimObjects(type);
+    changePointColor(color:string){
+        var list:THREE.Object3D[] = this.getAimObjects();
         var mat:THREE.MeshBasicMaterial = new THREE.MeshBasicMaterial({color: new THREE.Color(color)});
         for(var i:number = 0; i < list.length; i++){
             (list[i] as THREE.Mesh).material = mat;
@@ -166,69 +159,52 @@ export default class App {
     }
 
     changeLineColor(color:string){
-        this.line.material = new THREE.MeshBasicMaterial({color: new THREE.Color(color)});
+        this.stage.changeLineColor(color);
     }
 
-    changeSize(type:number, size:number){
+    changeSize(size:number){
         if(size <= 0){
             size = 0.01;
         }
-        var list:THREE.Object3D[] = this.getAimObjects(type);
+        var list:THREE.Object3D[] = this.getAimObjects();
         for(var i:number = 0; i < list.length; i++){
             (list[i] as THREE.Mesh).scale.setScalar(size);
         }
     }
 
-    addPoints(points:string){
-        this.stage.addPoints(points);
-        // this.resizeStage();
-
-        // this.scene.add(this.group);
-        // var list:Array<THREE.Vector3> = Tooler.getVector3(points);
-        // if(list.length > 0){
-        //     var ps:Array<THREE.Mesh> = Tooler.getPoints(list);
-        //     for(var i:number = 0; i < ps.length; i++){
-        //         this.group.add(ps[i]);
-        //     }
-        //     this.line = Tooler.getLines(list);
-        //     this.scene.add(this.line);
-
-        //     this.frame = new THREE.BoxHelper(this.group, new THREE.Color(0xff9900));
-        //     this.scene.add(this.frame);
-
-        //     this.resizeStage();
-        // }
-        // else{
-        //     alert("顶点数应该为3的倍数");
-        // }
+    addPoints(points:string, type:number){
+        var list = points.split(";");
+        list.forEach((p:string) => {
+            this.stage.addPoints(p, type);
+        })
     }
 
     resizeStage(){
-        var max:number = Tooler.getMaxSize(this.scene);
-        var far = max * 10;
-        this.camera.far = far;
-        console.log("far = " + far);
-        this.scene.remove(this.grid);
+        // var max:number = Tooler.getMaxSize(this.scene);
+        // var far = max * 10;
+        // this.camera.far = far;
+        // console.log("far = " + far);
+        // this.scene.remove(this.grid);
 
-        this.grid = new THREE.GridHelper(far, 100);
-        (this.grid.material as any).transparent = true;
-        (this.grid.material as any).opacity = 0.1;
-        // this.grid.scale.addScalar(far / 100);
-        this.scene.add(this.grid);
+        // this.grid = new THREE.GridHelper(far, 100);
+        // (this.grid.material as any).transparent = true;
+        // (this.grid.material as any).opacity = 0.1;
+        // // this.grid.scale.addScalar(far / 100);
+        // this.scene.add(this.grid);
         
-        var startPot:THREE.Vector3 = new THREE.Vector3(10, 10, 10);
-        var normalizePot:THREE.Vector3 = startPot.normalize();
-        var endPot:THREE.Vector3 = normalizePot.setScalar(max);
-        console.log('camera position', endPot);
-        this.camera.position.copy(endPot);
-        this.camera.lookAt(new THREE.Vector3())
-        this.orbit.update();
+        // var startPot:THREE.Vector3 = new THREE.Vector3(10, 10, 10);
+        // var normalizePot:THREE.Vector3 = startPot.normalize();
+        // var endPot:THREE.Vector3 = normalizePot.setScalar(max);
+        // console.log('camera position', endPot);
+        // this.camera.position.copy(endPot);
+        // this.camera.lookAt(new THREE.Vector3())
+        // this.orbit.update();
 
-        this.camera.updateProjectionMatrix();
+        // this.camera.updateProjectionMatrix();
         
-        var range:number = Tooler.getBoxSize(this.group) / 100;
-        listener.emit("setRange", range);
-        this.changeSize(0, range);
+        // var range:number = Tooler.getBoxSize(this.group) / 100;
+        // listener.emit("setRange", range);
+        // this.changeSize(0, range);
     }
     
     onResize(e:Event):void{

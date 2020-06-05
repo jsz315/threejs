@@ -2,18 +2,22 @@ import * as THREE from 'three'
 
 export default class Tooler{
 
-    public static getVector3(points:string):Array<THREE.Vector3>{
+    public static getVector3(points:string, type:number):Array<THREE.Vector3>{
         var list:Array<THREE.Vector3> = [];
-        points = points.replace(/\s/g, "");
+        // points = points.replace(/\s/g, "");
         var ps:Array<string> = points.split(",");
         var total:number = ps.length;
-        if(total % 3 == 0 && total > 0){
-            for(var i:number = 0; i < total; i += 3){
-                var point:THREE.Vector3 = new THREE.Vector3(Number(ps[i]), Number(ps[i + 1]), Number(ps[i + 2]));
+        if(total % type == 0 && total > 0){
+            for(var i:number = 0; i < total; i += type){
+                var point:THREE.Vector3 = new THREE.Vector3(Number(ps[i]), Number(ps[i + 1]), type == 3 ? Number(ps[i + 2]) : 0);
                 list.push(point);
             }
+            return list;
         }
-        return list;
+        else{
+            alert(`顶点应该为${type}的倍数`);
+            return null;
+        }
     }
 
     public static getPoints(ps: Array<THREE.Vector3>):Array<THREE.Mesh>{

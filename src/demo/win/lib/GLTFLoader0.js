@@ -77,7 +77,8 @@ var GLTFLoader = ( function () {
 
 		this.manager = ( manager !== undefined ) ? manager : DefaultLoadingManager;
 		this.dracoLoader = null;
-		this.ddsLoader = null;
+        this.ddsLoader = null;
+        console.log("manager", this.manager);
 
 	}
 
@@ -289,14 +290,16 @@ var GLTFLoader = ( function () {
 
 			}
 
-			// console.warn("json-----------------------");
-			// console.log(json)
-
-			// var isDebug = location.search.indexOf("mendaoyun.com") == -1;
-
+            console.warn("json-----------------------")
+            // json.images[0].uri = 'test.png';
+			// console.warn(json);
+			// var isTest = Tooler.isTest();
 			// if(json.images){
 			// 	json.images.forEach(item => {
-			// 		item.uri = item.uri.replace("http:", "https:");
+			// 		if(!isTest){
+			// 			item.uri = item.uri.replace("http:", "https:");
+			// 		}
+			// 		console.log(item.uri);
 			// 	})
 			// }
 
@@ -2084,8 +2087,7 @@ var GLTFLoader = ( function () {
 
 			// Load Texture resource.
 
-            // var loader = Loader.Handlers.get( sourceURI );
-            var loader = options.manager.getHandler( sourceURI );
+			var loader = Loader.Handlers.get( sourceURI );
 
 			if ( ! loader ) {
 
@@ -2094,10 +2096,7 @@ var GLTFLoader = ( function () {
 					: textureLoader;
 
 			}
-
 			return new Promise( function ( resolve, reject ) {
-
-                // loader.load( resolveURL( sourceURI, options.path ), resolve, undefined, reject );
                 var url = resolveURL( sourceURI, options.path );
 				loader.load( url, resolve, undefined, (e)=>{
                     console.warn("贴图不存在，使用默认贴图", url);
@@ -2141,7 +2140,7 @@ var GLTFLoader = ( function () {
 
 			return texture;
 
-		} );
+		} )
 
 	};
 
@@ -2496,8 +2495,7 @@ var GLTFLoader = ( function () {
 			return parser.getDependency( 'accessor', accessorIndex )
 				.then( function ( accessor ) {
 
-                    // geometry.addAttribute( attributeName, accessor );
-                    geometry.setAttribute( attributeName, accessor );
+					geometry.addAttribute( attributeName, accessor );
 
 				} );
 
@@ -3133,7 +3131,7 @@ var GLTFLoader = ( function () {
 
 				var matrix = new Matrix4();
 				matrix.fromArray( nodeDef.matrix );
-				node.applyMatrix4( matrix );
+				node.applyMatrix( matrix );
 
 			} else {
 

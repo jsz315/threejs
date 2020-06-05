@@ -66,7 +66,7 @@
 
             <div class="result">
                 <div class="item">总数量：{{totalNum}}</div>
-                <div class="item">总面积：{{totalArea}}</div>
+                <!-- <div class="item">总面积：{{totalArea}}</div> -->
                 <div class="item">合计：<span class="total">￥{{totalPrice}}</span></div>
             </div>
         </div>

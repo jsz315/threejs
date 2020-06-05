@@ -151,6 +151,9 @@ export default class App {
         if (intersectObjects[0]) {
             obj = intersectObjects[0].object;
             console.log(obj);
+            // console.log("[当前模型]：");
+            // var aim:THREE.Object3D = Tooler.getRootModel(obj);
+            // console.log(aim);
             let mat = Array.isArray(obj.material) ? obj.material[0] : obj.material;
             if (mat.map) {
                 let img = mat.map.image;
@@ -270,10 +273,16 @@ export default class App {
             url = url.replace("http:", "https:");
         }
         this.fineLoader.start(url, (object3D: THREE.Object3D) => {
-            this.fitModel(object3D);
+           
             url = url.replace(/\.(glb|zip)/, ".animation");
             url = url + "?v=" + Math.random();
-            this.effect.init(url, this.scene);
+            this.effect.init(url, this.scene);//多个一样的模型有bug
+
+            console.log(this.scene, 'scene');
+            console.log(object3D, 'object3D');
+            this.fitModel(object3D);
+            
+            // this.effect.init(url, object3D);
             // window.dispatchEvent(new CustomEvent("animate"));
         })
         // this.addSkybox();

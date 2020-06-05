@@ -8,12 +8,6 @@
                     <div class="item">
                         <div class="btn" :class="{'selected': type == 0}" @click="choose(0)"></div>全部
                     </div>
-                    <div class="item">
-                        <div class="btn" :class="{'selected': type == 1}" @click="choose(1)"></div>当前
-                    </div>
-                    <div class="item">
-                        <div class="btn" :class="{'selected': type == 2}" @click="choose(2)"></div>起始
-                    </div>
                 </div>
             </div>
             <div class="param">
@@ -32,9 +26,6 @@
                     </div>
                     <div class="item">
                         <div class="btn" :class="{'selected': isAxes}" @click="toggle(1)"></div>坐标
-                    </div>
-                    <div class="item">
-                        <div class="btn" :class="{'selected': isFrame}" @click="toggle(2)"></div>边框
                     </div>
                 </div>
             </div>
@@ -91,7 +82,6 @@ export default {
             size: 1,
             isGrid: true,
             isAxes: true,
-            isFrame: true,
             x: 0,
             y: 0,
             z: 0,
@@ -148,24 +138,20 @@ export default {
             else if(n == 1){
                 this.isAxes = !this.isAxes;
             }
-            else{
-                this.isFrame = !this.isFrame;
-            }
             listener.emit("changeVisible", {
                 isGrid: this.isGrid,
-                isAxes: this.isAxes,
-                isFrame: this.isFrame
+                isAxes: this.isAxes
             })
         },
         changeSize(e){
             console.log(e);
             this.size = e.target.value;
-            listener.emit("size", this.type, Number(this.size));
+            listener.emit("size", Number(this.size));
         },
         changePointColor(e){
             console.log(e);
             this.pointColor = e.target.value;
-            listener.emit("pointColor", this.type, this.pointColor);
+            listener.emit("pointColor", this.pointColor);
         },
         changeLineColor(e){
             console.log(e);

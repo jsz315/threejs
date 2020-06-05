@@ -41,7 +41,11 @@ async function getList(){
         if (res.data && res.data.code == 200) {
             var list = [];
             var datas = res.data.datas;
-            if(datas.plan && datas.state == 1){
+            var has = false;
+            if(datas.state == undefined || datas.state == 1){
+                has = true;
+            }
+            if(datas.plan && has){
                 datas = datas.plan;
                 if(datas.windoor){
                     for(var i in datas.windoor){
@@ -147,9 +151,14 @@ function getSize(data){
 }
 
 async function getBalcony(obj){
+    
     return new Promise(async resolve=>{
         // var host = getHost();
         // var url = host + '/data/upload/' + obj.balcony_path + "/" + obj.balcony_file + "?v=" + Math.random();
+        if(!obj.price_json){
+            resolve(false);
+            return;
+        }
         var url = obj.price_json + "?v=" + Math.random();
         console.log(url);
         let res = await axios.get(url);

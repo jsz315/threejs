@@ -47,7 +47,7 @@ async function getList(){
             var list = [];
             var datas = res.data.datas;
           
-            if(datas.plan){
+            if(datas.plan && (datas.state == 1)){
                 datas = datas.plan;
                 if(datas.windoor){
                     for(var i in datas.windoor){
@@ -56,6 +56,30 @@ async function getList(){
                             var t = await getWindoor(item);
                             if(t){
                                 item.type = 'windoor';
+                                list.push(item);
+                            }
+                        }
+                    }
+                }
+                if(datas.balcony){
+                    for(var i in datas.balcony){
+                        var item = datas.balcony[i];
+                        if(item.state == 1){
+                            var t = await getBalcony(item);
+                            if(t){
+                                item.type = 'balcony';
+                                list.push(item);
+                            }
+                        }
+                    }
+                }
+                if(datas.sunroom){
+                    for(var i in datas.sunroom){
+                        var item = datas.sunroom[i];
+                        if(item.state == 1){
+                            var t = await getBalcony(item);
+                            if(t){
+                                item.type = 'sunroom';
                                 list.push(item);
                             }
                         }
@@ -107,6 +131,28 @@ async function getList(){
     })
 }
 
+async function getBalcony(obj){
+    
+    return new Promise(async resolve=>{
+        // var host = getHost();
+        // var url = host + '/data/upload/' + obj.balcony_path + "/" + obj.balcony_file + "?v=" + Math.random();
+        if(!obj.price_json){
+            resolve(false);
+            return;
+        }
+        var url = obj.price_json + "?v=" + Math.random();
+        console.log(url);
+        let res = await axios.get(url);
+        if(res.data){
+            var data = res.data;
+            obj.detail = data;
+            resolve(true);
+        }
+        else{
+            resolve(false);
+        }
+    });
+}
 
 async function getWindoor(obj, old = false){
     return new Promise(async resolve=>{
