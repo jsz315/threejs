@@ -142,3 +142,23 @@ function $(sel){
 //         }, m);
 //     })
 // }
+
+
+(function () {
+    var active = false;
+    if(location.search.indexOf("eruda=true") != -1){
+        active = true;
+    }
+    else{
+        if(localStorage.getItem("active-eruda") == "true"){
+            active = true;
+        }
+    }
+    if (!active) return;
+    var script = document.createElement("script");
+    script.src = "https://libs.cdnjs.net/eruda/2.3.3/eruda.min.js";
+    document.body.appendChild(script);
+    script = document.createElement("script");
+    script.innerHTML = 'setTimeout(function(){eruda.init();console.log("eruda.init");}, 3000);';
+    document.body.appendChild(script);
+})();

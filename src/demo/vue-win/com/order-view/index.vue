@@ -12,6 +12,9 @@
             <div class="input-box">
                 <input class="text" v-model="phone" type="text" placeholder="请输入手机号"/>
             </div>
+            <div class="input-box">
+                <textarea class="lines" v-model="note" placeholder="请输入留言内容"></textarea>
+            </div>
             <div class="t-title">
                 <div class="t-ico"></div>
                 <div class="t-tip1">预约记录</div>
@@ -34,6 +37,7 @@ export default {
         return {
             name: "",
             phone: "",
+            note: "",
             success: false,
             list: [],
             isInit: false
@@ -110,6 +114,7 @@ export default {
                 model_id: this.$store.state.modelId,
                 client_name: this.name,
                 telephone: this.phone,
+                note: this.note,
                 user_id: userId
             };
             var host = Tooler.getHost();

@@ -1,22 +1,29 @@
 <template>
-    <swiper ref="mySwiper" class="swiper-view" :style="{'height': height + 'px'}" :options="swiperOptions">
+    <!-- <swiper ref="mySwiper" class="swiper-view" :style="{'height': height + 'px'}" :options="swiperOptions">
         <swiper-slide class="item" v-for="(item, index) in pics" v-bind:key="index" :style="style(item)"></swiper-slide>
+        <div class="swiper-pagination" slot="pagination" v-if="this.pics.length > 1"></div>
+    </swiper> -->
+
+    <swiper ref="mySwiper" class="swiper-view" :options="swiperOptions">
+        <swiper-slide ref="slide" class="item" v-for="(item, index) in pics" :style="style(item)" v-bind:key="index"></swiper-slide>
         <div class="swiper-pagination" slot="pagination" v-if="this.pics.length > 1"></div>
     </swiper>
 </template>
 
 <script>
+import listener from "../../lib/listener"
+let resizeEvent;
+
 export default {
     props: ['pics'],
     data() {
         return {
-            height: window.innerHeight - 148,
             swiperOptions: {
                 pagination: {
                     el: '.swiper-pagination'
                 },
                 autoplay: {
-                    delay: 2000,
+                    delay: 5000,
                     //当用户滑动图片后继续自动轮播
                     disableOnInteraction: false,
                 },
@@ -25,7 +32,6 @@ export default {
                 // Some Swiper option/callback...
                 on: {
                     slideChange: ()=>{
-                        // console.log(this, 'slideChange');
                         this.$emit('change');
                     }
                 }
@@ -37,27 +43,31 @@ export default {
         
     },
     mounted() {
-        // window.addEventListener("resize", ()=>{
-        //     console.log("resize");
-        //     this.height = 820 * window.innerWidth / 1920;
-        // })
-        console.log(this, 'this');
-        console.log('swiper', this.$refs.mySwiper);
+        resizeEvent = listener.make(window, "resize", this.changeHight.bind(this));
+        // window.addEventListener("resize", this.changeHight.bind(this))
+        this.changeHight();
+
         if(this.pics.length == 1){
             this.$refs.mySwiper.$swiper.autoplay.stop();
-            // this.$refs.mySwiper.$swiper.stopAutoplay();
-            // this.$refs.mySwiper.lockSwipes();
         }
     },
     destroyed(){
-        
+        resizeEvent.destory();
+        // window.removeEventListener("resize", this.changeHight.bind(this));
+        console.log("移除侦听舞台变换事件");
     },
     methods:{
         style(item){
             return {
-                'background-image': 'url(' + item + ')',
-                'height': this.height + 'px'
+                'background-image': 'url(' + item + ')'
             }
+        },
+        changeHight(){
+            var h = window.innerHeight - 148 + 'px';
+            this.$refs.mySwiper.$el.style.height = h;
+            this.$refs.slide.forEach(div=>{
+                div.$el.style.height = h;
+            })
         }
     }
 };

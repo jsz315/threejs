@@ -41,12 +41,15 @@ export default {
         let url = Tooler.getQueryString("url");
         let id = url.split("/").pop().split(".")[0];
         this.fetchData(id);
-        this.sellerData(id);
+        if(!price.isERP()){
+            this.sellerData(id);
+        }
 
         listener.on("effect", ()=>{
             this.$store.commit("changeEffectVisible", true);
         })
         listener.on("colorMap", (n)=>{
+            console.log("IsSingle", n);
             this.$store.commit("changeIsSingle", n);
         })
     },
@@ -123,10 +126,10 @@ export default {
                     }
                 }
                 else{
-                    if(!retry){
-                        retry = true;
-                        this.fetchData(26);
-                    }
+                    // if(!retry){
+                    //     retry = true;
+                    //     this.fetchData(26);
+                    // }
                     
                 }
             }

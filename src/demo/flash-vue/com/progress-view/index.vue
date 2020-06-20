@@ -45,7 +45,7 @@ export default {
                 frame = 1;
                 this.changeTip();
             }
-        }, 30);
+        }, 50);
     },
     destroyed(){
         clearInterval(timerId);

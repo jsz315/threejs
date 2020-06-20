@@ -20,6 +20,7 @@ export default class App {
             alpha: true
         });
         window.addEventListener("resize", e => this.onResize(e), false);
+        this.setup();
     }
     
     onResize(e:Event):void{
@@ -41,11 +42,7 @@ export default class App {
 
         this.stage.update();
     }
-
-    updateGUIParam(param: any){
-
-    }
-
+    
     setup():void {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);

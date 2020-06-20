@@ -15,6 +15,10 @@ export default class Components{
         this.sub = [];
         this.isSingleColor = true;
         this.isRoom = false;
+
+        listener.on("colorMap", (n:boolean)=>{
+            this.isSingleColor = n;
+        })
     }
 
     initMap(materials: any[]){
@@ -41,10 +45,26 @@ export default class Components{
                 }
                 if(src.indexOf("/IPR_A_") != -1){
                     this.main.push(m);
+                    // if(m.userData.isFrame){
+                    //     this.main.push(m);
+                    // }
+                    // else{
+                    //     this.sub.push(m);
+                    // }
                 }
                 else if(src.indexOf("/IPR_B_") != -1){
-                    // this.isSingleColor = false;
                     this.sub.push(m);
+                    // if(m.userData.isFrame){
+                    //     this.sub.push(m);
+                    // }
+                    // else{
+                    //     this.main.push(m);
+                    // }
+                }
+                if(src.indexOf("/IWA_") != -1){
+                    m.roughness = 0.96;
+                    m.metalness = 0.04;
+                    m.flatShading = false;
                 }
             }
             m.transparent = true;
@@ -78,22 +98,6 @@ export default class Components{
         texture.flipY = material.map.flipY;
         texture.flipX = material.map.flipY;
         material.map = texture;
-
-
-        // let map = material.map;
-
-        // let texture: any = new THREE.TextureLoader().load(url, () => {
-        //     material.map.needsUpdate = true;
-        //     material.needsUpdate = true;
-        // });
-
-        // texture.wrapS = map.wrapS;
-        // texture.wrapT = map.wrapT;
-        // texture.repeat = new THREE.Vector2(map.repeat.x, map.repeat.y);
-        // texture.flipY = map.flipY;
-        // texture.flipX = map.flipX;
-
-        // material.map = texture;
     }
 
     changeMap(url: string, isSub: boolean){

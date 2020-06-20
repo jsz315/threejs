@@ -15,7 +15,9 @@ async function getList(){
     
         let host = getHost();
         let res;
-        if(isERP()){
+        var checkERP = isERP();
+        console.log("cur is erp", checkERP);
+        if(checkERP){
             res = await axios({
                 url: host + "/api/index/modelPrice",
                 method: 'post',
@@ -42,16 +44,19 @@ async function getList(){
         }
         
     
-        console.log(res);
+        console.log("price", res);
         if (res.data && res.data.code == 200) {
             var list = [];
             var datas = res.data.datas;
           
-            if(datas.plan && (datas.state == 1)){
+            if(datas.plan && (datas.state == 1 || datas.state == undefined)){
                 datas = datas.plan;
                 if(datas.windoor){
                     for(var i in datas.windoor){
                         var item = datas.windoor[i];
+                        if(item.color_id.indexOf(",") != -1){
+                            listener.emit('colorMap', false);
+                        }
                         if(item.show_offer == 2 && item.state == 1){
                             var t = await getWindoor(item);
                             if(t){
@@ -64,6 +69,9 @@ async function getList(){
                 if(datas.balcony){
                     for(var i in datas.balcony){
                         var item = datas.balcony[i];
+                        if(item.color_id.indexOf(",") != -1){
+                            listener.emit('colorMap', false);
+                        }
                         if(item.state == 1){
                             var t = await getBalcony(item);
                             if(t){
@@ -76,6 +84,9 @@ async function getList(){
                 if(datas.sunroom){
                     for(var i in datas.sunroom){
                         var item = datas.sunroom[i];
+                        if(item.color_id.indexOf(",") != -1){
+                            listener.emit('colorMap', false);
+                        }
                         if(item.state == 1){
                             var t = await getBalcony(item);
                             if(t){
@@ -90,6 +101,9 @@ async function getList(){
                 //兼容旧数据接口
                 for(var i in datas){
                     var item = datas[i];
+                    if(item.color_id.indexOf(",") != -1){
+                        listener.emit('colorMap', false);
+                    }
                     if(item.show_offer == 2){
                         var t = await getWindoor(item, true);
                         if(t){
@@ -231,7 +245,6 @@ async function getItem(obj){
         // obj.seriesName = data.seriesName;
 
         listener.emit('colorMap', !data.multiColor);
-        // listener.emit("colorMap", this.isSingleColor);
 
         resolve();
     });

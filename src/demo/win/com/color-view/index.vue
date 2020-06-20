@@ -42,6 +42,7 @@ export default {
     },
     methods: {
         changeColor(item, isSub){
+            console.log('changeColor', isSub ? "内框" : "外框");
             listener.emit('changeColor', item['color_img'], isSub);
         }
     }

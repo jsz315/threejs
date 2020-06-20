@@ -51,8 +51,15 @@ export default {
             var type_id = u.split("-")[3];
             var id = u.split("-")[4];
             var host = price.getHost();
+            var url;
+            if(price.isERP()){
+                url = host + "/api/userplan/modelNoteUpdate";
+            }
+            else{
+                url = host + `/mapi/index.php?app=modelshow&fnn=modelNoteUpdate`;
+            }
 
-            var res = await axios.post(host + `/mapi/index.php?app=modelshow&fnn=modelNoteUpdate`, {
+            var res = await axios.post(url, {
                 sourcetype: type_id,
                 yun3d_id: id,
                 phone: this.phone,
