@@ -19,7 +19,7 @@
 // }
 
 import './index.less'
-import MintUI from 'mint-ui'
+// import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
 
 import Vue from 'vue'
@@ -27,7 +27,11 @@ import Home from "./com/home/index.vue"
 import store from "./store/index";
 
 import { Toast } from 'mint-ui';
-Vue.use(MintUI);
+// Vue.use(MintUI);
+
+import { Range } from 'mint-ui';
+
+Vue.component(Range.name, Range);
 
 Vue.prototype.$toast = (tip) => {
     Toast({

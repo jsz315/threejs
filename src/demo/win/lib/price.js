@@ -177,7 +177,7 @@ async function getWindoor(obj, old = false){
             // var url = host + '/data/upload' + obj.plan_path + "/" + obj.pricejson_file + "?v=" + Math.random();
             var url = obj.pricejson_file + "?v=" + Math.random();
             if(old){
-                url = host + '/data/upload' + obj.plan_path + "/" + obj.pricejson_file + "?v=" + Math.random();
+                url = host + '/data/json/' + obj.plan_path + "/" + obj.pricejson_file + "?v=" + Math.random();
             }
 
             axios.get(url).then(res=>{

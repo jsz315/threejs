@@ -39,7 +39,8 @@ export default class Pickup{
         // let list = [this.scene.getObjectByName('ball')];
         var ball = this.scene.getObjectByName('ball');
         console.log(this.scene);
-        var list = [ball];
+        // var list = [ball];
+        var list = this.scene.getObjectByName("3dxy").children;
         let intersectObjects = this.rayCaster.intersectObjects(list, true);
         if (intersectObjects[0]) {
             obj = intersectObjects[0].object;

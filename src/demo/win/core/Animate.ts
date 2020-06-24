@@ -137,6 +137,11 @@ export default class Animate {
 
                 if(animation.moveType == Animate.ROTATE){
                     var r:number = animation.rotate.angle / animation.frames;
+                    // if(animation.rotate.axis.x == 1){
+                    //     animation.rotate.axis.x = 0;//======================
+                    //     animation.rotate.axis.y = 1;//======================
+                    // }
+                   
                     Tooler.rotateOnAxis(this.view, animation.rotate.pivot, animation.rotate.axis, r);
                 }
                 else{

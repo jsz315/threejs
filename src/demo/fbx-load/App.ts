@@ -1,7 +1,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { DragControls } from 'three/examples/jsm/controls/DragControls'
-import { FBXLoader } from './tool/FBXLoader'
+// import { FBXLoader } from './tool/FBXLoader'
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -78,7 +79,8 @@ export default class App {
     
 
     async addObj() {
-        let url = '/obj/fbx/woman/succubus.fbx';
+        // let url = '/obj/fbx/woman/succubus.fbx';
+        let url = '/obj/fbx/fengshan.fbx';
         // let url = '/obj/fbx/IronMan_Animated/Import_UpdateAnimation01.fbx';
         let obj:any = await FineLoader.loadFbx(url);
         this.fitModel(obj);

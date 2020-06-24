@@ -176,7 +176,9 @@ export default class App {
         let scale: number = Tooler.getFitScale(parent, 10);
         parent.position.set(0, 0, 0);
         parent.scale.multiplyScalar(scale);
+
         parent.rotateX(-Math.PI / 2);
+
         this.scene.add(parent);
         parent.name = "load_scene";
 
@@ -289,11 +291,18 @@ export default class App {
 
         this.addLights();
         this.animate();
+        this.addAxis();
         
         this.setAmbient(param.ambient);
         this.setDirectional(param.directional);
         this.setMetalness(param.metalness);
         this.setRoughness(param.roughness);
+    }
+
+    addAxis(){
+        if(location.search.indexOf("debug=1") != -1){
+            this.scene.add(new THREE.AxesHelper(10));
+        }
     }
 
     addLights(): void {
