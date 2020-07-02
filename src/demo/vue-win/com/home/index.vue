@@ -250,6 +250,15 @@ export default {
 
                 let datas = res.data.datas;
                 // datas["color"] && this.$store.commit("changeColorList", datas["color"]);
+
+                if(datas["sys_img"]){
+                    this.$store.commit("changeSeriesImages", datas["sys_img"]);
+                }
+                if(datas["brand_img"]){
+                    this.$store.commit("changeBrandImages", datas["brand_img"]);
+                }
+                this.$store.commit("changeLogoImage", datas["vr_img"]);
+                /*
                 if(datas["sys_img"] || datas["brand_img"]){
                     if(datas["sys_img"]){
                         this.$store.commit("changeSeriesImages", datas["sys_img"]);
@@ -266,6 +275,7 @@ export default {
                     }
                     
                 }
+                */
 
 
                 // let datas = res.data.datas;

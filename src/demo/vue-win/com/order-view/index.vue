@@ -120,11 +120,13 @@ export default {
             var host = Tooler.getHost();
             let res = await this.$post(host + "/mapi/index.php?app=count_client&fnn=count_model_save", param);
             if(res.data.code == 200 && res.data.datas){
-                // this.$toast('提交成功');
-                this.success = true;
-                setTimeout(()=>{
-                    this.success = false;
-                }, 3000);
+                this.$toast('提交成功');
+                // this.success = true;
+                this.close();
+                // setTimeout(()=>{
+                //     this.success = false;
+                //     this.close();
+                // }, 3000);
             }
             
         }

@@ -48,7 +48,10 @@ async function getList(){
         if (res.data && res.data.code == 200) {
             var list = [];
             var datas = res.data.datas;
-          
+            if(datas.plan_show == 2){
+                location.replace("./error.html");
+                return;
+            }
             if(datas.plan && (datas.state == 1 || datas.state == undefined)){
                 datas = datas.plan;
                 if(datas.windoor){
