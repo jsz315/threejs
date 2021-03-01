@@ -35,7 +35,7 @@
     "postcss-loader": "^3.0.0",
     "postcss-px2rem-exclude": "^0.0.6",
     "style-loader": "^0.23.1",
-    "three": "^0.115.0",
+    "three": "^0.125.0",
     "three-js-csg": "^72.0.0",
     "three-orbit-controls": "^82.1.0",
     "three-orbitcontrols-ts": "^0.1.2",
